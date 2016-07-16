@@ -1,0 +1,16 @@
+extends layout
+
+block content
+    .row
+      .col-sm-3
+      .col-sm-6
+        .panel
+          .panel-body
+            .container-fluid
+              #error.hidden.alert.alert-danger(role='alert')
+            h3 Search the OEIS Database
+            br
+            .form-group
+              input.form-control(type='text', id='sequence', autofocus=true)
+            a.btn.btn-default(href='#', role='button', onclick='lookupSequence()') Lookup
+      .col-sm-3

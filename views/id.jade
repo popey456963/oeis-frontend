@@ -1,0 +1,20 @@
+extends layout
+
+block content
+    .row
+      .col-sm-3
+      .col-sm-6
+        .panel
+          .panel-body
+            .container-fluid
+              #error.hidden.alert.alert-danger(role='alert')
+            h3=sequenceName
+            h4=data.name
+            for item, index in data
+              p
+                b=index
+                if index == 'data'
+                  p=item.split(",").join(", ")
+                else
+                  p=item
+      .col-sm-3
