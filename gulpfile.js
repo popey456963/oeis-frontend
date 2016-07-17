@@ -10,7 +10,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var plumber = require('gulp-plumber');
 
 gulp.task('sass', function() {
-  return gulp.src('public/css/main.scss')
+  return gulp.src('public/css/*.scss')
     .pipe(plumber())
     .pipe(sass())
     .pipe(autoprefixer())

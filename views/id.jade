@@ -2,19 +2,37 @@ extends layout
 
 block content
     .row
-      .col-sm-3
-      .col-sm-6
+      .col-sm-2
+      .col-sm-8
         .panel
           .panel-body
             .container-fluid
               #error.hidden.alert.alert-danger(role='alert')
-            h3=sequenceName
+            if data.id
+              h3.alignleft!=sequenceName + " <span style='font-size: 60%'>(Formerly " + data.id + ")</span>"
+            else
+              h3.alignleft=sequenceName
+            h6.rev.alignright!="Rev: " + data.revision + "<br>" + "Ref: " + data.references
+            div(style='clear: both;')
             h4=data.name
             for item, index in data
               p
-                b=index
-                if index == 'data'
-                  p=item.split(",").join(", ")
-                else
-                  p=item
-      .col-sm-3
+                if index != 'number' && index != 'name' && index != 'id' && index != 'references' && index != 'revision' && index != 'time' && index != 'created' && index != 'ext'  && index !='offset'
+                  b=index
+                  if index == 'data'
+                    p=item.split(",").join(", ")
+                  else if index == 'comment' || index == 'reference' || index == 'link'
+                    ul.circle
+                      for i in item
+                        li!=i
+                  else if index == 'formula' || index == 'maple' || index == 'mathematica' || index == 'program' || index == 'example'
+                    pre
+                      for i in item
+                        !=i + "<br>"
+                  else if index == 'xref'
+                    p
+                      for i in item
+                        !=i + "<br>"
+                  else
+                    p=item
+      .col-sm-2

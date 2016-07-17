@@ -13,6 +13,12 @@ function leftpad (str, len, ch) {
   return str
 }
 
+$('#sequence').keypress(function (e) {
+  if (e.which == 13) {
+    lookupSequence()
+  }
+});
+
 function lookupSequence() {
   document.getElementById('error').className = 'hidden alert alert-danger'
   var error = ''

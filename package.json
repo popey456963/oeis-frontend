@@ -12,6 +12,7 @@
     "watch": "gulp"
   },
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.1",
     "cached-request": "^1.0.0",
     "compression": "^1.6.2",
@@ -33,6 +34,10 @@
     "mongoose": "^4.5.4",
     "morgan": "^1.7.0",
     "nodemailer": "^2.3.0",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
+    "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
     "pm2": "^1.0.2",
     "reuest": "^2.73.0",
     "socket.io": "^1.4.5",
