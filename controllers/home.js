@@ -174,7 +174,7 @@ function parseResponse(res, json, sequence) {
   } else {
     res.render('id', {
       title: 'A' + sequence + ' :: OEIS Lookup',
-      data: json.results,
+      data: json.results[0],
       sequenceName: 'A' + sequence
     })
   }

@@ -35,7 +35,7 @@ block content
                         span=keyword.join(', ')
                 .col-xs-12.col-sm-12.col-md-10
                   h3
-                    a(href='#', title='')=result.name
+                    a(href='/' + 'A' + sequenceGen(result.number, 6), title='')=result.name
                   p=result.data.split(',').join(', ')
                 span.clearfix.borda
             hgroup.mb20
