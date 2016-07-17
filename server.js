@@ -78,7 +78,7 @@ app.get('/contact', contactController.contactGet);
 app.post('/contact', contactController.contactPost);
 
 app.use(function(req,res){
-    res.render('404.jade');
+    res.status(404).render('404.jade');
 });
 
 // Production error handler
