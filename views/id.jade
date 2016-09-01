@@ -18,17 +18,22 @@ block content
             for item, index in data
               p
                 if index != 'number' && index != 'name' && index != 'id' && index != 'references' && index != 'revision' && index != 'time' && index != 'created' && index != 'ext'  && index !='offset'
-                  b=index
+                  b=toTitleCase(index)
                   if index == 'data'
                     p=item.split(",").join(", ")
                   else if index == 'comment' || index == 'reference' || index == 'link'
                     ul.circle
                       for i in item
                         li!=i
-                  else if index == 'formula' || index == 'maple' || index == 'mathematica' || index == 'program' || index == 'example'
+                  else if index == 'formula' || index == 'program' || index == 'example'
                     pre
                       for i in item
                         !=i + "<br>"
+                  else if index == 'maple' || index == 'mathematica'
+                    pre
+                      code(class=index)
+                        for i in item
+                          !=i + "<br>"
                   else if index == 'xref'
                     p
                       for i in item

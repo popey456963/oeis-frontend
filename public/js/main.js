@@ -1,5 +1,5 @@
 $(function() {
-  // On Startup
+  hljs.initHighlightingOnLoad()
 })
 
 function leftpad (str, len, ch) {

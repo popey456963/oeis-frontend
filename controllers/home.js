@@ -55,6 +55,9 @@ exports.test = function(req, res) {
   }
 }
 
+/*
+ * GET /A******
+ */
 exports.id = function(req, res) {
   var sequence = req.params.id
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
@@ -87,6 +90,9 @@ exports.id = function(req, res) {
   }
 }
 
+/*
+ * GET /search
+ */
 exports.search = function(req, res) {
   var sequence = decodeURIComponent(req.query.q);
   attemptRequest(sequence, 1000 * 60 * 60 * 24, "", "&start=" + ((parseInt(req.query.page)-1)*10), function(json) {
@@ -175,7 +181,8 @@ function parseResponse(res, json, sequence) {
     res.render('id', {
       title: 'A' + sequence + ' :: OEIS Lookup',
       data: json.results[0],
-      sequenceName: 'A' + sequence
+      sequenceName: 'A' + sequence,
+      toTitleCase: function toTitleCase(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});}
     })
   }
 }

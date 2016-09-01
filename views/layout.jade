@@ -7,6 +7,7 @@ html
     title= title + ' :: OEIS Lookup'
     link(href='https://fonts.googleapis.com/css?family=Inconsolata:400,700', rel='stylesheet', type='text/css')
     link(href='/css/main.css', rel='stylesheet', type='text/css')
+    link(href='/css/highlight.default.css', rel='stylesheet', type='text/css')
   body
     include includes/header
     block content
@@ -14,7 +15,7 @@ html
     script(src='/socket.io/socket.io.js')
     script(src='/js/lib/jquery.min.js')
     script(src='/js/lib/bootstrap.min.js')
-    script(src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML' async)
+    script(src='/js/lib/highlight.min.js')
     script(src='/js/main.js')
 
     // Google Analytics: change UA-XXXXX-X to be your site's ID.
