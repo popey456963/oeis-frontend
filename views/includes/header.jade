@@ -14,6 +14,16 @@ nav.navbar.navbar-default.navbar-static-top
         li(class=(title == 'Welcome :: OEIS Lookup') ? 'active' : null)
           a(href='/welcome') Welcome
       ul.nav.navbar-nav.navbar-right
+        li.dropdown
+          a.navbar-avatar.dropdown-toggle(href='#', data-toggle='dropdown')
+            span.flag-icon.flag-icon-gb
+            span(style='line-height: 220%;')   English 
+            i.caret
+          ul.dropdown-menu
+            li
+              a(href='#')
+                span.flag-icon.flag-icon-gb(style='width:1.666666666em; line-height:1em')
+                span    English 
         if user
           li.dropdown
             a.navbar-avatar.dropdown-toggle(href='#', data-toggle='dropdown')

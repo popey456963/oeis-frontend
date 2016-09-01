@@ -1,5 +1,6 @@
 $(function() {
   hljs.initHighlightingOnLoad()
+  $('.selectpicker').selectpicker()
 })
 
 function leftpad (str, len, ch) {
