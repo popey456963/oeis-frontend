@@ -186,3 +186,24 @@ function parseResponse(res, json, sequence) {
     })
   }
 }
+
+function getRecent() {
+  console.log("Grabbing Recent Data")
+  var re = /A[0-9]{6}/
+  request('http://oeis.org/recent.txt', function(err, resp, body) {
+    var lines = body.split("\n");
+    var aNumbers = []
+    for (var i = 0; i < lines.length; i++) {
+      var items = lines[i].split(" ")
+      if (items.length > 1) {
+        if (re.test(items[1])) {
+          aNumbers.push(items[1])
+        }
+      }
+    }
+    var aNumbers = Array.from(new Set(aNumbers))
+    console.log(JSON.stringify(aNumbers))
+  })
+}
+
+getRecent()
