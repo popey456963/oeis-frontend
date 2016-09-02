@@ -74,7 +74,7 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', { successRedi
 
 app.get('/', HomeController.index);
 app.get('/welcome', HomeController.welcome);
-app.get('/A:id', HomeController.id);
+app.get('/A:sequence', HomeController.id);
 app.get('/search', HomeController.search);
 app.post('/test', HomeController.test);
 app.get('/contact', contactController.contactGet);

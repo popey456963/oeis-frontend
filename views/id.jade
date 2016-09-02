@@ -25,10 +25,18 @@ block content
                     ul.circle
                       for i in item
                         li!=i
-                  else if index == 'formula' || index == 'program' || index == 'example'
+                  else if index == 'formula' || index == 'example'
                     pre
                       for i in item
                         !=i + "<br>"
+                  else if index == 'program'
+                    pre
+                      for i in item
+                        !="<b>" + i[0] + "</b><br><code class='" + i[0].toLowerCase() + " multiple_programs'>"
+                        for j in i[1]
+                          !=j + "<br>"
+                        !="</code>"
+
                   else if index == 'maple' || index == 'mathematica'
                     pre
                       code(class=index)

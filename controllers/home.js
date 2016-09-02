@@ -24,32 +24,24 @@ exports.welcome = function(req, res) {
  */
 exports.test = function(req, res) {
   var sequence = req.body.sequence  
-  req.assert('sequence', 'Sequence must not be blank.').notEmpty()
-  var errors = req.validationErrors()
+  var url = "https://oeis.org/search?fmt=json&q=" + encodeURIComponent(sequence)
 
-  if (errors) {
-    res.send(errors[0].msg)
+  if (sequence == "") {
+    res.send('Sequence must not be blank')
   } else {
-    attemptRequest(sequence, 1000 * 60 * 60 * 24, "", "&start=" + ((parseInt(req.query.page)-1)*10), function(json) {
-      if (json != false) {
-        parseJSON(res, json, sequence)
+    superRequest(url, function(data) {
+      if (data) {
+        if (data.count != 0 && data.results == null) {
+          res.send("Too many results.")
+        } else if (data.results == null) {
+          res.send("No results.")
+        } else if (data.count == 1) {
+          res.send("1 " + data.results[0].number)
+        } else {
+          res.send("")
+        }
       } else {
-        console.log("Initial cached response did not work.")
-        attemptRequest(sequence, 0, "", "&start=" + ((parseInt(req.query.page)-1)*10), function(json) {
-          if (json != false) {
-            parseJSON(res, json, sequence)
-          } else {
-            console.log("Uncached response did not appear to work either.")
-            attemptNormalRequest(sequence, "", "&start=" + ((parseInt(req.query.page)-1)*10), function(json) {
-              if (json != false) {
-                parseJSON(res, json, sequence)
-              } else {
-                console.log("Oh dear, even our normal request doesn't appear to be working.")
-                res.send("OEIS didn't provide a good response, despite multiple attempts.  Please check their website, if it appears up, please contact us.")
-              }
-            })
-          }
-        })
+        res.send("OEIS didn't provide a good response, despite multiple attempts.  Check their website, or contact us.")
       }
     })
   }
@@ -59,32 +51,31 @@ exports.test = function(req, res) {
  * GET /A******
  */
 exports.id = function(req, res) {
-  var sequence = req.params.id
+  console.log("Hi, I'm here.")
+  var sequence = req.params.sequence
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
     res.render('not_found', {
       title: 'ID Not Found :: OEIS Lookup'
     })
   } else {
-    attemptRequest(sequence, 1000 * 60 * 60 * 24, "id:A", "", function(json) {
-      if (json != false) {
-        parseResponse(res, json, sequence)
+    var url = 'https://oeis.org/search?fmt=json&q=id:A' + sequence
+    superRequest(url, function(data) {
+      if (data) {
+        if (data.count == 0 || data.results == null) {
+          res.render('not_found', {
+            title: 'ID Not Found :: OEIS Lookup'
+          })
+        } else {
+          data.results[0].program = parseProgram(data.results[0].program)
+          res.render('id', {
+            title: 'A' + sequence + ' :: OEIS Lookup',
+            data: data.results[0],
+            toTitleCase: function(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
+            sequenceName: 'A' + sequence
+          })
+        }
       } else {
-        console.log("Initial cached response did not work.")
-        attemptRequest(sequence, 0, "id:A", "", function(json) {
-          if (json != false) {
-            parseResponse(res, json, sequence)
-          } else {
-            console.log("Uncached response did not appear to work either.")
-            attemptNormalRequest(sequence, "id:A", "", function(json) {
-              if (json != false) {
-                parseResponse(res, json, sequence)
-              } else {
-                console.log("Oh dear, even our normal request doesn't appear to be working.")
-                res.send("OEIS didn't provide a good response, despite multiple attempts.  Please check their website, if it appears up, please contact us.")
-              }
-            })
-          }
-        })
+        res.send("OEIS didn't provide a good response, despite multiple attempts.  Check their website, or contact us.")
       }
     })
   }
@@ -95,115 +86,98 @@ exports.id = function(req, res) {
  */
 exports.search = function(req, res) {
   var sequence = decodeURIComponent(req.query.q);
-  attemptRequest(sequence, 1000 * 60 * 60 * 24, "", "&start=" + ((parseInt(req.query.page)-1)*10), function(json) {
-    if (json != false) {
-      parseSearch(req, res, json)
-    } else {
-      console.log("Initial cached response did not work.")
-      attemptRequest(sequence, 0, "", "&start=" + ((parseInt(req.query.page)-1)*10), function(json) {
-        if (json != false) {
-          parseSearch(req, res, json)
-        } else {
-          console.log("Uncached response did not appear to work either.")
-          attemptNormalRequest(sequence, "", "&start=" + ((parseInt(req.query.page)-1)*10), function(json) {
-            if (json != false) {
-              parseSearch(req, res, json)
-            } else {
-              console.log("Oh dear, even our normal request doesn't appear to be working.")
-              res.send("OEIS didn't provide a good response, despite multiple attempts.  Please check their website, if it appears up, please contact us.")
-            }
-          })
-        }
-      })
+  var page = (typeof req.query.page === 'undefined') ? 0 : parseInt(req.query.page) - 1
+  var url = 'https://oeis.org/search?fmt=json&q=' + sequence + '&start=' + (page * 10)
+
+  superRequest(url, function(data) {
+    res.render('./search_results/search_results', {
+      title: "Search Results",
+      query: req.query.q,
+      data: data.results,
+      numResults: data.count,
+      currentPage: data.start / 10,
+      maxPage: Math.ceil(data.count / 10),
+      sequenceGen: function padLeft(nr, n, str){
+        return Array(n-String(nr).length+1).join(str||'0')+nr;
+      }
+    })
+  })
+}
+
+function parseProgram(program) {
+  var languages = []
+  var currentCounter = -1
+  var re = /^\([a-zA-Z0-9]+\)/
+  var re2 = /^\(([a-zA-Z0-9]+)\)/
+  var re3 = /^([.]+)/
+  for (var i = 0; i < program.length; i++) {
+    if (re.test(program[i])) {
+      var group = re2.exec(program[i])[1]
+      currentCounter++
+      // console.log(group + ": " + program[i].replace(re, '').trim())
+      program[i] = program[i].replace(re, '').trim()
+      languages[currentCounter] = [group, []]
     }
-  })
-}
-
-function parseSearch(req, res, json) {
-  res.render('./search_results/search_results', {
-    title: "Search Results",
-    query: req.query.q,
-    data: json.results,
-    sequenceGen: function padLeft(nr, n, str){
-      return Array(n-String(nr).length+1).join(str||'0')+nr;
-    },
-    numResults: json.count,
-    currentPage: json.start / 10,
-    maxPage: Math.ceil(json.count / 10)
-  })
-}
-
-function parseJSON(res, json) {
-  if (json.count != 0 && json.results == null) {
-    res.send("Too many results.")
-  } else if (json.results == null) {
-    res.send("No results.")
-  } else if (json.count == 1) {
-    res.send("1 " + json.results[0].number)
-  } else {
-    res.send("")
+    var replacement = re3.exec(program[i])
+    if (replacement && replacement.length > 0) {
+      program[i] = program[i].replace(replacement[1], new Array(replacement[1].length + 1).join(" "))
+    }
+    if (currentCounter != -1) {
+      languages[currentCounter][1].push(program[i])
+    }
   }
+  // console.log(languages)
+  return languages
 }
 
-function attemptRequest(sequence, ttl, id, extra, callback) {
-  var options = {
-    url: 'https://oeis.org/search?fmt=json&q=' + id + sequence + extra,
-    ttl: ttl
-  }
-  var json;
+function superRequest(url, callback, ttl) {
+  ttl = (typeof ttl === 'undefined') ? 1000 * 60 * 60 * 24 : ttl
+  var options = { url: url, ttl: ttl }
+  console.log(options)
   cachedRequest(options, function(err, resp, body) {
     try {
-      var json = JSON.parse(body)
-      callback(json)
+      callback(JSON.parse(body))
     } catch(e) {
-      callback(false)
-    }
-  })
-}
-
-function attemptNormalRequest(sequence, id, extra, callback) {
-  request('https://oeis.org/search?fmt=json&q=' + id + sequence + extra, function(err, resp, body) {
-    try {
-      var json = JSON.parse(body)
-      callback(json)
-    } catch(e) {
-      callback(false)
-    }
-  })
-}
-
-function parseResponse(res, json, sequence) {
-  if (json.count == 0 || json.results == null) {
-    res.render('not_found', {
-      title: 'ID Not Found :: OEIS Lookup'
-    })
-  } else {
-    res.render('id', {
-      title: 'A' + sequence + ' :: OEIS Lookup',
-      data: json.results[0],
-      sequenceName: 'A' + sequence,
-      toTitleCase: function toTitleCase(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});}
-    })
-  }
-}
-
-function getRecent() {
-  console.log("Grabbing Recent Data")
-  var re = /A[0-9]{6}/
-  request('http://oeis.org/recent.txt', function(err, resp, body) {
-    var lines = body.split("\n");
-    var aNumbers = []
-    for (var i = 0; i < lines.length; i++) {
-      var items = lines[i].split(" ")
-      if (items.length > 1) {
-        if (re.test(items[1])) {
-          aNumbers.push(items[1])
-        }
+      console.log(e)
+      if (ttl == 0) {
+        request(url, function(err, resp, body) {
+          try {
+            callback(JSON.parse(body))
+          } catch(e) {
+            callback(false)
+          }
+        })
+      } else {
+        superRequest(url, callback, 0)
       }
     }
-    var aNumbers = Array.from(new Set(aNumbers))
-    console.log(JSON.stringify(aNumbers))
   })
 }
 
-getRecent()
+function getRecentlyChanged() {
+  request('https://oeis.org/recent.txt', function(err, resp, body) {
+    console.log("Got /recent.txt successfully")
+    var text = body.split("\n")
+    var updates = []
+    for (var i = 0; i < text.length; i++) {
+      if (text[i].substring(0, 2) == '%I') {
+        updates.push(text[i].split(" ")[1])
+      }
+    }
+    console.log(JSON.stringify(updates))
+  })
+}
+
+function find_csa(arr, subarr, from_index) {
+    var i = from_index >>> 0,
+        sl = subarr.length,
+        l = arr.length + 1 - sl;
+
+    loop: for (; i<l; i++) {
+        for (var j=0; j<sl; j++)
+            if (arr[i+j] !== subarr[j])
+                continue loop;
+        return i;
+    }
+    return -1;
+}

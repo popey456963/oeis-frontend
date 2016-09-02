@@ -1,7 +1,7 @@
 {
-  "name": "shy-dawn",
+  "name": "oeis-frontend",
   "version": "1.0.0",
-  "description": "My app description",
+  "description": "A Newer Frontend for OEIS",
   "scripts": {
     "build": "gulp build",
     "build:production": "gulp build --production",
