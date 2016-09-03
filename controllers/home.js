@@ -1,5 +1,37 @@
 var request = require('request')
 var cachedRequest = require('cached-request')(request)
+var User = require('../models/User.js')
+var moment = require('moment')
+
+/*
+ * Ensure Admin Lvl 1
+ */
+exports.ensureLvl1 = function(req, res, next) {
+  if (req.isAuthenticated()) {
+    if (checkLvl1(req.user.admin)) { next() } 
+    else { res.render('./admin/not_admin', { title: "Not An Admin :: OEIS Lookup" }) }
+  } else { res.redirect('/login') }
+}
+
+/*
+ * Ensure Admin Lvl 2
+ */
+exports.ensureLvl2 = function(req, res, next) {
+  if (req.isAuthenticated()) {
+    if (checkLvl2(req.user.admin)) { next() } 
+    else { res.render('./admin/not_admin', { title: "Not An Admin :: OEIS Lookup" }) }
+  } else { res.redirect('/login') }
+}
+
+/*
+ * Ensure Admin Lvl 3
+ */
+exports.ensureLvl3 = function(req, res, next) {
+  if (req.isAuthenticated()) {
+    if (checkLvl3(req.user.admin)) { next() } 
+    else { res.render('./admin/not_admin', { title: "Not An Admin :: OEIS Lookup" }) }
+  } else { res.redirect('/login') }
+}
 
 /**
  * GET /
@@ -116,6 +148,49 @@ exports.langtest = function(req, res) {
   })
 }
 
+/*
+ * GET /admin/users
+ */
+exports.adminUsers = function(req, res) {
+  User.find({}, function(err, docs) {
+    var listOfUsers = []
+    for (var i = 0; i < docs.length; i++) {
+      var temp = {
+        joined: moment(docs[i].createdAt).fromNow(),
+        editted: moment(docs[i].updatedAt).fromNow(),
+        name: docs[i].name,
+        email: docs[i].email,
+        location: docs[i].location,
+        picture: docs[i].picture,
+        twitter: docs[i].twitter,
+        facebook: docs[i].facebook,
+        admin: docs[i].admin,
+        gender: docs[i].gender,
+        website: docs[i].website
+      }
+      listOfUsers.push(temp)
+    }
+    res.render('./admin/users', {
+      title: "User List :: OEIS Lookup",
+      users: listOfUsers,
+      adminNumToWord: adminNumToWord
+    })
+  })
+}
+
+function adminNumToWord(number) {
+  perms = String("000" + (number >>> 0).toString(2)).slice(-3)
+  roles = []
+  if (perms.charAt(0) == "1") roles.push("Perm A")
+  if (perms.charAt(1) == "1") roles.push("Perm B")
+  if (perms.charAt(2) == "1") roles.push("Perm C")
+  return roles.join(",")
+}
+
+function checkLvl1(number) { return String("000" + (number >>> 0).toString(2)).slice(-3).charAt(0) == "1" }
+function checkLvl2(number) { return String("000" + (number >>> 0).toString(2)).slice(-3).charAt(1) == "1" }
+function checkLvl3(number) { return String("000" + (number >>> 0).toString(2)).slice(-3).charAt(2) == "1" }
+
 function parseProgram(program) {
   var transform = {
     "PARI": "apache"
@@ -198,3 +273,20 @@ function find_csa(arr, subarr, from_index) {
     }
     return -1;
 }
+
+function makeAdmin(email) {
+  User.findOne({ email: email }, function(err, user) {
+    if (err) console.log(err)
+    if (user && !err) {
+      user.admin = 7
+      user.save(function(err, updatedUser) {
+        if (err) console.log(err)
+        console.log(updatedUser)
+      })
+    } else {
+      console.log("No User Found (Or Error Found)")
+    }
+  })
+}
+
+makeAdmin('_codefined@twitter.com')

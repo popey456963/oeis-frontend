@@ -1,0 +1,25 @@
+extends admin_layout
+
+block content
+    .row
+      .col-sm-3
+      .col-sm-6
+        .panel
+          .panel-body
+            .container-fluid
+              #error.hidden.alert.alert-danger(role='alert')
+            h3 List of OEIS Users
+            br
+            p
+              for user in users
+                if user.admin
+                  h4=user.name
+                    span!= " <i>(" + adminNumToWord(user.admin) + ")</i>"
+                else
+                  h4=user.name
+                for value, item in user
+                  if item != "name" && value != undefined && value != "" && item != "admin"
+                    span!="<b>" + item + "</b>"
+                    span=": " + value
+                    span!="<br>"
+      .col-sm-3

@@ -78,6 +78,7 @@ app.get('/A:sequence', HomeController.id);
 app.get('/search', HomeController.search);
 app.post('/test', HomeController.test);
 app.get('/langtest', HomeController.langtest);
+app.get('/admin/users', HomeController.ensureLvl1, HomeController.adminUsers)
 
 app.use(function(req,res){
     res.status(404).render('404.jade');
