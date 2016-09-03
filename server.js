@@ -77,8 +77,7 @@ app.get('/welcome', HomeController.welcome);
 app.get('/A:sequence', HomeController.id);
 app.get('/search', HomeController.search);
 app.post('/test', HomeController.test);
-app.get('/contact', contactController.contactGet);
-app.post('/contact', contactController.contactPost);
+app.get('/langtest', HomeController.langtest);
 
 app.use(function(req,res){
     res.status(404).render('404.jade');

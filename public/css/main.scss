@@ -294,3 +294,28 @@ textarea {
   border-width: 1px;
   border-color: rgb(204, 204, 204);
 }
+
+.floating-button {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  text-align: center;
+  font-size: 32px;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: .1em solid;
+  color: #aaaaaa;
+  text-decoration: none;
+  transition: all .2s ease-in-out;
+  
+  > .fa {
+    font-size: 1em;
+    line-height: 182.5%;
+    animation: .4s toggle;
+  }
+}
+
+.floating-button:hover {
+  transform: scale(1.1);
+}

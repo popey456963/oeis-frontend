@@ -1,0 +1,16 @@
+extends layout
+
+block content
+    .row
+      .col-sm-2
+      .col-sm-8
+        .panel
+          .panel-body
+            h3 Language Test for Code Highlighting
+            textarea(id='inputCode' cols='120' rows='9')
+            br
+            a.btn.btn-default(href='#', role='button', onclick='highlight()') Highlight
+            br
+            br
+            pre#codeBlock
+      .col-sm-2

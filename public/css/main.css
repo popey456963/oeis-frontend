@@ -5972,3 +5972,27 @@ textarea {
   border-style: solid;
   border-width: 1px;
   border-color: #cccccc; }
+
+.floating-button {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  text-align: center;
+  font-size: 32px;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: .1em solid;
+  color: #aaaaaa;
+  text-decoration: none;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out; }
+  .floating-button > .fa {
+    font-size: 1em;
+    line-height: 182.5%;
+    -webkit-animation: .4s toggle;
+            animation: .4s toggle; }
+
+.floating-button:hover {
+  -webkit-transform: scale(1.1);
+          transform: scale(1.1); }

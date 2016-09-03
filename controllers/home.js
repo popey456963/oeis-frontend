@@ -66,12 +66,15 @@ exports.id = function(req, res) {
             title: 'ID Not Found :: OEIS Lookup'
           })
         } else {
-          data.results[0].program = parseProgram(data.results[0].program)
+          if (data.results[0].program != undefined) {
+            data.results[0].program = parseProgram(data.results[0].program)
+          }
           res.render('id', {
             title: 'A' + sequence + ' :: OEIS Lookup',
             data: data.results[0],
             toTitleCase: function(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
-            sequenceName: 'A' + sequence
+            sequenceName: 'A' + sequence,
+            id_page: true
           })
         }
       } else {
@@ -91,7 +94,7 @@ exports.search = function(req, res) {
 
   superRequest(url, function(data) {
     res.render('./search_results/search_results', {
-      title: "Search Results",
+      title: "Search Results :: OEIS Lookup",
       query: req.query.q,
       data: data.results,
       numResults: data.count,
@@ -104,25 +107,39 @@ exports.search = function(req, res) {
   })
 }
 
+/*
+ * GET /langtest
+ */
+exports.langtest = function(req, res) {
+  res.render('./test_lang', {
+    title: "Lang Test :: OEIS Lookup"
+  })
+}
+
 function parseProgram(program) {
+  var transform = {
+    "PARI": "apache"
+  }
   var languages = []
   var currentCounter = -1
   var re = /^\([a-zA-Z0-9]+\)/
   var re2 = /^\(([a-zA-Z0-9]+)\)/
   var re3 = /^([.]+)/
   for (var i = 0; i < program.length; i++) {
+    var trimmed = false
     if (re.test(program[i])) {
       var group = re2.exec(program[i])[1]
       currentCounter++
       // console.log(group + ": " + program[i].replace(re, '').trim())
       program[i] = program[i].replace(re, '').trim()
-      languages[currentCounter] = [group, []]
+      languages[currentCounter] = [[group, transform[group]], []]
+      trimmed = true
     }
     var replacement = re3.exec(program[i])
     if (replacement && replacement.length > 0) {
       program[i] = program[i].replace(replacement[1], new Array(replacement[1].length + 1).join(" "))
     }
-    if (currentCounter != -1) {
+    if (currentCounter != -1 && !(trimmed && program[i].length == 0)) {
       languages[currentCounter][1].push(program[i])
     }
   }
