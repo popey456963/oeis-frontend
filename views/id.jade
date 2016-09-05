@@ -1,57 +1,56 @@
 extends layout
 
 block content
-    .row
-      .col-sm-2
-      .col-sm-8
-        .panel
-          .panel-body
-            .container-fluid
-              #error.hidden.alert.alert-danger(role='alert')
-            if data.id
-              h3.alignleft!=sequenceName + " <span style='font-size: 60%'>(Formerly " + data.id + ")</span>"
-            else
-              h3.alignleft=sequenceName
-            h6.rev.alignright!="Rev: " + data.revision + "<br>" + "Ref: " + data.references
-            div(style='clear: both;')
-            h4=data.name
-            for item, index in data
-              p
-                if index != 'number' && index != 'name' && index != 'id' && index != 'references' && index != 'revision' && index != 'time' && index != 'created' && index != 'ext'  && index !='offset'
-                  b=toTitleCase(index)
-                  if index == 'data'
-                    p=item.split(",").join(", ")
-                  else if index == 'comment' || index == 'reference' || index == 'link'
-                    ul.circle
-                      for i in item
-                        li!=i
-                  else if index == 'formula' || index == 'example'
-                    pre
-                      for i in item
-                        !=i + "<br>"
-                  else if index == 'program'
-                    pre
-                      for i in item
-                        if i[0][1] != undefined
-                          !="<b>" + i[0][0] + "</b><br><code class='" + i[0][1].toLowerCase() + " multiple_programs'>"
-                        else
-                          // Let's try guessing... :)
-                          !="<b>" + i[0][0] + "</b><br><code class='multiple_programs'>"
-                        for j in i[1]
-                          !=j + "\n"
-                        !="</code>"
-
-                  else if index == 'maple' || index == 'mathematica'
-                    pre
-                      code(class=index)
+    .container-fluid
+      .row
+        .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2.col-lg-8.col-lg-offset-2
+          .panel
+            .panel-body
+              .container-fluid
+                #error.hidden.alert.alert-danger(role='alert')
+              if data.id
+                h3.alignleft!=sequenceName + " <span style='font-size: 60%'>(Formerly " + data.id + ")</span>"
+              else
+                h3.alignleft=sequenceName
+              h6.rev.alignright!="Rev: " + data.revision + "<br>" + "Ref: " + data.references
+              div(style='clear: both;')
+              h4=data.name
+              for item, index in data
+                p
+                  if index != 'number' && index != 'name' && index != 'id' && index != 'references' && index != 'revision' && index != 'time' && index != 'created' && index != 'ext'  && index !='offset'
+                    b=toTitleCase(index)
+                    if index == 'data'
+                      p=item.split(",").join(", ")
+                    else if index == 'comment' || index == 'reference' || index == 'link'
+                      ul.circle
+                        for i in item
+                          li!=i
+                    else if index == 'formula' || index == 'example'
+                      pre
                         for i in item
                           !=i + "<br>"
-                  else if index == 'xref'
-                    p
-                      for i in item
-                        !=i + "<br>"
-                  else
-                    p=item
-      .col-sm-2
-      a.floating-button(href='#', style='display: none;')
-        i.fa.fa-refresh
+                    else if index == 'program'
+                      pre
+                        for i in item
+                          if i[0][1] != undefined
+                            !="<b>" + i[0][0] + "</b><br><code class='" + i[0][1].toLowerCase() + " multiple_programs'>"
+                          else
+                            // Let's try guessing... :)
+                            !="<b>" + i[0][0] + "</b><br><code class='multiple_programs'>"
+                          for j in i[1]
+                            !=j + "\n"
+                          !="</code>"
+
+                    else if index == 'maple' || index == 'mathematica'
+                      pre
+                        code(class=index)
+                          for i in item
+                            !=i + "<br>"
+                    else if index == 'xref'
+                      p
+                        for i in item
+                          !=i + "<br>"
+                    else
+                      p=item
+        a.floating-button(href='#', style='display: none;')
+          i.fa.fa-refresh

@@ -193,12 +193,13 @@ function checkLvl3(number) { return String("000" + (number >>> 0).toString(2)).s
 
 function parseProgram(program) {
   var transform = {
-    "PARI": "apache"
+    "PARI": "apache",
+    "S/R": "css"
   }
   var languages = []
   var currentCounter = -1
-  var re = /^\([a-zA-Z0-9]+\)/
-  var re2 = /^\(([a-zA-Z0-9]+)\)/
+  var re = /^\([a-zA-Z0-9\/\-.]+\)/
+  var re2 = /^\(([a-zA-Z0-9\/\-.]+)\)/
   var re3 = /^([.]+)/
   for (var i = 0; i < program.length; i++) {
     var trimmed = false
@@ -208,6 +209,7 @@ function parseProgram(program) {
       // console.log(group + ": " + program[i].replace(re, '').trim())
       program[i] = program[i].replace(re, '').trim()
       languages[currentCounter] = [[group, transform[group]], []]
+      console.log("Found Group: " + group)
       trimmed = true
     }
     var replacement = re3.exec(program[i])

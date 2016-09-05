@@ -1,18 +1,17 @@
 extends layout
 
 block content
-    .row
-      .col-sm-3
-      .col-sm-6
-        .panel
-          .panel-body
-            .container-fluid
-              #error.hidden.alert.alert-danger(role='alert')
-            h3 Search the OEIS Database
-            br
-            .form-group
-              input.form-control(type='text', id='sequence', autofocus=true)
-            a.btn.btn-success(href='#', role='button', onclick='lookupSequence()') Lookup Sequence
-            span(style='width: 10px; display: inline-block;')
-            a.btn.btn-default(href='#', role='button', onclick='randomSequence()' style='float: right;') Random Sequence
-      .col-sm-3
+    .container-fluid
+      .row
+        .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2.col-lg-6.col-lg-offset-3
+          .panel
+            .panel-body
+              .container-fluid
+                #error.hidden.alert.alert-danger(role='alert')
+              h3 Search the OEIS Database
+              br
+              .form-group
+                input.form-control(type='text', id='sequence', autofocus=true, placeholder='1,1,2,3,5,8,13,21,34')
+              a.btn.btn-success(href='#', role='button', onclick='lookupSequence()') Lookup Sequence
+              span(style='width: 10px; display: inline-block;')
+              a.btn.btn-default(href='#', role='button', onclick='randomSequence()' style='float: right;') Random Sequence

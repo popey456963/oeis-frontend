@@ -1,90 +1,89 @@
 extends search_results_layout
 
 block content
-  .row
-    .col-sm-1
-    .col-sm-10
-      .panel
-        .panel-body
-          hgroup.mb20
-            h1='Search Results - Page ' + (currentPage + 1)
-            h2.lead
-              strong.text-danger= numResults
-              |  results were found for the search for 
-              strong.text-danger= query
-          section.col-xs-12.col-sm-6.col-md-12
-            for result in data
-              article.search-result.row
-                .col-xs-12.col-sm-12.col-md-2
-                  ul.meta-search
-                    li
-                      i.glyphicon.glyphicon-pushpin
-                      span='A' + sequenceGen(result.number, 6)
-                    li
-                      i.glyphicon.glyphicon-calendar
-                        - var d = new Date(result.time);
-                      span=d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear()
-                    li
-                      i.glyphicon.glyphicon-tags
-                      - var keyword = result.keyword.split(',')
-                      if keyword.length > 4
-                        span=keyword.slice(0, 4).join(', ') + '...'
-                      else if keyword.length == 4
-                        span=keyword.slice(0, 4).join(', ')
-                      else
-                        span=keyword.join(', ')
-                .col-xs-12.col-sm-12.col-md-10
-                  h3
-                    a(href='/' + 'A' + sequenceGen(result.number, 6), title='')=result.name
-                  p=result.data.split(',').join(', ')
-                span.clearfix.borda
+  .container-fluid
+    .row
+      .col-xs-10.col-sm-10.col-sm-offset-1.col-md-10.col-md-offset-1.col-lg-10.col-lg-offset-1
+        .panel
+          .panel-body
             hgroup.mb20
-            center
-              if maxPage < 11
-                ul.pagination
-                  li
-                    a(href='#', aria-label='Previous')
-                      span(aria-hidden='true') &laquo;
-                  - for (var i = 0; i < maxPage; ++i) {
-                    - var newPage = '/search?q=' + encodeURIComponent(query) + '&page=' + (i + 1)
-                    if i == (currentPage)
-                      li.active
-                        a(href='#')=i+1
-                    else
+              h1='Search Results - Page ' + (currentPage + 1)
+              h2.lead
+                strong.text-danger= numResults
+                |  results were found for the search for 
+                strong.text-danger= query
+            section.col-xs-12.col-sm-6.col-md-12
+              for result in data
+                article.search-result.row
+                  .col-xs-12.col-sm-12.col-md-2
+                    ul.meta-search
                       li
-                        a(href=newPage)=i+1
-                  - }
-                  li
-                    a(href='#', aria-label='Next')
-                      span(aria-hidden='true') &raquo;
-              else
-                ul.pagination
-                  - var toShowBefore = 5
-                  - var toShowAfter = 5
-                  - while (currentPage + 1 - toShowBefore < 1) {
-                  -   toShowAfter += 1
-                  -   toShowBefore -= 1
-                  - }
-                  - while (currentPage + 1 + toShowAfter > maxPage) {
-                  -   toShowAfter += 1
-                  -   toShowBefore -= 1
-                  - }
-                  - console.log(toShowAfter)
-                  - console.log(toShowBefore)
-                  - console.log(currentPage)
-                  li
-                    a(href='#', aria-label='Previous')
-                      span(aria-hidden='true') &laquo;
-                  - for (var i = currentPage - toShowBefore; i < currentPage + 1 + toShowAfter; ++i) {
-                    - var newPage = '/search?q=' + encodeURIComponent(query) + '&page=' + (i + 1)
-                    if i == (currentPage)
-                      li.active
-                        a(href='#')=i+1
-                    else
+                        i.glyphicon.glyphicon-pushpin
+                        span='A' + sequenceGen(result.number, 6)
                       li
-                        a(href=newPage)=i+1
-                  - }
-                  li
-                    a(href='#', aria-label='Next')
-                      span(aria-hidden='true') &raquo;
-    .col-sm-1
+                        i.glyphicon.glyphicon-calendar
+                          - var d = new Date(result.time);
+                        span=d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear()
+                      li
+                        i.glyphicon.glyphicon-tags
+                        - var keyword = result.keyword.split(',')
+                        if keyword.length > 4
+                          span=keyword.slice(0, 4).join(', ') + '...'
+                        else if keyword.length == 4
+                          span=keyword.slice(0, 4).join(', ')
+                        else
+                          span=keyword.join(', ')
+                  .col-xs-12.col-sm-12.col-md-10
+                    h3
+                      a(href='/' + 'A' + sequenceGen(result.number, 6), title='')=result.name
+                    p=result.data.split(',').join(', ')
+                  span.clearfix.borda
+              hgroup.mb20
+              center
+                if maxPage < 11
+                  ul.pagination
+                    li
+                      a(href='#', aria-label='Previous')
+                        span(aria-hidden='true') &laquo;
+                    - for (var i = 0; i < maxPage; ++i) {
+                      - var newPage = '/search?q=' + encodeURIComponent(query) + '&page=' + (i + 1)
+                      if i == (currentPage)
+                        li.active
+                          a(href='#')=i+1
+                      else
+                        li
+                          a(href=newPage)=i+1
+                    - }
+                    li
+                      a(href='#', aria-label='Next')
+                        span(aria-hidden='true') &raquo;
+                else
+                  ul.pagination
+                    - var toShowBefore = 5
+                    - var toShowAfter = 5
+                    - while (currentPage + 1 - toShowBefore < 1) {
+                    -   toShowAfter += 1
+                    -   toShowBefore -= 1
+                    - }
+                    - while (currentPage + 1 + toShowAfter > maxPage) {
+                    -   toShowAfter += 1
+                    -   toShowBefore -= 1
+                    - }
+                    - console.log(toShowAfter)
+                    - console.log(toShowBefore)
+                    - console.log(currentPage)
+                    li
+                      a(href='#', aria-label='Previous')
+                        span(aria-hidden='true') &laquo;
+                    - for (var i = currentPage - toShowBefore; i < currentPage + 1 + toShowAfter; ++i) {
+                      - var newPage = '/search?q=' + encodeURIComponent(query) + '&page=' + (i + 1)
+                      if i == (currentPage)
+                        li.active
+                          a(href='#')=i+1
+                      else
+                        li
+                          a(href=newPage)=i+1
+                    - }
+                    li
+                      a(href='#', aria-label='Next')
+                        span(aria-hidden='true') &raquo;
