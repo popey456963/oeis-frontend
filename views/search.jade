@@ -14,6 +14,7 @@ block content
                 input.form-control(type='text', id='sequence', autofocus=true, placeholder=sequence)
               a.btn.btn-success(href='#', role='button', onclick='lookupSequence()') 
                 span#sequence-loading.fa.fa-spinner.fa-spin(style='display:none;')
-                span#lookup-sequence        Lookup Sequence
+                span#loading-space(style='display:none;width:8px;')
+                span#lookup-sequence Lookup Sequence
               span(style='width: 10px; display: inline-block;')
               a.btn.btn-default(href='#', role='button', onclick='randomSequence()' style='float: right;') Random Sequence

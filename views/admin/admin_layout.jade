@@ -7,24 +7,21 @@ html
     title= title
     link(href='//fonts.googleapis.com/css?family=Inconsolata:400,700', rel='stylesheet', type='text/css')
     link(href='/css/main.css', rel='stylesheet', type='text/css')
-    link(href='/css/highlight.default.css', rel='stylesheet', type='text/css')
+    if page == "A-Page" || page == "Test-Lang"
+      link(href='/css/highlight.default.css', rel='stylesheet', type='text/css')
     link(href='/css/flag-icon.min.css', rel='stylesheet', type='text/css')
+    if page == "Search"
+      link(href='/css/font-awesome.min.css', rel='stylesheet', type='text/css')
   body
     include ../includes/header
     block content
 
-    script(src='/socket.io/socket.io.js')
+    //script(src='/socket.io/socket.io.js')
     script(src='/js/lib/jquery.min.js')
     script(src='/js/lib/bootstrap.min.js')
-    if title.indexOf("Lang Test") != -1 || /^\([a-zA-Z0-9]+\)/.test(title)
-      script(src='/js/lib/highlight.min.js')
-    script(src='/css/font-awesome.min.css')
     script(src='/js/main.js')
-    if title == "Lang Test :: OEIS Lookup"
-      script(src='/js/testLang.js')
-    if title == "User List :: OEIS Lookup"
+    if page == "User-List"
       script(src='/js/listUsers.js')
-      // script(src='/js/lib/moment.min.js')
     script.
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

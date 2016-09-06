@@ -40,6 +40,7 @@ exports.ensureLvl3 = function(req, res, next) {
  */
 exports.index = function(req, res) {
   res.render('search', {
+    page: "Search",
     title: 'Search :: OEIS Lookup',
     sequence: seq_list[Math.floor(Math.random() * seq_list.length)]
   })
@@ -105,6 +106,7 @@ exports.id = function(req, res) {
             data.results[0].program = parseProgram(data.results[0].program)
           }
           res.render('id', {
+            page: "A-Page",
             title: 'A' + sequence + ' :: OEIS Lookup',
             data: data.results[0],
             toTitleCase: function(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
@@ -147,6 +149,7 @@ exports.search = function(req, res) {
  */
 exports.langtest = function(req, res) {
   res.render('./test_lang', {
+    page: "Test-Lang",
     title: "Lang Test :: OEIS Lookup"
   })
 }
@@ -174,6 +177,7 @@ exports.adminUsers = function(req, res) {
       listOfUsers.push(temp)
     }
     res.render('./admin/users', {
+      page: "User-List",
       title: "User List :: OEIS Lookup",
       users: listOfUsers,
       adminNumToWord: adminNumToWord

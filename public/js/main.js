@@ -40,13 +40,9 @@ $('#sequence').keypress(function (e) {
   }
 });
 
-
-                span.sequence-loading.fa.fa-spinner.fa-spin(style='display:none;')
-                span.lookup-sequence
-
-
 function lookupSequence() {
   document.getElementById('sequence-loading').style.display = '';
+  document.getElementById('loading-space').style.display = 'inline-block';
   document.getElementById('lookup-sequence').innerHTML = 'Looking Up...';
 
   document.getElementById('error').className = 'hidden alert alert-danger'
@@ -70,6 +66,7 @@ function lookupSequence() {
       document.getElementById('error').innerHTML = data
       document.getElementById('error').className = 'alert alert-danger'
       document.getElementById('sequence-loading').style.display = 'none';
+      document.getElementById('loading-space').style.display = 'none';
       document.getElementById('lookup-sequence').innerHTML = 'Lookup Sequence';
     }
     console.log(data)
