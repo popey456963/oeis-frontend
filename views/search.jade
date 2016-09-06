@@ -11,7 +11,9 @@ block content
               h3 Search the OEIS Database
               br
               .form-group
-                input.form-control(type='text', id='sequence', autofocus=true, placeholder='1,1,2,3,5,8,13,21,34')
-              a.btn.btn-success(href='#', role='button', onclick='lookupSequence()') Lookup Sequence
+                input.form-control(type='text', id='sequence', autofocus=true, placeholder=sequence)
+              a.btn.btn-success(href='#', role='button', onclick='lookupSequence()') 
+                span#sequence-loading.fa.fa-spinner.fa-spin(style='display:none;')
+                span#lookup-sequence        Lookup Sequence
               span(style='width: 10px; display: inline-block;')
               a.btn.btn-default(href='#', role='button', onclick='randomSequence()' style='float: right;') Random Sequence

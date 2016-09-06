@@ -2,6 +2,8 @@ var request = require('request')
 var cachedRequest = require('cached-request')(request)
 var User = require('../models/User.js')
 var moment = require('moment')
+var old_updates = require('../updates.json')
+var seq_list = require('../sequences.json')
 
 /*
  * Ensure Admin Lvl 1
@@ -38,7 +40,8 @@ exports.ensureLvl3 = function(req, res, next) {
  */
 exports.index = function(req, res) {
   res.render('search', {
-    title: 'Search :: OEIS Lookup'
+    title: 'Search :: OEIS Lookup',
+    sequence: seq_list[Math.floor(Math.random() * seq_list.length)]
   })
 }
 
@@ -232,12 +235,15 @@ function superRequest(url, callback, ttl) {
     try {
       callback(JSON.parse(body))
     } catch(e) {
-      console.log(e)
+      // console.log(e)
+      throw e
       if (ttl == 0) {
         request(url, function(err, resp, body) {
           try {
             callback(JSON.parse(body))
           } catch(e) {
+            // console.log(e)
+            throw e
             callback(false)
           }
         })
@@ -248,7 +254,7 @@ function superRequest(url, callback, ttl) {
   })
 }
 
-function getRecentlyChanged() {
+function getRecentlyChanged(callback) {
   request('https://oeis.org/recent.txt', function(err, resp, body) {
     console.log("Got /recent.txt successfully")
     var text = body.split("\n")
@@ -258,7 +264,7 @@ function getRecentlyChanged() {
         updates.push(text[i].split(" ")[1])
       }
     }
-    console.log(JSON.stringify(updates))
+    callback(updates)
   })
 }
 
@@ -291,4 +297,26 @@ function makeAdmin(email) {
   })
 }
 
-makeAdmin('_codefined@twitter.com')
+makeAdmin('popey@debenclipper.com')
+
+if (old_updates = {}) {
+  getRecentlyChanged(function(updates) {
+    old_updates = updates
+    setTimeout(checkUpdate, 100000)
+  })
+} else {
+  setTimeout(checkUpdate, 100000)
+}
+
+function checkUpdate() {
+  getRecentlyChanged(function(updates) {
+    var indexToFind = find_csa(updates, old_updates.slice(0, 100), 0)
+    if (indexToFind != 0) {
+      for (var i = 0; i < indexToFind; i++) {
+        console.log("Updated Item: " + updates[i])
+        // updateItem(updates[i])
+      }
+    }
+    old_updates = updates
+  })
+}
