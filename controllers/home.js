@@ -1,39 +1,10 @@
 var request = require('request')
 var cachedRequest = require('cached-request')(request)
 var User = require('../models/User.js')
+var Sequence = require('../models/Sequence.js')
 var moment = require('moment')
 var old_updates = require('../updates.json')
 var seq_list = require('../sequences.json')
-
-/*
- * Ensure Admin Lvl 1
- */
-exports.ensureLvl1 = function(req, res, next) {
-  if (req.isAuthenticated()) {
-    if (checkLvl1(req.user.admin)) { next() } 
-    else { res.render('./admin/not_admin', { title: "Not An Admin :: OEIS Lookup" }) }
-  } else { res.redirect('/login') }
-}
-
-/*
- * Ensure Admin Lvl 2
- */
-exports.ensureLvl2 = function(req, res, next) {
-  if (req.isAuthenticated()) {
-    if (checkLvl2(req.user.admin)) { next() } 
-    else { res.render('./admin/not_admin', { title: "Not An Admin :: OEIS Lookup" }) }
-  } else { res.redirect('/login') }
-}
-
-/*
- * Ensure Admin Lvl 3
- */
-exports.ensureLvl3 = function(req, res, next) {
-  if (req.isAuthenticated()) {
-    if (checkLvl3(req.user.admin)) { next() } 
-    else { res.render('./admin/not_admin', { title: "Not An Admin :: OEIS Lookup" }) }
-  } else { res.redirect('/login') }
-}
 
 /**
  * GET /
@@ -104,6 +75,9 @@ exports.id = function(req, res) {
         } else {
           if (data.results[0].program != undefined) {
             data.results[0].program = parseProgram(data.results[0].program)
+          }
+          for (var i in data.results[0]) {
+            data.results[0][i] = linkName(data.results[0][i])
           }
           res.render('id', {
             page: "A-Page",
@@ -194,10 +168,6 @@ function adminNumToWord(number) {
   return roles.join(",")
 }
 
-function checkLvl1(number) { return String("000" + (number >>> 0).toString(2)).slice(-3).charAt(0) == "1" }
-function checkLvl2(number) { return String("000" + (number >>> 0).toString(2)).slice(-3).charAt(1) == "1" }
-function checkLvl3(number) { return String("000" + (number >>> 0).toString(2)).slice(-3).charAt(2) == "1" }
-
 function parseProgram(program) {
   var transform = {
     "PARI": "apache",
@@ -240,14 +210,12 @@ function superRequest(url, callback, ttl) {
       callback(JSON.parse(body))
     } catch(e) {
       // console.log(e)
-      throw e
       if (ttl == 0) {
         request(url, function(err, resp, body) {
           try {
             callback(JSON.parse(body))
           } catch(e) {
             // console.log(e)
-            throw e
             callback(false)
           }
         })
@@ -324,3 +292,83 @@ function checkUpdate() {
     old_updates = updates
   })
 }
+
+function linkName(text){
+  if (text) {
+    if (text.constructor === Array) {
+      for(var j in text) {
+        text[j] = linkName(text[j])
+      }
+      return text
+    } if (text.constructor === String) {
+      var link = /_(\S([A-Za-z \.]+)?)_/gm;
+      console.log(text)
+      console.log(text.constructor)
+      var html = text.replace(link, '<a href="http://oeis.org/wiki/User:$1">$1</a>');
+      return html
+    } else {
+      console.log(text)
+      return text
+    }
+  } else {
+    return text
+  }
+}
+
+function updateItem(id) {
+  superRequest('https://oeis.org/search?q=id:A' + id + '&fmt=json', function(data) {
+    // Fix for some weird closure issues.
+    var y = data
+    Sequence.findOne({number: id}, function(err, seq) {
+      var data = y
+      if (err) console.log(err)
+      else {
+        // console.log(seq)
+        if (seq === null) {
+          console.log("Sequence Not Found... Creating... ")
+          var itemID = new Sequence(data.results[0])
+          itemID.data = itemID.data.split(",")
+          itemID.save(function(err) {
+            if (err) {
+              console.log(err)
+              console.log(itemID)
+            }
+            else {
+              console.log("Created New Item: " + id)
+            }
+          })
+        } else {
+          console.log("Sequence Found... Updating... ")
+          for (var i in data.results[0]) {
+            seq[i] = data.results[0][i]
+          }
+          seq.save(function(err) {
+            if (err) console.log(err)
+            else {
+              console.log("Item Found... Updated!")
+            }
+          })
+        }
+      }
+    })
+  })
+}
+
+function listItems() {
+  Sequence.find({}, function(err, docs) {
+    console.log(err)
+    console.log(docs)
+  })
+}
+
+// Sequence.remove({}, function(err) { if (!err) console.log("Collection Removed.") })
+
+function updateAll(max) {
+  for (var i = 1; i <= max; i++) {
+    updateItem(('000000' + String(i)).substring(String(i).length))
+  }
+}
+
+// updateItem("000011")
+
+// updateAll(100)
