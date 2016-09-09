@@ -380,19 +380,18 @@ function updateOne(id) {
         console.log(err)
         Hi
       }
-      console.log(id + " was updated successfully!")
+      console.log(text + " was updated successfully!")
     })
   })
 }
 
 function updateAll(max) {
   for (var i = 1; i <= max; i++) {
-    console.log(i)
     updateOne(i)
   }
 }
 
- updateAll(5000)
+updateAll(1000)
 
 //updateOne(15)
 
