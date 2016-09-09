@@ -204,7 +204,7 @@ function parseProgram(program) {
 function superRequest(url, callback, ttl) {
   ttl = (typeof ttl === 'undefined') ? 1000 * 60 * 60 * 24 : ttl
   var options = { url: url, ttl: ttl }
-  console.log(options)
+  // console.log(options)
   cachedRequest(options, function(err, resp, body) {
     try {
       callback(JSON.parse(body))
@@ -228,15 +228,19 @@ function superRequest(url, callback, ttl) {
 
 function getRecentlyChanged(callback) {
   request('https://oeis.org/recent.txt', function(err, resp, body) {
-    console.log("Got /recent.txt successfully")
-    var text = body.split("\n")
-    var updates = []
-    for (var i = 0; i < text.length; i++) {
-      if (text[i].substring(0, 2) == '%I') {
-        updates.push(text[i].split(" ")[1])
+    if (body) {
+      console.log("Got /recent.txt successfully")
+      var text = body.split("\n")
+      var updates = []
+      for (var i = 0; i < text.length; i++) {
+        if (text[i].substring(0, 2) == '%I') {
+          updates.push(text[i].split(" ")[1])
+        }
       }
+      callback(updates)
+    } else {
+      console.log("Failed to get /recent.txt")
     }
-    callback(updates)
   })
 }
 
@@ -315,11 +319,11 @@ function linkName(text){
   }
 }
 
-function updateItem(id) {
+function updateItem(id, number) {
   superRequest('https://oeis.org/search?q=id:A' + id + '&fmt=json', function(data) {
     // Fix for some weird closure issues.
     var y = data
-    Sequence.findOne({number: id}, function(err, seq) {
+    Sequence.findOne({number: number}, function(err, seq) {
       var data = y
       if (err) console.log(err)
       else {
@@ -342,6 +346,7 @@ function updateItem(id) {
           for (var i in data.results[0]) {
             seq[i] = data.results[0][i]
           }
+          seq.data = seq.data.split(",")
           seq.save(function(err) {
             if (err) console.log(err)
             else {
@@ -363,11 +368,33 @@ function listItems() {
 
 // Sequence.remove({}, function(err) { if (!err) console.log("Collection Removed.") })
 
+function updateOne(id) {
+  var text = ('000000' + String(id)).substring(String(id).length)
+  superRequest('https://oeis.org/search?q=id:A' + text + '&fmt=json', function(newData) {
+    var query = { number: id }
+    var update = newData.results[0]
+    var options = { upsert: true, new: true }
+
+    Sequence.findOneAndUpdate(query, update, options, function(err, result) {
+      if (err) {
+        console.log(err)
+        Hi
+      }
+      console.log(id + " was updated successfully!")
+    })
+  })
+}
+
 function updateAll(max) {
   for (var i = 1; i <= max; i++) {
-    updateItem(('000000' + String(i)).substring(String(i).length))
+    console.log(i)
+    updateOne(i)
   }
 }
+
+ updateAll(5000)
+
+//updateOne(15)
 
 // updateItem("000011")
 
