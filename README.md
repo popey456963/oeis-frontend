@@ -1,6 +1,6 @@
-# Project Title
+# OEIS Lookup
 
-One Paragraph of project description goes here
+This project provides a graphical interface to accessing the OEIS database of integers.  It aims to be more user-friendly and faster than the official OEIS.org website from which this gets it's data.
 
 ## Getting Started
 
@@ -8,59 +8,86 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisities
 
-What things you need to install the software and how to install them
+To run this project, you will need the following items setup:
 
-```
-Give examples
-```
+- Mongo Database
+- Elastisearch Server
+- Node (preferably v.4.x.x)
+- NPM
+- Gulp
+
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
-
-Stay what the step will be
+This is a step-by-step guide of how to get a dev environment up and running.  Start by cloning the repo and navigating to that directory:
 
 ```
-Give the example
+git clone https://github.com/popey456963/oeis-frontend
+cd oeis-frontend
 ```
 
-And repeat
+Install all required modules, and build all the .scss files
 
 ```
-until finished
+gulp build
+npm i
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+Ensure the elastisearch and mongo database is running, then start the server using node:
+
+```
+node server.js
+```
+
+If all works, you should be able to navigate to localhost:3005 and see the OEIS Lookup website.
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+All tests are made using mocha, which can be installed via `npm i -g mocha`.  Once installed, you can run `mocha` in the OEIS-Frontend directory in order to run all test
 
-### Break down into end to end tests
+### Creating Tests
 
-Explain what these tests test and why
+Tests are organised into sections based on what they are testing, these sections are as follows:
 
-```
-Give an example
-```
+- A
+- B
+- C
 
-### And coding style tests
-
-Explain what these tests test and why
+If you want to create a test, navigate to the desired section, duplicate the `_template.test.js` file and rename it to `testName.test.js`.  You can then fill the file with the test of your choice, an example for verifying whether `/` renders:
 
 ```
-Give an example
+var request = require('supertest');
+var server = require('../server');
+
+describe('GET /', function() {
+  it('should render ok', function(done) {
+    request(server)
+      .get('/')
+      .expect(200, done);
+  });
+});
 ```
+
+### Coding Style Tests
+
+We enforce several code standards in order to keep the codebase maintainable, the full list can be found [here](http://standardjs.com/rules.html) but the key points are:
+
+- We use two spaces for indentation.
+- Always handle errors.
+- Never have unused variables.
+- Don't define multiple variables in one statement
+- No semicolons at the end of lines
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+Deployment on a production server is identical to deployment on a development server apart from running `gulp build --production` instead of it's counterpart.
 
 ## Built With
 
-* Dropwizard - Bla bla bla
-* Maven - Maybe
-* Atom - ergaerga
+* Node
+* Express
+* Elasticsearch
+* Mongo
 
 ## Contributing
 
@@ -72,9 +99,9 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Alexander Craggs** - *Initial work* - [Codefined](http://codefined.xyz)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/popey456963/oeis-frontend/contributors) who participated in this project.
 
 ## License
 
@@ -82,6 +109,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* Several amazing individuals helped provide me with the motivation and skills in order to complete this project, including Developius and Polarlemniscate.
