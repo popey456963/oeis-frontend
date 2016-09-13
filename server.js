@@ -11,7 +11,7 @@ var dotenv = require('dotenv')
 var mongoose = require('mongoose')
 var passport = require('passport')
 
-// Pretty errors
+/*// Pretty errors
 var pe = require('pretty-error').start()
 pe.appendStyle({
   'pretty-error > trace > item > footer > addr': {
@@ -26,7 +26,7 @@ pe.appendStyle({
     marginLeft: 2,
     bullet: '"<grey>-</grey>"'
   }
-})
+})*/
 
 // Load environment variables from .env file
 dotenv.load()
@@ -44,7 +44,7 @@ var app = express()
 var server = require('http').Server(app)
 var io = require('socket.io').listen(server)
 
-mongoose.connect(process.env.MONGODB)
+mongoose.connect(process.env.MONGODB, { config: { autoIndex: false, ensureIndex: false } })
 mongoose.connection.on('error', function() {
   console.log('MongoDB Connection Error. Please make sure that MongoDB is running.')
   process.exit(1)

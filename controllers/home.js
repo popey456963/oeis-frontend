@@ -370,6 +370,8 @@ function listItems() {
 
 function updateOne(id) {
   var text = ('000000' + String(id)).substring(String(id).length)
+  // Possibly need to change this to just request.  We don't really want to
+  // Use the 
   superRequest('https://oeis.org/search?q=id:A' + text + '&fmt=json', function(newData) {
     var query = { number: id }
     var update = newData.results[0]
@@ -380,19 +382,18 @@ function updateOne(id) {
         console.log(err)
         Hi
       }
-      console.log(id + " was updated successfully!")
+      console.log(text + " was updated successfully!")
     })
   })
 }
 
 function updateAll(max) {
   for (var i = 1; i <= max; i++) {
-    console.log(i)
     updateOne(i)
   }
 }
 
- updateAll(2)
+updateAll(10)
 
 //updateOne(15)
 
