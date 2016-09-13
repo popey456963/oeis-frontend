@@ -392,7 +392,7 @@ function updateAll(max) {
   }
 }
 
- updateAll(5000)
+ updateAll(2)
 
 //updateOne(15)
 
