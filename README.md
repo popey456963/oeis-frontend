@@ -55,7 +55,7 @@ Tests are organised into sections based on what they are testing, these sections
 
 If you want to create a test, navigate to the desired section, duplicate the `_template.test.js` file and rename it to `testName.test.js`.  You can then fill the file with the test of your choice, an example for verifying whether `/` renders:
 
-```
+```javascript
 var request = require('supertest');
 var server = require('../server');
 
