@@ -57,7 +57,7 @@ If you want to create a test, navigate to the desired section, duplicate the `_t
 
 ```javascript
 var request = require('supertest');
-var server = require('../server');
+var server = require('../../server');
 
 describe('GET /', function() {
   it('should render ok', function(done) {
