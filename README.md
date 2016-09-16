@@ -43,15 +43,13 @@ If all works, you should be able to navigate to localhost:3005 and see the OEIS 
 
 ## Running the tests
 
-All tests are made using mocha, which can be installed via `npm i -g mocha`.  Once installed, you can run `mocha` in the OEIS-Frontend directory in order to run all test
+All tests are made using mocha, which can be installed via `npm i -g mocha`.  Once installed, you can run `mocha --recursive` or `npm test` in the OEIS-Frontend directory to run the test suite.
 
 ### Creating Tests
 
 Tests are organised into sections based on what they are testing, these sections are as follows:
 
-- A
-- B
-- C
+- `page-loading` - For testing entire pages
 
 If you want to create a test, navigate to the desired section, duplicate the `_template.test.js` file and rename it to `testName.test.js`.  You can then fill the file with the test of your choice, an example for verifying whether `/` renders:
 
@@ -67,6 +65,8 @@ describe('GET /', function() {
   });
 });
 ```
+
+If you feel that there is a whole section of tests that don't fit anywhere, feel free to create a new directory with a name signifying what the tests do.
 
 ### Coding Style Tests
 
