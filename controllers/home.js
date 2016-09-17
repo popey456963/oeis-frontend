@@ -376,16 +376,20 @@ function updateOne(id) {
   // Use the 
   superRequest('https://oeis.org/search?q=id:A' + text + '&fmt=json', function(newData) {
     var query = { number: id }
-    var update = newData.results[0]
-    var options = { upsert: true, new: true }
+    if (newData && newData.results && newData.results[0]) {
+      var update = newData.results[0]
+      var options = { upsert: true, new: true }
 
-    Sequence.findOneAndUpdate(query, update, options, function(err, result) {
-      if (err) {
-        console.log(err)
-        Hi
-      }
-      console.log(text + ' was updated successfully!')
-    })
+      Sequence.findOneAndUpdate(query, update, options, function(err, result) {
+        if (err) {
+          console.log(err)
+          Hi
+        }
+        console.log(text + ' was updated successfully!')
+      })
+    } else {
+      console.log("Request returned something wrong when trying to update one...")
+    }
   })
 }
 
