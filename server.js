@@ -42,6 +42,7 @@ require('./config/passport')
 
 var app = express()
 
+// Start Socket.io server
 var server = require('http').Server(app)
 var io = require('socket.io').listen(server)
 
@@ -49,9 +50,9 @@ var io = require('socket.io').listen(server)
 logger.token('user', function(req, res) { return JSON.stringify(req.user) })
 var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
 
+// Connect to Mongoose database
 mongoose.connect(process.env.MONGODB, { config: { autoIndex: false, ensureIndex: false } })
 mongoose.connection.on('error', function(err) {
-  console.log(err)
   console.log('MongoDB Connection Error. Please make sure that MongoDB is running.')
   process.exit(1)
 })
