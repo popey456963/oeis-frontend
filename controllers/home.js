@@ -3,8 +3,8 @@ var cachedRequest = require('cached-request')(request)
 var User = require('../models/User.js')
 var Sequence = require('../models/Sequence.js')
 var moment = require('moment')
-var old_updates = require('../data/updates.json')
-var seq_list = require('../config/sequences.json')
+var old_updates = require('../updates.json')
+var seq_list = require('../sequences.json')
 
 /**
  * GET /
