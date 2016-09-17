@@ -1,10 +1,10 @@
 @echo off
 setlocal enableextensions enabledelayedexpansion
 
+echo "Current options: elasticsearch, nodemon, watch, mongod, mongo"
+
 if "%1" == "" SET /P inputName= "Command > "
 if NOT "%1" == "" SET inputName=%1
-
-echo %inputName%
 
 if "%inputName%" == "elastisearch" goto StartElastisearch
 if "%inputName%" == "elasticsearch" goto StartElastisearch
