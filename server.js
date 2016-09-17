@@ -10,7 +10,6 @@ var expressValidator = require('express-validator')
 var dotenv = require('dotenv')
 var mongoose = require('mongoose')
 var passport = require('passport')
-var fs = require('fs')
 
 /*// Pretty errors
 var pe = require('pretty-error').start()
@@ -45,13 +44,8 @@ var app = express()
 var server = require('http').Server(app)
 var io = require('socket.io').listen(server)
 
-// Logger Settings
-logger.token('user', function(req, res) { return JSON.stringify(req.user) })
-var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
-
 mongoose.connect(process.env.MONGODB, { config: { autoIndex: false, ensureIndex: false } })
-mongoose.connection.on('error', function(err) {
-  console.log(err)
+mongoose.connection.on('error', function() {
   console.log('MongoDB Connection Error. Please make sure that MongoDB is running.')
   process.exit(1)
 })
@@ -59,7 +53,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'jade')
 app.set('port', process.env.PORT || 3005)
 app.use(compression())
-app.use(logger('dev', { stream: accessLogStream }))
+app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())

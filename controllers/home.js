@@ -11,7 +11,7 @@ var seq_list = require('../sequences.json')
  */
 exports.index = function(req, res) {
   res.render('search', {
-    page: 'Search',
+    page: "Search",
     title: 'Search :: OEIS Lookup',
     sequence: seq_list[Math.floor(Math.random() * seq_list.length)]
   })
@@ -22,8 +22,7 @@ exports.index = function(req, res) {
  */
 exports.welcome = function(req, res) {
   res.render('welcome', {
-    title: 'Welcome :: OEIS Lookup',
-    page: 'Welcome'
+    title: 'Welcome :: OEIS Lookup'
   })
 }
 
@@ -32,24 +31,24 @@ exports.welcome = function(req, res) {
  */
 exports.test = function(req, res) {
   var sequence = req.body.sequence  
-  var url = 'https://oeis.org/search?fmt=json&q=' + encodeURIComponent(sequence)
+  var url = "https://oeis.org/search?fmt=json&q=" + encodeURIComponent(sequence)
 
-  if (sequence == '') {
+  if (sequence == "") {
     res.send('Sequence must not be blank')
   } else {
     superRequest(url, function(data) {
       if (data) {
         if (data.count != 0 && data.results == null) {
-          res.send('Too many results.')
+          res.send("Too many results.")
         } else if (data.results == null) {
-          res.send('No results.')
+          res.send("No results.")
         } else if (data.count == 1) {
-          res.send('1 ' + data.results[0].number)
+          res.send("1 " + data.results[0].number)
         } else {
-          res.send('')
+          res.send("")
         }
       } else {
-        res.send('OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
+        res.send("OEIS didn't provide a good response, despite multiple attempts.  Check their website, or contact us.")
       }
     })
   }
@@ -59,7 +58,7 @@ exports.test = function(req, res) {
  * GET /A******
  */
 exports.id = function(req, res) {
-  console.log('Hi, I\'m here.')
+  console.log("Hi, I'm here.")
   var sequence = req.params.sequence
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
     res.render('not_found', {
@@ -81,7 +80,7 @@ exports.id = function(req, res) {
             data.results[0][i] = linkName(data.results[0][i])
           }
           res.render('id', {
-            page: 'A-Page',
+            page: "A-Page",
             title: 'A' + sequence + ' :: OEIS Lookup',
             data: data.results[0],
             toTitleCase: function(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
@@ -90,7 +89,7 @@ exports.id = function(req, res) {
           })
         }
       } else {
-        res.send('OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
+        res.send("OEIS didn't provide a good response, despite multiple attempts.  Check their website, or contact us.")
       }
     })
   }
@@ -106,8 +105,7 @@ exports.search = function(req, res) {
 
   superRequest(url, function(data) {
     res.render('./search_results/search_results', {
-      title: 'Search Results :: OEIS Lookup',
-      page: 'Search Results',
+      title: "Search Results :: OEIS Lookup",
       query: req.query.q,
       data: data.results,
       numResults: data.count,
@@ -125,8 +123,8 @@ exports.search = function(req, res) {
  */
 exports.langtest = function(req, res) {
   res.render('./test_lang', {
-    page: 'Test-Lang',
-    title: 'Lang Test :: OEIS Lookup'
+    page: "Test-Lang",
+    title: "Lang Test :: OEIS Lookup"
   })
 }
 
@@ -153,8 +151,8 @@ exports.adminUsers = function(req, res) {
       listOfUsers.push(temp)
     }
     res.render('./admin/users', {
-      page: 'User-List',
-      title: 'User List :: OEIS Lookup',
+      page: "User-List",
+      title: "User List :: OEIS Lookup",
       users: listOfUsers,
       adminNumToWord: adminNumToWord
     })
@@ -162,18 +160,18 @@ exports.adminUsers = function(req, res) {
 }
 
 function adminNumToWord(number) {
-  perms = String('000' + (number >>> 0).toString(2)).slice(-3)
+  perms = String("000" + (number >>> 0).toString(2)).slice(-3)
   roles = []
-  if (perms.charAt(0) == '1') roles.push('Perm A')
-  if (perms.charAt(1) == '1') roles.push('Perm B')
-  if (perms.charAt(2) == '1') roles.push('Perm C')
-  return roles.join(',')
+  if (perms.charAt(0) == "1") roles.push("Perm A")
+  if (perms.charAt(1) == "1") roles.push("Perm B")
+  if (perms.charAt(2) == "1") roles.push("Perm C")
+  return roles.join(",")
 }
 
 function parseProgram(program) {
   var transform = {
-    'PARI': 'apache',
-    'S/R': 'css'
+    "PARI": "apache",
+    "S/R": "css"
   }
   var languages = []
   var currentCounter = -1
@@ -185,15 +183,15 @@ function parseProgram(program) {
     if (re.test(program[i])) {
       var group = re2.exec(program[i])[1]
       currentCounter++
-      // console.log(group + ': ' + program[i].replace(re, '').trim())
+      // console.log(group + ": " + program[i].replace(re, '').trim())
       program[i] = program[i].replace(re, '').trim()
       languages[currentCounter] = [[group, transform[group]], []]
-      console.log('Found Group: ' + group)
+      console.log("Found Group: " + group)
       trimmed = true
     }
     var replacement = re3.exec(program[i])
     if (replacement && replacement.length > 0) {
-      program[i] = program[i].replace(replacement[1], new Array(replacement[1].length + 1).join(' '))
+      program[i] = program[i].replace(replacement[1], new Array(replacement[1].length + 1).join(" "))
     }
     if (currentCounter != -1 && !(trimmed && program[i].length == 0)) {
       languages[currentCounter][1].push(program[i])
@@ -231,17 +229,17 @@ function superRequest(url, callback, ttl) {
 function getRecentlyChanged(callback) {
   request('https://oeis.org/recent.txt', function(err, resp, body) {
     if (body) {
-      console.log('Got /recent.txt successfully')
-      var text = body.split('\n')
+      console.log("Got /recent.txt successfully")
+      var text = body.split("\n")
       var updates = []
       for (var i = 0; i < text.length; i++) {
         if (text[i].substring(0, 2) == '%I') {
-          updates.push(text[i].split(' ')[1])
+          updates.push(text[i].split(" ")[1])
         }
       }
       callback(updates)
     } else {
-      console.log('Failed to get /recent.txt')
+      console.log("Failed to get /recent.txt")
     }
   })
 }
@@ -270,7 +268,7 @@ function makeAdmin(email) {
         console.log(updatedUser)
       })
     } else {
-      console.log('No User Found (Or Error Found)')
+      console.log("No User Found (Or Error Found)")
     }
   })
 }
@@ -291,7 +289,7 @@ function checkUpdate() {
     var indexToFind = find_csa(updates, old_updates.slice(0, 100), 0)
     if (indexToFind != 0) {
       for (var i = 0; i < indexToFind; i++) {
-        console.log('Updated Item: ' + updates[i])
+        console.log("Updated Item: " + updates[i])
         // updateItem(updates[i])
       }
     }
@@ -310,7 +308,7 @@ function linkName(text){
       var link = /_(\S([A-Za-z \.]+)?)_/gm;
       console.log(text)
       console.log(text.constructor)
-      var html = text.replace(link, "<a href='http://oeis.org/wiki/User:$1'>$1</a>");
+      var html = text.replace(link, '<a href="http://oeis.org/wiki/User:$1">$1</a>');
       return html
     } else {
       console.log(text)
@@ -331,28 +329,28 @@ function updateItem(id, number) {
       else {
         // console.log(seq)
         if (seq === null) {
-          console.log('Sequence Not Found... Creating... ')
+          console.log("Sequence Not Found... Creating... ")
           var itemID = new Sequence(data.results[0])
-          itemID.data = itemID.data.split(',')
+          itemID.data = itemID.data.split(",")
           itemID.save(function(err) {
             if (err) {
               console.log(err)
               console.log(itemID)
             }
             else {
-              console.log('Created New Item: ' + id)
+              console.log("Created New Item: " + id)
             }
           })
         } else {
-          console.log('Sequence Found... Updating... ')
+          console.log("Sequence Found... Updating... ")
           for (var i in data.results[0]) {
             seq[i] = data.results[0][i]
           }
-          seq.data = seq.data.split(',')
+          seq.data = seq.data.split(",")
           seq.save(function(err) {
             if (err) console.log(err)
             else {
-              console.log('Item Found... Updated!')
+              console.log("Item Found... Updated!")
             }
           })
         }
@@ -368,7 +366,7 @@ function listItems() {
   })
 }
 
-// Sequence.remove({}, function(err) { if (!err) console.log('Collection Removed.') })
+// Sequence.remove({}, function(err) { if (!err) console.log("Collection Removed.") })
 
 function updateOne(id) {
   var text = ('000000' + String(id)).substring(String(id).length)
@@ -384,7 +382,7 @@ function updateOne(id) {
         console.log(err)
         Hi
       }
-      console.log(text + ' was updated successfully!')
+      console.log(text + " was updated successfully!")
     })
   })
 }
@@ -399,6 +397,6 @@ updateAll(10)
 
 //updateOne(15)
 
-// updateItem('000011')
+// updateItem("000011")
 
 // updateAll(100)
