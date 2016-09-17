@@ -18,7 +18,8 @@ html
 
     //script(src='/socket.io/socket.io.js')
     script(src='/js/lib/jquery.min.js')
-    script(src='/js/lib/bootstrap.min.js')
+    if page != "Welcome"
+      script(src='/js/lib/bootstrap.min.js')
     if page == "A-Page" || page == "Test-Lang"
       script(src='/js/lib/highlight.min.js')
     script(src='/js/main.js')
