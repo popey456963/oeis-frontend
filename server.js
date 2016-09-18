@@ -12,7 +12,7 @@ var mongoose = require('mongoose')
 var passport = require('passport')
 var fs = require('fs')
 
-/*// Pretty errors
+// Pretty errors
 var pe = require('pretty-error').start()
 pe.appendStyle({
   'pretty-error > trace > item > footer > addr': {
@@ -27,7 +27,7 @@ pe.appendStyle({
     marginLeft: 2,
     bullet: '"<grey>-</grey>"'
   }
-})*/
+})
 
 // Load environment variables from .env file
 dotenv.load()

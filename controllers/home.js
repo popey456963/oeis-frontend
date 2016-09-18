@@ -10,10 +10,11 @@ var seq_list = require('../config/sequences.json')
  * GET /
  */
 exports.index = function(req, res) {
+  var randomSequence = seq_list[Math.floor(Math.random() * seq_list.length)]
   res.render('search', {
     page: 'Search',
     title: 'Search :: OEIS Lookup',
-    sequence: seq_list[Math.floor(Math.random() * seq_list.length)]
+    sequence: randomSequence
   })
 }
 
@@ -206,26 +207,41 @@ function parseProgram(program) {
 function superRequest(url, callback, ttl) {
   ttl = (typeof ttl === 'undefined') ? 1000 * 60 * 60 * 24 : ttl
   var options = { url: url, ttl: ttl }
-  // console.log(options)
-  cachedRequest(options, function(err, resp, body) {
-    try {
-      callback(JSON.parse(body))
-    } catch(e) {
-      // console.log(e)
-      if (ttl == 0) {
-        request(url, function(err, resp, body) {
-          try {
-            callback(JSON.parse(body))
-          } catch(e) {
-            // console.log(e)
-            callback(false)
-          }
-        })
-      } else {
-        superRequest(url, callback, 0)
+  console.log(options)
+  console.log("Gets here!")
+  try {
+    cachedRequest(options, function(err, resp, body) {
+      console.log("Doesn't get here...")
+      try {
+        callback(JSON.parse(body))
+      } catch(e) {
+        console.log(e)
+        if (ttl == 0) {
+          request(url, function(err, resp, body) {
+            try {
+              callback(JSON.parse(body))
+            } catch(e) {
+              console.log(e)
+              console.log("We were forced to return false...")
+              callback(false)
+            }
+          })
+        } else {
+          superRequest(url, callback, 0)
+        }
       }
-    }
-  })
+    })
+  } catch(e) {
+    console.log("Cached Request had a fatal error whilst handling: " + url)
+    request(url, function(err, resp, body) {
+      try {
+        callback(JSON.parse(body))
+      } catch(e) {
+        console.log(e)
+        callback(false)
+      }
+    })
+  }
 }
 
 function getRecentlyChanged(callback) {
@@ -260,22 +276,22 @@ function find_csa(arr, subarr, from_index) {
     return -1;
 }
 
-function makeAdmin(email) {
+function makeAdmin(email, level) {
   User.findOne({ email: email }, function(err, user) {
     if (err) console.log(err)
     if (user && !err) {
-      user.admin = 7
+      user.admin = level
       user.save(function(err, updatedUser) {
         if (err) console.log(err)
         console.log(updatedUser)
       })
     } else {
-      console.log('No User Found (Or Error Found)')
+      console.log('No User Found...')
     }
   })
 }
 
-makeAdmin('popey@debenclipper.com')
+makeAdmin('popey@debenclipper.com', 7)
 
 if (old_updates = {}) {
   getRecentlyChanged(function(updates) {
@@ -371,10 +387,13 @@ function listItems() {
 // Sequence.remove({}, function(err) { if (!err) console.log('Collection Removed.') })
 
 function updateOne(id) {
+  console.log("Got here!")
   var text = ('000000' + String(id)).substring(String(id).length)
   // Possibly need to change this to just request.  We don't really want to
-  // Use the 
+  // Use the super request because that includes logging...
+  console.log("Requesting " + text)
   superRequest('https://oeis.org/search?q=id:A' + text + '&fmt=json', function(newData) {
+    console.log(newData)
     var query = { number: id }
     if (newData && newData.results && newData.results[0]) {
       var update = newData.results[0]
@@ -395,14 +414,20 @@ function updateOne(id) {
 
 function updateAll(max) {
   for (var i = 1; i <= max; i++) {
-    updateOne(i)
+    setTimeout(function(i) { try{ updateOne(i) } catch(e) { console.log(e) } }, i * 400, i)
   }
 }
 
-updateAll(10)
+// updateAll(1000)
 
-//updateOne(15)
+// updateOne(72)
 
 // updateItem('000011')
 
 // updateAll(100)
+
+var options = { url: "https://oeis.org/search?q=id:A000072&fmt=json", ttl: 1000 * 60 * 60 * 24 }
+request(options, function(err, resp, body) {
+  var body = JSON.parse(body)
+  console.log(body)
+})
