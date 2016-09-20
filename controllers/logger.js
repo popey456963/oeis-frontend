@@ -9,7 +9,7 @@ var logger = function(m, n){
   m = m || module.parent.filename.replace(/^.*[\\\/]/, '')
   this.normalName = m
   this.moduleName = ' [' + m
-  while (this.moduleName.length < 8) { this.moduleName += ' ' }
+  while (this.moduleName.length < 9) { this.moduleName += ' ' }
   this.moduleName += '] '
 
   this.l = {
@@ -85,7 +85,7 @@ logger.prototype.print   = function(msg, code) {
       } else {
         var locName = this.capitalise(fileName)
       }
-      while (locName.length < 8) { locName += ' ' }
+      while (locName.length < 9) { locName += ' ' }
       console.log(this.date() + ' [' + locName + '] ' + this.l[code](fullMessage.join(" ")))      
     }
   }

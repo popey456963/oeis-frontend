@@ -11,6 +11,7 @@ var dotenv = require('dotenv')
 var mongoose = require('mongoose')
 var passport = require('passport')
 var fs = require('fs')
+var request = require('request')
 var logger = require('./controllers/logger')()
 
 // Pretty errors
@@ -102,7 +103,13 @@ app.get('/langtest', HomeController.langtest)
 app.get('/admin/users', AdminController.ensureAdmin['read'], HomeController.adminUsers)
 
 app.use(function(req,res){
-    res.status(404).render('404.jade')
+  request('http://oeis.org' + req.url, function (error, response, body) {
+    if (!error && response.statusCode == 404) {
+      res.render('404.jade')
+    } else {
+      res.status(response.statusCode).render('frame.jade', { url: 'http://oeis.org' + req.url })
+    }
+  })
 })
 
 // Production error handler

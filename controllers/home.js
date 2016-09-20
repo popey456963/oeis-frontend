@@ -71,6 +71,11 @@ exports.test = function(req, res) {
  */
 exports.id = function(req, res) {
   var sequence = req.params.sequence
+  if (sequence.length < 6 && !isNaN(sequence)) {
+    while (sequence.length < 6) { sequence = '0' + sequence }
+    res.redirect('/A' + sequence)
+    return
+  }
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
     res.render('not_found', {
       title: 'ID Not Found :: OEIS Lookup'
