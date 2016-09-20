@@ -49,7 +49,11 @@ exports.loginPost = function(req, res, next) {
       return res.redirect('/login')
     }
     req.logIn(user, function(err) {
-      res.redirect('/');
+      if (req.query.redirect) {
+        res.redirect(req.query.redirect)
+      } else {
+        res.redirect('/');
+      }
     });
   })(req, res, next);
 };

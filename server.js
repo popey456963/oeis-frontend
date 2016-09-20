@@ -1,6 +1,6 @@
 var express = require('express')
 var path = require('path')
-var logger = require('morgan')
+var httpLogger = require('morgan')
 var compression = require('compression')
 var methodOverride = require('method-override')
 var session = require('express-session')
@@ -11,6 +11,7 @@ var dotenv = require('dotenv')
 var mongoose = require('mongoose')
 var passport = require('passport')
 var fs = require('fs')
+var logger = require('./controllers/logger')()
 
 // Pretty errors
 var pe = require('pretty-error').start()
@@ -47,10 +48,11 @@ var server = require('http').Server(app)
 var io = require('socket.io').listen(server)
 
 // Logger Settings
-logger.token('user', function(req, res) { return JSON.stringify(req.user) })
+httpLogger.token('user', function(req, res) { return JSON.stringify(req.user) })
 var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
 
-// Connect to Mongoose database
+// Connect to Mongoose database & Fix Promise Error
+mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB, { config: { autoIndex: false, ensureIndex: false } })
 mongoose.connection.on('error', function(err) {
   console.log('MongoDB Connection Error. Please make sure that MongoDB is running.')
@@ -60,7 +62,8 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'jade')
 app.set('port', process.env.PORT || 3005)
 app.use(compression())
-app.use(logger('dev', { stream: accessLogStream }))
+app.use(httpLogger('common', { stream: accessLogStream }))
+app.use(httpLogger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())
@@ -115,12 +118,12 @@ if (app.get('env') === 'production') {
 io.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' })
   socket.on('my other event', function (data) {
-    console.log(data)
+    logger.log(data)
   })
 })
 
 server.listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'))
+  logger.log('Express server listening on port ' + app.get('port'))
 })
 
 module.exports = app
