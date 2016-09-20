@@ -55,7 +55,7 @@ var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB, { config: { autoIndex: false, ensureIndex: false } })
 mongoose.connection.on('error', function(err) {
-  console.log('MongoDB Connection Error. Please make sure that MongoDB is running.')
+  logger.error('MongoDB Connection Error. Please make sure that MongoDB is running.')
   process.exit(1)
 })
 app.set('views', path.join(__dirname, 'views'))
@@ -108,7 +108,7 @@ app.use(function(req,res){
 // Production error handler
 if (app.get('env') === 'production') {
   app.use(function(err, req, res, next) {
-    console.error(err.stack)
+    logger.error(err.stack)
     res.sendStatus(err.status || 500)
   })
 } else {
