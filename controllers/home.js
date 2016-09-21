@@ -2,7 +2,6 @@ var request = require('request')
 var cachedRequest = require('cached-request')(request)
 var User = require('../models/User')
 var Sequence = require('../models/Sequence')
-var moment = require('moment')
 var old_updates = require('../data/updates')
 var seq_list = require('../config/sequences')
 var logger = require('./logger')()
@@ -144,46 +143,6 @@ exports.langtest = function(req, res) {
     page: 'Test-Lang',
     title: 'Lang Test :: OEIS Lookup'
   })
-}
-
-/*
- * GET /admin/users
- */
-exports.adminUsers = function(req, res) {
-  User.find({}, function(err, docs) {
-    var listOfUsers = []
-    for (var i = 0; i < docs.length; i++) {
-      var temp = {
-        joined: moment(docs[i].createdAt).fromNow(),
-        editted: moment(docs[i].updatedAt).fromNow(),
-        name: docs[i].name,
-        email: docs[i].email,
-        location: docs[i].location,
-        picture: docs[i].picture,
-        twitter: docs[i].twitter,
-        facebook: docs[i].facebook,
-        admin: docs[i].admin,
-        gender: docs[i].gender,
-        website: docs[i].website
-      }
-      listOfUsers.push(temp)
-    }
-    res.render('./admin/users', {
-      page: 'User-List',
-      title: 'User List :: OEIS Lookup',
-      users: listOfUsers,
-      adminNumToWord: adminNumToWord
-    })
-  })
-}
-
-function adminNumToWord(number) {
-  perms = String('000' + (number >>> 0).toString(2)).slice(-3)
-  roles = []
-  if (perms.charAt(0) == '1') roles.push('Perm A')
-  if (perms.charAt(1) == '1') roles.push('Perm B')
-  if (perms.charAt(2) == '1') roles.push('Perm C')
-  return roles.join(',')
 }
 
 function parseProgram(program) {

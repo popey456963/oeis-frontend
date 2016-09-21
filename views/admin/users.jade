@@ -14,7 +14,7 @@ block content
                 for user in users
                   if user.admin
                     h4=user.name
-                      span!= " <i>(" + adminNumToWord(user.admin) + ")</i>"
+                      span!= " <i>(" + getPerms(user.admin) + ")</i>"
                   else
                     h4=user.name
                   for value, item in user

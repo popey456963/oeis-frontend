@@ -96,11 +96,12 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', { successRedi
 
 app.get('/', HomeController.index)
 app.get('/welcome', HomeController.welcome)
+app.get('/admin', AdminController.ensureAdmin['read'], AdminController.adminPage)
+app.get('/admin/users', AdminController.ensureAdmin['read'], AdminController.adminUsers)
 app.get('/A:sequence', HomeController.id)
 app.get('/search', HomeController.search)
 app.post('/test', HomeController.test)
 app.get('/langtest', HomeController.langtest)
-app.get('/admin/users', AdminController.ensureAdmin['read'], HomeController.adminUsers)
 
 app.use(function(req,res){
   request('http://oeis.org' + req.url, function (error, response, body) {
