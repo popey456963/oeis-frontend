@@ -247,23 +247,6 @@ function findSubstring(arr, subarr, fromIndex) {
     return -1
 }
 
-function makeAdmin(email, level) {
-  User.findOne({ email: email }, function(err, user) {
-    if (err) logger.error(err)
-    if (user && !err) {
-      user.admin = level
-      user.save(function(err, updatedUser) {
-        if (err) logger.error(err)
-        logger.log('Successfully Made ' + email + ' Admin Lvl.' + String(level))
-      })
-    } else {
-      logger.log('No User Found...')
-    }
-  })
-}
-
-makeAdmin('popey@debenclipper.com', 7)
-
 if (old_updates = {}) {
   getRecentlyChanged(function(updates) {
     old_updates = updates

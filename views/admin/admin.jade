@@ -9,4 +9,11 @@ block content
               .container-fluid
                 #error.hidden.alert.alert-danger(role='alert')
               h3 Admin Actions
-              
+              if ensurePerm['read'](user)
+                p Congrats on Read
+              if ensurePerm['list'](user)
+                a(href='/admin/users') List of Users
+              if ensurePerm['write'](user)
+                p Congrats on Write
+              if ensurePerm['execute'](user)
+                p Congrats on Execute

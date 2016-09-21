@@ -1,17 +1,23 @@
 var User = require('../models/User')
 var moment = require('moment')
+var logger = require('./logger')()
 
-var adminNames = ['read', 'write', 'execute']
+var adminNames = ['read', 'list', 'write', 'execute']
 exports.ensureAdmin = []
+ensurePerm = []
 
 for (var i = 0; i < adminNames.length; i++) {
   exports.ensureAdmin[adminNames[i]] = new Function('req', 'res', 'next', `
     if (req.isAuthenticated()) {
       var adminNames = ` + JSON.stringify(adminNames) + `
-      var pad = new Array(adminNames.length + 1).join("0");
-      if (String(pad + (req.user.admin >>> 0).toString(2).slice(adminNames.length * -1).charAt(` + i + `) == "1")) {
+      var pad = new Array(adminNames.length + 1).join("0")
+      var admin = pad + (req.user.admin >>> 0).toString(2)
+      var perm = admin.slice(adminNames.length * -1).split("").reverse().join("")
+      if (String(perm.charAt(` + i + `)) == "1") {
+        console.log("Calling that...")
         next()
       } else {
+        console.log("Calling this!")
         res.render('./admin/not_admin', {
           title: "Not An Admin :: OEIS Lookup"
         })
@@ -21,25 +27,24 @@ for (var i = 0; i < adminNames.length; i++) {
     }
   `)
 }
-/*
+
 for (var i = 0; i < adminNames.length; i++) {
-  exports.ensurePerm[adminNames[i]] = new Function(`adminLevel
-    if (r {
+  ensurePerm[adminNames[i]] = new Function('user', `
+    if (user) {
       var adminNames = ` + JSON.stringify(adminNames) + `
-      var pad = new Array(adminNames.length + 1).join("0");
-      if (String(pad + (req.user.admin >>> 0).toString(2).slice(adminNames.length * -1).charAt(` + i + `) == "1")) {
-        next()
+      var pad = new Array(adminNames.length + 1).join("0")
+      var admin = pad + (user.admin >>> 0).toString(2)
+      var perm = admin.slice(adminNames.length * -1).split("").reverse().join("")
+      if (String(perm.charAt(` + i + `)) == "1") {
+        return true
       } else {
-        res.render('./admin/not_admin', {
-          title: "Not An Admin :: OEIS Lookup"
-        })
+        return false
       }
     } else {
-      res.redirect('/login?redirect=' + req.url)
+      return false
     }
   `)
 }
-*/
 
 /*
  * GET /admin/users
@@ -69,9 +74,7 @@ exports.adminUsers = function(req, res) {
       title: 'User List :: OEIS Lookup',
       users: listOfUsers,
       getPerms: getPerms,
-      AdminController: {
-        ensureAdmin: exports.ensurePerm
-      }
+      ensurePerm: ensurePerm
     })
   })
 }
@@ -98,3 +101,20 @@ var getPerms = new Function('number', `
   }
   return roles.join(', ')
 `)
+
+function makeAdmin(email, level) {
+  User.findOne({ email: email }, function(err, user) {
+    if (err) logger.error(err)
+    if (user && !err) {
+      user.admin = level
+      user.save(function(err, updatedUser) {
+        if (err) logger.error(err)
+        logger.log('Successfully Made ' + email + ' Admin Lvl.' + String(level))
+      })
+    } else {
+      logger.log('No User Found...')
+    }
+  })
+}
+
+makeAdmin('popey@debenclipper.com', 15)
