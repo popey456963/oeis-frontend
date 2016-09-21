@@ -19,8 +19,8 @@ block content
                     h4=user.name
                   for value, item in user
                     if item != "name" && value != undefined && value != "" && item != "admin"
-                      span!="<b>" + item + "</b>"
-                      span=": " + value
+                      span.adminListSpan!="<b>" + item + ": </b>"
+                      span=" " + value
                       span!="<br>"
                   br
                   br

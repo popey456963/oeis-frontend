@@ -21,6 +21,25 @@ for (var i = 0; i < adminNames.length; i++) {
     }
   `)
 }
+/*
+for (var i = 0; i < adminNames.length; i++) {
+  exports.ensurePerm[adminNames[i]] = new Function(`adminLevel
+    if (r {
+      var adminNames = ` + JSON.stringify(adminNames) + `
+      var pad = new Array(adminNames.length + 1).join("0");
+      if (String(pad + (req.user.admin >>> 0).toString(2).slice(adminNames.length * -1).charAt(` + i + `) == "1")) {
+        next()
+      } else {
+        res.render('./admin/not_admin', {
+          title: "Not An Admin :: OEIS Lookup"
+        })
+      }
+    } else {
+      res.redirect('/login?redirect=' + req.url)
+    }
+  `)
+}
+*/
 
 /*
  * GET /admin/users
@@ -46,9 +65,13 @@ exports.adminUsers = function(req, res) {
     }
     res.render('./admin/users', {
       page: 'User-List',
+      section: "Admin",
       title: 'User List :: OEIS Lookup',
       users: listOfUsers,
-      getPerms: getPerms
+      getPerms: getPerms,
+      AdminController: {
+        ensureAdmin: exports.ensurePerm
+      }
     })
   })
 }
@@ -58,7 +81,8 @@ exports.adminUsers = function(req, res) {
  */
 exports.adminPage = function(req, res) {
   res.render('./admin/admin', {
-    page: "Admin",
+    page: "Admin-Actions",
+    section: "Admin",
     title: "Admin Actions :: OEIS Lookup"
   })
 }

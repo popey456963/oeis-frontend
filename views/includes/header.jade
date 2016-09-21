@@ -14,7 +14,7 @@ nav.navbar.navbar-default.navbar-static-top
         li(class=(page == 'Welcome') ? 'active' : null)
           a(href='/welcome') Welcome
         if user && user.admin
-          li(class=(page == 'Admin') ? 'active' : null)
+          li(class=(section == 'Admin') ? 'active' : null)
             a(href='/admin') Admin
       ul.nav.navbar-nav.navbar-right
         li.dropdown
