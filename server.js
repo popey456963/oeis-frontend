@@ -1,3 +1,6 @@
+// At some point consider doing something with:
+// border-bottom: 1.5px dotted #888888;
+
 var express = require('express')
 var path = require('path')
 var httpLogger = require('morgan')
