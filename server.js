@@ -13,7 +13,6 @@ var passport = require('passport')
 var fs = require('fs')
 var request = require('request')
 var logger = require('./controllers/logger')()
-var analytics = require('node-analytics')
 var repl = require('repl')
 var os = require('os')
 
@@ -66,6 +65,7 @@ process.stdin.on('data', function (text) {
 var HomeController = require('./controllers/home')
 var UserController = require('./controllers/user')
 var AdminController = require('./controllers/admin')
+var StatsController = require('./controllers/stats')
 
 // Passport OAuth strategies
 require('./config/passport')
@@ -103,7 +103,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(function(req, res, next) { res.locals.user = req.user; next() })
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(analytics())
+app.use(StatsController.statsDaemon)
 
 app.get('/account', UserController.ensureAuthenticated, UserController.accountGet)
 app.put('/account', UserController.ensureAuthenticated, UserController.accountPut)

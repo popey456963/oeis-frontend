@@ -16,7 +16,7 @@ html
     include includes/header
     block content
       
-    //script(src='/socket.io/socket.io.js')
+    // script(src='/socket.io/socket.io.js')
     script(src='/js/lib/jquery.min.js')
     script(src='/js/lib/bootstrap.min.js')
     if page == "A-Page" || page == "Test-Lang"
@@ -26,7 +26,6 @@ html
     if page == "Test-Lang"
       script(src='/js/testLang.js')
     script(src='/js/lib/pace.min.js')
-    script(src='/js/lib/analytics-client.js')
     script.
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
