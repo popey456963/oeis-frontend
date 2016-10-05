@@ -11,14 +11,15 @@ block content
               h3 Admin Actions
               if ensurePerm['read'](user)
                 h5.adminHeader [Read Permissions]
-                a(href='#').link Search Admins
+                a(href='#').link Statistics
               if ensurePerm['list'](user)
                 h5.adminHeader [List Permissions]
                 a(href='/admin/users').link List of Users
+                a(href='#').link Search Users
               if ensurePerm['write'](user)
                 h5.adminHeader [Write Permissions]
                 a(href='#').link Create User
-                a(href='#').link Edit User
+                a(href='#').link Sequence Submission Queue
               if ensurePerm['execute'](user)
                 h5.adminHeader [Execute Permissions]
                 a(href='#').link Edit Groups
