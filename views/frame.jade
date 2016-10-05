@@ -2,4 +2,9 @@ style.
   body {
     margin: 0;
   }
-iframe(src=url, style="border: 0; width: 100%; height: 100%") Your browser doesn't support iFrames.
+iframe(src=url, id="iframe" style="border: 0; width: 100%; height: 100%", onLoad="updateURL(this.contentWindow.location)") Your browser doesn't support iFrames.
+script(src="/js/lib/jquery.min.js")
+script.
+  $('#iframe').load(function(){
+    alert('frame has (re)loaded');
+  });

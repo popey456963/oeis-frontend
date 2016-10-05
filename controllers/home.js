@@ -6,15 +6,6 @@ var old_updates = require('../data/updates')
 var seq_list = require('../config/sequences')
 var logger = require('./logger')()
 
-logger.log("Hey!")
-
-function hi() {
-  logger.log("Bye!")
-}
-
-
-hi()
-
 /**
  * GET /
  */

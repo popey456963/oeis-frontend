@@ -102,7 +102,7 @@ var getPerms = new Function('number', `
   return roles.join(', ')
 `)
 
-function makeAdmin(email, level) {
+exports.makeAdmin = function(email, level) {
   User.findOne({ email: email }, function(err, user) {
     if (err) logger.error(err)
     if (user && !err) {
@@ -117,4 +117,4 @@ function makeAdmin(email, level) {
   })
 }
 
-makeAdmin('popey@debenclipper.com', 15)
+exports.makeAdmin('popey@debenclipper.com', 15)

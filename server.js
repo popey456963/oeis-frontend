@@ -13,6 +13,8 @@ var passport = require('passport')
 var fs = require('fs')
 var request = require('request')
 var logger = require('./controllers/logger')()
+var repl = require('repl')
+var os = require('os')
 
 // Pretty errors
 var pe = require('pretty-error').start()
@@ -33,6 +35,31 @@ pe.appendStyle({
 
 // Load environment variables from .env file
 dotenv.load()
+
+// REPL
+if (process.env.REPL == 'true') {
+  function evalInContext(js, context) { return function() { return eval(js); }.call(context) }
+  var empty = '(' + os.EOL + ')'
+  repl.start({
+    input: process.stdin,
+    output: process.stdout,
+    eval: function(cmd, context, filename, callback) {
+      if (cmd === empty) return callback()
+      var result = evalInContext(cmd, this)
+      callback(null, result)
+    }
+  })
+}
+
+/*
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+var util = require('util');
+
+process.stdin.on('data', function (text) {
+  console.log('received data:', util.inspect(text.replace('\r\n', '')));
+});
+*/
 
 // Controllers
 var HomeController = require('./controllers/home')

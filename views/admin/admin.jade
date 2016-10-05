@@ -3,17 +3,22 @@ extends admin_layout
 block content
     .container-fluid
       .row
-        .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2.col-lg-6.col-lg-offset-3
+        .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2.col-lg-8.col-lg-offset-2
           .panel
             .panel-body
               .container-fluid
                 #error.hidden.alert.alert-danger(role='alert')
               h3 Admin Actions
               if ensurePerm['read'](user)
-                p Congrats on Read
+                h5.adminHeader [Read Permissions]
+                a(href='#').link Search Admins
               if ensurePerm['list'](user)
-                a(href='/admin/users') List of Users
+                h5.adminHeader [List Permissions]
+                a(href='/admin/users').link List of Users
               if ensurePerm['write'](user)
-                p Congrats on Write
+                h5.adminHeader [Write Permissions]
+                a(href='#').link Create User
+                a(href='#').link Edit User
               if ensurePerm['execute'](user)
-                p Congrats on Execute
+                h5.adminHeader [Execute Permissions]
+                a(href='#').link Edit Groups
