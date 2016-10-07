@@ -1,36 +1,35 @@
-
-  (new PageViews.HourViews(pageInformation)).save(function(err) {
-  console.log("Visited page " + url + " with method " + req.method)
-  var url = req.url.split("?")[0]
-          if (err) console.log(err)
-        (new PageViews.ActiveUser({ user: req.user.email, createdAt: new Date()})).save(function(err) {
-        })
-      if (!docs) {
-      }
-    createdAt: new Date()
-    if (err) console.log(err)
-    if (err) console.log(err)
-    if (err) console.log(err)
-    page: url,
-    PageViews.ActiveUser.findOne({ user: req.user.email }, function(err, docs) {
-    })
-  (new PageViews.DayViews(pageInformation)).save(function(err) {
-  (new PageViews.WeekViews(pageInformation)).save(function(err) {
-  */
-  /*
-  console.log(req.headers)
-  console.log(req.method)
-  console.log(req.sessionID)
-  console.log(req.url)
-  console.log(req.user)
-  if (req.user) {
-  next()
-  var pageInformation = {
-  }
-  }
-  })
-  })
-  })
-exports.statsDaemon = function (req, res, next) {
 var PageViews = require('../models/PageViews')
+
+function handleError(err) {
+  if (err) console.log(err)
+}
+
+exports.statsDaemon = function (req, res, next) {
+  var url = req.url.split("?")[0]
+
+  var pageInformation = {
+    page: url,
+    createdAt: new Date()
+  }
+
+  console.log("Someone visited page " + url + " with method " + req.method)
+  if (req.method == "GET") {
+    var hour = new PageViews.HourViews(pageInformation); hour.save(handleError)
+    var day =  new PageViews.DayViews(pageInformation);  day.save(handleError)
+    var week = new PageViews.WeekViews(pageInformation); week.save(handleError)
+    if (req.user) {
+      PageViews.ActiveUser.remove({ user: req.user.email }, handleError)
+      var active = new PageViews.ActiveUser({ user: req.user.email, createdAt: new Date()}); active.save(handleError)
+    }
+    PageViews.PageViews.findOne({ page: url }, function(err, doc) {
+      if (err) console.log(err)
+      if (!doc) {
+        var page = new PageViews.PageViews({ page: url, totalViews: 1}); page.save(handleError)
+      } else {
+        doc.totalViews += 1
+        doc.save()
+      }
+    })
+  }
+  next()
 }
