@@ -1,6 +1,7 @@
 var User = require('../models/User')
 var moment = require('moment')
 var logger = require('./logger')()
+var crypto = require('crypto')
 
 var adminNames = ['read', 'list', 'write', 'execute']
 exports.ensureAdmin = []
@@ -46,6 +47,14 @@ for (var i = 0; i < adminNames.length; i++) {
   `)
 }
 
+function gravatar(email) {
+  if (!email) {
+    return 'https://gravatar.com/avatar/?s=80&d=retro';
+  }
+  var md5 = crypto.createHash('md5').update(email).digest('hex');
+  return 'https://gravatar.com/avatar/' + md5 + '?s=200&d=retro';
+}
+
 /*
  * GET /admin/users
  */
@@ -64,7 +73,10 @@ exports.adminUsers = function(req, res) {
         facebook: docs[i].facebook,
         admin: docs[i].admin,
         gender: docs[i].gender,
-        website: docs[i].website
+        website: docs[i].website,
+        last_active: moment().fromNow(),
+        gravatar: gravatar(docs[i].email),
+        contributions: 0
       }
       listOfUsers.push(temp)
     }

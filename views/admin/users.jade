@@ -3,29 +3,22 @@ extends admin_layout
 block content
     .container-fluid
       .row
-        .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2.col-lg-6.col-lg-offset-3
+        .col-xs-12.col-sm-10.col-sm-offset-1.col-md-10.col-md-offset-1.col-lg-10.col-lg-offset-1
           .panel
             .panel-body
               .container-fluid
                 #error.hidden.alert.alert-danger(role='alert')
               h3 List of OEIS Users
-              br
-              p
-                for user in users
-                  if user.admin
-                    h4=user.name
-                      span!= " <i>(" + getPerms(user.admin) + ")</i>"
-                  else
-                    h4=user.name
-                  for value, item in user
-                    if item != "name" && value != undefined && value != "" && item != "admin"
-                      span.adminListSpan!="<b>" + item + ": </b>"
-                      span=" " + value
-                      span!="<br>"
-                  br
-                  br
-              div.card.card-block
-                h4.card-title Card Title
-                p.card-text Some quick example text to build on the card title and make up the bulk of the card's content.
-                a.card-link(href='#') Card Link
-                a.card-link(href='#') Another Link
+              for user in users
+                .col-md-6.col-lg-6
+                  fieldset.userFieldset
+                    legend.userLegend
+                      input(type='checkbox').userCheckbox
+                      a.userLink(href='#')= user.name
+                    .userProfile
+                      img(src=user.gravatar, width='80', height='80')
+                    .userDetails
+                      for value, item in user
+                        if item == "joined" || item == "email" || item == "last_active" || item == "contributions"
+                          span #[strong #{item}: ] #{value}
+                          br

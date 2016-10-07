@@ -6027,3 +6027,44 @@ textarea {
   padding-bottom: 0px;
   padding-top: 15px;
   border-top: 15px; }
+
+.fieldset {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px; }
+
+.userFieldset {
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background: #efefef;
+  border: 1px solid #ccc;
+  padding: 2px 7px 5px;
+  margin-bottom: 10px; }
+
+.userCheckbox {
+  margin: 10px 5px 10px 5px !important; }
+
+.userLegend {
+  font-weight: bold;
+  margin-bottom: 10px; }
+
+.userLink {
+  color: #0072BC;
+  text-decoration: none; }
+
+.userProfile {
+  height: 80px;
+  width: 80px;
+  background: #fff;
+  border: 1px solid #ccc;
+  float: left;
+  clear: left;
+  margin-right: 5px;
+  text-align: center; }
+
+.userDetails {
+  float: left;
+  margin-left: 5px;
+  line-height: 1.7; }
