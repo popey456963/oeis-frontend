@@ -102,6 +102,17 @@ exports.adminPage = function(req, res) {
   })
 }
 
+/*
+ * GET /admin/stats
+ */
+exports.adminStats = function(req, res) {
+  res.render('./admin/stats', {
+    page: "Admin-Stats",
+    section: "Admin",
+    title: "Statistics :: OEIS Lookup"
+  })
+}
+
 var getPerms = new Function('number', `
   var adminNames = ` + JSON.stringify(adminNames) + `
   var perms = String(new Array(adminNames.length + 1).join("0") + (number >>> 0).toString(2)).slice(-3)

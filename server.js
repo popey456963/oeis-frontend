@@ -129,6 +129,7 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', { successRedi
 app.get('/', HomeController.index)
 app.get('/welcome', HomeController.welcome)
 app.get('/admin', AdminController.ensureAdmin['read'], AdminController.adminPage)
+app.get('/admin/stats', AdminController.ensureAdmin['read'], AdminController.adminStats)
 app.get('/admin/users', AdminController.ensureAdmin['list'], AdminController.adminUsers)
 app.get('/A:sequence', HomeController.id)
 app.get('/search', HomeController.search)

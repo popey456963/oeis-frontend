@@ -11,7 +11,7 @@ block content
               h3 Admin Actions
               if ensurePerm['read'](user)
                 h5.adminHeader [Read Permissions]
-                a(href='#').link Statistics
+                a(href='/admin/stats').link Statistics
               if ensurePerm['list'](user)
                 h5.adminHeader [List Permissions]
                 a(href='/admin/users').link List of Users

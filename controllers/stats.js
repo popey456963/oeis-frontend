@@ -18,8 +18,8 @@ exports.statsDaemon = function (req, res, next) {
     var day =  new PageViews.DayViews(pageInformation);  day.save(handleError)
     var week = new PageViews.WeekViews(pageInformation); week.save(handleError)
     if (req.user) {
-      PageViews.ActiveUser.remove({ user: req.user.email }, handleError)
-      var active = new PageViews.ActiveUser({ user: req.user.email, createdAt: new Date()}); active.save(handleError)
+      PageViews.ActiveUsers.remove({ user: req.user.email }, handleError)
+      var active = new PageViews.ActiveUsers({ user: req.user.email, createdAt: new Date()}); active.save(handleError)
     }
     PageViews.PageViews.findOne({ page: url }, function(err, doc) {
       if (err) console.log(err)
