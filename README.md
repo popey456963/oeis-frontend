@@ -2,6 +2,8 @@
 
 This project provides a graphical interface to accessing the OEIS database of integers.  It aims to be more user-friendly and faster than the official OEIS.org website from which this gets it's data.
 
+One should note this project is going through massive changes at the moment, as it is in *Alpha*.  The website is often 2-3 weeks behind this master branch and should definitely not be taken as a "finished product".
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
