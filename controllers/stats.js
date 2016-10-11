@@ -8,8 +8,7 @@ exports.statsDaemon = function (req, res, next) {
   var url = req.url.split("?")[0]
 
   var pageInformation = {
-    page: url,
-    createdAt: new Date()
+    page: url
   }
 
   console.log("Someone visited page " + url + " with method " + req.method)
@@ -18,8 +17,9 @@ exports.statsDaemon = function (req, res, next) {
     var day =  new PageViews.DayViews(pageInformation);  day.save(handleError)
     var week = new PageViews.WeekViews(pageInformation); week.save(handleError)
     if (req.user) {
-      PageViews.ActiveUsers.remove({ user: req.user.email }, handleError)
-      var active = new PageViews.ActiveUsers({ user: req.user.email, createdAt: new Date()}); active.save(handleError)
+      console.log(req.user)
+      PageViews.ActiveUsers.remove({ email: req.user.email}, handleError)
+      var active = new PageViews.ActiveUsers({ email: req.user.email, name: req.user.name }); active.save(handleError)
     }
     PageViews.PageViews.findOne({ page: url }, function(err, doc) {
       if (err) console.log(err)

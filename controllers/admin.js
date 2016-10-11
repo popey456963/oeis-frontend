@@ -1,4 +1,5 @@
 var User = require('../models/User')
+var PageViews = require('../models/PageViews')
 var moment = require('moment')
 var logger = require('./logger')()
 var crypto = require('crypto')
@@ -101,15 +102,50 @@ exports.adminPage = function(req, res) {
     title: "Admin Actions :: OEIS Lookup"
   })
 }
-
 /*
  * GET /admin/stats
  */
 exports.adminStats = function(req, res) {
-  res.render('./admin/stats', {
-    page: "Admin-Stats",
-    section: "Admin",
-    title: "Statistics :: OEIS Lookup"
+  /*
+   * This needs:
+   *  - Active Users
+   *  - PageViews (ALL)
+   *  - Latest Changes
+   */
+  popularPages(function(popularPages) {
+    getDocuments('HourViews', function(HourViews) {
+      getDocuments('DayViews', function(DayViews) {
+        getDocuments('WeekViews', function(WeekViews) {
+          getDocuments('ActiveUsers', function(ActiveUsers) {
+            var LatestChanges = [{ "id": "A000045", change: "editted" }]
+            res.render('./admin/stats', {
+              page: "Admin-Stats",
+              section: "Admin",
+              title: "Statistics :: OEIS Lookup",
+              popularPages: popularPages,
+              hourViews: HourViews,
+              dayViews: DayViews,
+              weekViews: WeekViews,
+              activeUsers: ActiveUsers,
+              latestChanges: LatestChanges
+            })    
+          })
+        })
+      })
+    })
+  })
+}
+
+function getDocuments(name, callback) {
+  PageViews[name].find({}, function(err, documents) {
+    if (err) logger.error(err)
+    callback(documents)
+  })
+}
+
+function popularPages(callback) {
+  PageViews['PageViews'].find({}).sort({ totalViews: -1 }).limit(10).exec(function(err, pages) {
+    callback(pages)
   })
 }
 
