@@ -18,6 +18,7 @@ var request = require('request')
 var logger = require('./controllers/logger')()
 var repl = require('repl')
 var os = require('os')
+var MongoStore = require('connect-mongo')(session)
 
 // Pretty errors
 var pe = require('pretty-error').start()
@@ -100,7 +101,12 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())
 app.use(methodOverride('_method'))
-app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }))
+app.use(session({ 
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
+}))
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())

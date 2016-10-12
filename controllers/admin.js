@@ -113,26 +113,47 @@ exports.adminStats = function(req, res) {
    *  - Latest Changes
    */
   popularPages(function(popularPages) {
-    getDocuments('HourViews', function(HourViews) {
-      getDocuments('DayViews', function(DayViews) {
-        getDocuments('WeekViews', function(WeekViews) {
-          getDocuments('ActiveUsers', function(ActiveUsers) {
-            var LatestChanges = [{ "id": "A000045", change: "editted" }]
-            res.render('./admin/stats', {
-              page: "Admin-Stats",
-              section: "Admin",
-              title: "Statistics :: OEIS Lookup",
-              popularPages: popularPages,
-              hourViews: HourViews,
-              dayViews: DayViews,
-              weekViews: WeekViews,
-              activeUsers: ActiveUsers,
-              latestChanges: LatestChanges
-            })    
+    getLatestPages(function(latestPages) {
+      getDocuments('HourViews', function(HourViews) {
+        getDocuments('DayViews', function(DayViews) {
+          getDocuments('WeekViews', function(WeekViews) {
+            getDocuments('ActiveUsers', function(ActiveUsers) {
+              var LatestChanges = [{ "id": "A000045", change: "editted" }]
+              res.render('./admin/stats', {
+                page: "Admin-Stats",
+                section: "Admin",
+                title: "Statistics :: OEIS Lookup",
+                popularPages: popularPages,
+                hourViews: HourViews,
+                dayViews: DayViews,
+                weekViews: WeekViews,
+                activeUsers: ActiveUsers,
+                latestChanges: LatestChanges,
+                latestPages: latestPages
+              })
+            })
           })
         })
       })
     })
+  })
+}
+
+function getLatestPages(callback) {
+  PageViews.WeekViews.find({}).sort({ createdAt: -1 }).limit(300).exec(function(err, pages) {
+    var sortedPages = []
+    var uniquePages = []
+    for (var i = 0; i < pages.length; i++) {
+      if (uniquePages.indexOf(pages[i].page) == -1) {
+        sortedPages.push({
+          page: pages[i].page,
+          time: moment(pages[i].createdAt).fromNow()
+        })
+        uniquePages.push(pages[i].page)
+      }
+    }
+    console.log(sortedPages)
+    callback(sortedPages.slice(0, 10))
   })
 }
 
@@ -144,7 +165,7 @@ function getDocuments(name, callback) {
 }
 
 function popularPages(callback) {
-  PageViews['PageViews'].find({}).sort({ totalViews: -1 }).limit(10).exec(function(err, pages) {
+  PageViews.PageViews.find({}).sort({ totalViews: -1 }).limit(10).exec(function(err, pages) {
     callback(pages)
   })
 }

@@ -18,6 +18,9 @@ html
       
     // script(src='/socket.io/socket.io.js')
     script(src='/js/lib/jquery.min.js')
+    script
+      window.cookieconsent_options = {"message":"This website uses cookies to ensure you get the best experience on our website","dismiss":"Got it!","learnMore":"More info","link":null,"theme":"light-floating"}
+    script(src='/js/lib/cookie-consent.min.js')
     script(src='/js/lib/bootstrap.min.js')
     if page == "A-Page" || page == "Test-Lang"
       script(src='/js/lib/highlight.min.js')

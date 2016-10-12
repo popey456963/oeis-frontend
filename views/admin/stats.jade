@@ -23,7 +23,12 @@ block content
               for user in activeUsers
                 li #[b #{user['name']}]
 
+            h4 Latest Viewed Pages:
+            ol
+              for page in latestPages
+                li #[b #{page['page']}]
+
             h4 Latest Changes:
             ol
               for change in latestChanges
-                li The sequence #[b #{change['id']}] was #{change['change']}
+                li The sequence #[b #{change['id']}] was #{change['change']}.
