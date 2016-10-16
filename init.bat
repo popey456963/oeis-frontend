@@ -1,7 +1,7 @@
 @echo off
 setlocal enableextensions enabledelayedexpansion
 
-echo "Current options: elasticsearch, nodemon, watch, mongod, mongo"
+if "%1" == "" echo "Current options: elasticsearch, nodemon, watch, mongod, mongo"
 
 if "%1" == "" SET /P inputName= "Command > "
 if NOT "%1" == "" SET inputName=%1
@@ -25,7 +25,7 @@ goto :EndOfFile
 
 :StartNodemon
 	echo Starting Nodemon...
-	nodemon server.js
+	nodemon server.js -e js
 	goto :EndOfFile
 
 :StartGulpWatch

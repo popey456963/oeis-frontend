@@ -1,0 +1,14 @@
+extends search_results_layout
+
+block content
+  .container-fluid
+    .row
+      .col-xs-10.col-sm-10.col-sm-offset-1.col-md-10.col-md-offset-1.col-lg-10.col-lg-offset-1
+        .panel
+          .panel-body
+            hgroup.mb20
+              h1='No Results Found'
+              h2.lead
+                strong.text-danger 0
+                |  results were found for the search  
+                strong.text-danger= query

@@ -1,10 +1,12 @@
 var request = require('request')
 var cachedRequest = require('cached-request')(request)
+var fs = require('fs')
 var User = require('../models/User')
 var Sequence = require('../models/Sequence')
 var old_updates = require('../data/updates')
 var seq_list = require('../config/sequences')
 var logger = require('./logger')()
+const GRAB_INTERVAL = 300
 
 /**
  * GET /
@@ -71,6 +73,7 @@ exports.id = function(req, res) {
       title: 'ID Not Found :: OEIS Lookup'
     })
   } else {
+    /*
     var url = 'https://oeis.org/search?fmt=json&q=id:A' + sequence
     superRequest(url, function(data) {
       if (data) {
@@ -89,7 +92,7 @@ exports.id = function(req, res) {
             page: 'A-Page',
             title: 'A' + sequence + ' :: OEIS Lookup',
             data: data.results[0],
-            toTitleCase: function(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
+            toTitleCase: function(str){return str.replace(/\w\S<!INSERT "* /" HERE!>g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
             sequenceName: 'A' + sequence,
             id_page: true
           })
@@ -98,8 +101,41 @@ exports.id = function(req, res) {
       } else {
         res.send('OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
       }
+    })*/
+    Sequence.findOne({ number: sequence }).lean().exec(function(err, doc) {
+      if (!doc) {
+        res.render('not_found', {
+          title: 'ID Not Found :: OEIS Lookup'
+        })
+      } else {
+        if (doc.program) {
+          doc.program = parseProgram(doc.program)
+        }
+        for (var i in doc) {
+          doc[i] = linkName(doc[i])
+        }
+        res.render('id', {
+          page: 'A-Page',
+          title: 'A' + sequence + ' :: OEIS Lookup',
+          data: organiseData(doc),
+          toTitleCase: function(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
+          sequenceName: 'A' + sequence,
+          id_page: true
+        })
+      }
     })
   }
+}
+
+function organiseData(data) {
+  headers = ['number', 'name', 'references', 'revision', 'id', 'data', 'comment', 'reference', 'link', 'formula', 'example', 'maple', 'mathematica', 'program', 'xref', 'keyword', 'author']
+  obj = {}
+  for (var i = 0; i < headers.length; i++) {
+    if (data[headers[i]]) {
+      obj[headers[i]] = data[headers[i]]
+    }
+  }
+  return obj
 }
 
 /*
@@ -111,19 +147,34 @@ exports.search = function(req, res) {
   var url = 'https://oeis.org/search?fmt=json&q=' + sequence + '&start=' + (page * 10)
 
   superRequest(url, function(data) {
-    res.render('./search_results/search_results', {
-      title: 'Search Results :: OEIS Lookup',
-      page: 'Search Results',
-      query: req.query.q,
-      data: data.results,
-      numResults: data.count,
-      currentPage: data.start / 10,
-      maxPage: Math.ceil(data.count / 10),
-      sequenceGen: function padLeft(nr, n, str){
-        return Array(n-String(nr).length+1).join(str||'0')+nr;
-      }
-    })
+    if (data && data.results && data.count > 0) {
+      data = parseSearch(data)
+      res.render('./search_results/search_results', {
+        title: 'Search Results :: OEIS Lookup',
+        page: 'Search Results',
+        query: req.query.q,
+        data: data.results,
+        numResults: data.count,
+        currentPage: data.start / 10,
+        maxPage: Math.ceil(data.count / 10),
+        sequenceGen: function padLeft(nr, n, str){
+          return Array(n-String(nr).length+1).join(str||'0')+nr;
+        }
+      })
+    } else {
+      res.render('./search_results/no_results', {
+        title: 'No Results :: OEIS Lookup',
+        page: 'Search Results',
+        query: req.query.q
+      })
+    }
   })
+}
+
+function parseSearch(data) {
+  for (var i = 0; i < data.length; i++) {
+
+  }
 }
 
 /*
@@ -143,21 +194,18 @@ function parseProgram(program) {
   }
   var languages = []
   var currentCounter = -1
-  var re = /^\([a-zA-Z0-9\/\-.]+\)/
-  var re2 = /^\(([a-zA-Z0-9\/\-.]+)\)/
-  var re3 = /^([.]+)/
+  var programNameRe = /^\(([a-zA-Z0-9\/\-.])+\)/
+  var matchAnythingRe = /^([.]+)/
   for (var i = 0; i < program.length; i++) {
     var trimmed = false
-    if (re.test(program[i])) {
-      var group = re2.exec(program[i])[1]
+    if (programNameRe.test(program[i])) {
+      var group = programNameRe.exec(program[i])[1]
       currentCounter++
-      // logger.log(group + ': ' + program[i].replace(re, '').trim())
-      program[i] = program[i].replace(re, '').trim()
+      program[i] = program[i].replace(programNameRe, '').trim()
       languages[currentCounter] = [[group, transform[group]], []]
-      // logger.log('Found Group: ' + group)
       trimmed = true
     }
-    var replacement = re3.exec(program[i])
+    var replacement = matchAnythingRe.exec(program[i])
     if (replacement && replacement.length > 0) {
       program[i] = program[i].replace(replacement[1], new Array(replacement[1].length + 1).join(' '))
     }
@@ -241,10 +289,10 @@ function findSubstring(arr, subarr, fromIndex) {
 if (old_updates = {}) {
   getRecentlyChanged(function(updates) {
     old_updates = updates
-    setTimeout(checkUpdate, 100000)
+    setInterval(checkUpdate, 100000)
   })
 } else {
-  setTimeout(checkUpdate, 100000)
+  setInterval(checkUpdate, 100000)
 }
 
 function checkUpdate() {
@@ -257,6 +305,13 @@ function checkUpdate() {
       }
     }
     old_updates = updates
+    fs.writeFile('./data/updates.json', JSON.stringify(old_updates, null, 4), function(err) {
+        if(err) {
+          logger.error(err);
+        } else {
+          logger.log("Updates Saved");
+        }
+    }); 
   })
 }
 
@@ -269,7 +324,7 @@ function linkName(text){
       return text
     } if (text.constructor === String) {
       var link = /_(\S([A-Za-z \.]+)?)_/gm;
-      var html = text.replace(link, "<a href='http://oeis.org/wiki/User:$1'>$1</a>");
+      var html = text.replace(link, "<a  class='name_link' href='http://oeis.org/wiki/User:$1'>$1</a>");
       return html
     } else {
       return text
@@ -339,7 +394,7 @@ function updateOne(id) {
       Sequence.findOneAndUpdate(query, update, options, function(err, result) {
         if (err) {
           logger.error(err)
-          Hi
+          throw err
         }
         logger.success(text + ' was updated successfully!')
       })
@@ -351,13 +406,90 @@ function updateOne(id) {
 
 function updateAll(max) {
   for (var i = 1; i <= max; i++) {
-    setTimeout(function(i) { try{ updateOne(i) } catch(e) { logger.error(e) } }, i * 400, i)
+    setTimeout(function(i) { try{ updateOne(i) } catch(e) { logger.error(e) } }, i * GRAB_INTERVAL, i)
   }
 }
 
-// updateAll(1000)
+function updateRange(min, max) {
+  for (var i = min; i <=  max; i++) {
+    setTimeout(function(i, min) { try{ updateOne(i) } catch(e) { logger.error(e) } }, (i - min) * GRAB_INTERVAL, i, min)
+  }
+}
 
-updateOne(72)
+function makeNew(min, max) {
+  console.log("I got called with: " + min + " " + max)
+  currentTimeout = 0
+  for (var i = min; i <= max; i++) {
+    console.log("Tried Lookup For: " + i)
+    Sequence.find({ number: i }, function(err, docs) {
+      if (err) { console.log(err) }
+      console.log(docs)
+      if (!docs || docs == []) {
+        console.log("Make New Registering Update For: " + i)
+        setTimeout(function(currentTimeout) { try{ updateOne(i) } catch(e) { logger.error(e) } }, currentTimeout * GRAB_INTERVAL, currentTimeout, i)
+        currentTimeout++
+      }
+    })
+  }
+}
+
+function findMissing(max, callback) {
+  Sequence.find({}, 'number -_id', function(err, docs) {
+    var array = []
+    docs.forEach(function(item) {
+      array.push(item.number);
+    })
+    array = array.sort(function (a, b) {  return a - b;  })
+    var count = 1;
+    var arrayEntry = 0;
+    var missing = [];
+    while (arrayEntry != array.length && count < max) {
+      if (array[arrayEntry] != count) {
+        missing.push(count)
+        count += 1
+      } else {
+        count += 1
+        arrayEntry += 1
+      }
+    }
+    while (count < max) {
+      missing.push(count)
+      count++
+    }
+    callback(missing)
+  })
+}
+
+function testAndUpdate(value) {
+  Sequence.find({number: value}, function(err, docs) {
+    if (err) console.log(err)
+    if (JSON.stringify(docs) == "[]") {
+      console.log("Grabbing sequence number " + value)
+    } else {
+      console.log("Sequence number " + value + "exists and hasn't been grabbed")
+    }
+  })
+}
+
+function bootstrapFindMissing(value, multiplier) {
+  if (!multiplier) multiplier = 1
+  findMissing(value, function(missing) {
+    currentTimeout = 0;
+    for (var i = 0; i < missing.length; i++) {
+      setTimeout(function(currentTimeout, j, multiplier) { try { updateOne(j) } catch(e) { logger.error(e) } }, currentTimeout * GRAB_INTERVAL * multiplier, currentTimeout, missing[i], multiplier)
+      currentTimeout++
+    }
+  })
+}
+
+// testAndUpdate(1)
+
+// Super Slow Grabber
+bootstrapFindMissing(9000, 20)
+
+// updateRange(5741, 90000)
+
+// updateOne(105) 
 
 // updateItem('000011')
 

@@ -6068,3 +6068,6 @@ textarea {
   float: left;
   margin-left: 5px;
   line-height: 1.7; }
+
+.name_link {
+  border-bottom: 1.5px dotted #888888; }

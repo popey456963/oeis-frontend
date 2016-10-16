@@ -17,7 +17,7 @@ block content
               h4.sequenceTitle=data.name
               for item, index in data
                 p
-                  if index != 'number' && index != 'name' && index != 'id' && index != 'references' && index != 'revision' && index != 'time' && index != 'created' && index != 'ext'  && index !='offset'
+                  if index != 'number' && index != 'name' && index != 'id' && index != 'references' && index != 'revision' && index != 'time' && index != 'created' && index != 'ext'  && index !='offset' && index != 'createdAt' && index != '_id' && index != 'updatedAt' && index != '__v'
                     b=toTitleCase(index)
                     if index == 'data'
                       p=item.split(",").join(", ")

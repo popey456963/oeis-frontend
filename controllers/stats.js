@@ -17,7 +17,7 @@ exports.statsDaemon = function (req, res, next) {
     var day =  new PageViews.DayViews(pageInformation);  day.save(handleError)
     var week = new PageViews.WeekViews(pageInformation); week.save(handleError)
     if (req.user) {
-      console.log(req.user)
+      // console.log(req.user)
       PageViews.ActiveUsers.remove({ email: req.user.email}, handleError)
       var active = new PageViews.ActiveUsers({ email: req.user.email, name: req.user.name }); active.save(handleError)
     }
