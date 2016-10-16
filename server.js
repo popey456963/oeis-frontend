@@ -138,6 +138,7 @@ app.get('/admin', AdminController.ensureAdmin['read'], AdminController.adminPage
 app.get('/admin/stats', AdminController.ensureAdmin['read'], AdminController.adminStats)
 app.get('/admin/users', AdminController.ensureAdmin['list'], AdminController.adminUsers)
 app.get('/A:sequence', HomeController.id)
+//app.get('/A:sequence/edit', HomeController.editSequence)
 app.get('/search', HomeController.search)
 app.post('/test', HomeController.test)
 app.get('/langtest', HomeController.langtest)
