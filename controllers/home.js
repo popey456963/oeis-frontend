@@ -171,6 +171,22 @@ exports.search = function(req, res) {
   })
 }
 
+function editSequence(req, res) {
+  var sequence = req.params.sequence
+  if (sequence.length < 6 && !isNaN(sequence)) {
+    while (sequence.length < 6) { sequence = '0' + sequence }
+    res.redirect('/A' + sequence + '/edit')
+    return ""
+  }
+  if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
+    res.render('not_found', {
+      title: 'ID Not Found :: OEIS Lookup'
+    })
+  } else {
+    // Write code here to edit sequence...
+  }
+}
+
 function parseSearch(data) {
   for (var i = 0; i < data.length; i++) {
 
