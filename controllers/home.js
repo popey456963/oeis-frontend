@@ -148,7 +148,7 @@ exports.search = function(req, res) {
 
   superRequest(url, function(data) {
     if (data && data.results && data.count > 0) {
-      data = parseSearch(data)
+      data = parseSearch(data, req.query.q)
       res.render('./search_results/search_results', {
         title: 'Search Results :: OEIS Lookup',
         page: 'Search Results',
@@ -171,7 +171,7 @@ exports.search = function(req, res) {
   })
 }
 
-function editSequence(req, res) {
+exports.editSequence = function(req, res) {
   var sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
     while (sequence.length < 6) { sequence = '0' + sequence }
@@ -187,10 +187,58 @@ function editSequence(req, res) {
   }
 }
 
-function parseSearch(data) {
-  for (var i = 0; i < data.length; i++) {
+function parseSearch(data, query) {
+  // We gotta go from a sequence of data points, to bolded data points.
 
+  // Here we parse the search query
+  var query = query.split(" ")
+  numbers = []
+  sequences = []
+  for (var i = 0; i < query.length; i++) {
+    if (!isNaN(query[i])) {
+      numbers.push(query[i])
+    } else {
+      // We need to work out if it's a sequence of numbers.
+      var seq = true
+      var seq_query = query[i].split(",")
+      for (var j = 0; j < seq_query.length; j++) {
+        if (isNaN(seq_query[j])) {
+          // We're afraid it isn't a sequence...
+          seq = false
+          break
+        }
+      }
+      if (seq) {
+        sequences.push(seq_query)
+      }
+    }
   }
+
+  console.log(numbers)
+  console.log(sequences)
+
+  // Here we carry out the highlighting from the parsed search query
+  for (var i = 0; i < data.results.length; i++) {
+    var list_values = data.results[i].data.split(",")
+    // console.log(data.results[i].data)
+    // We start by highlighting the sequences:
+    for (var j = 0; j < sequences.length; j++) {
+      var inner = findSubstring(list_values, sequences[j], 0)
+      if (inner != -1) {
+        list_values[inner] = "<b>" + list_values[inner]
+        list_values[inner + sequences[j].length - 1] = list_values[inner + sequences[j].length - 1] + "</b>"
+      }
+    }
+    for (var j = 0; j < list_values.length; j++) {
+      for (var k = 0; k < numbers.length; k++) {
+        if (numbers[k] == list_values[j]) {
+          list_values[j] = "<b>" + list_values[j] + "</b>"
+        }
+      }
+    }
+    data.results[i].data = list_values.join(",")
+  }
+  return data
 }
 
 /*
@@ -242,11 +290,13 @@ function superRequest(url, callback, ttl) {
       try {
         callback(JSON.parse(body))
       } catch(e) {
+        logger.error(e)
         if (ttl == 0) {
           request(url, function(err, resp, body) {
             try {
               callback(JSON.parse(body))
             } catch(e) {
+              logger.error(e)
               logger.warning("We were forced to return false...")
               callback(false)
             }
@@ -501,7 +551,7 @@ function bootstrapFindMissing(value, multiplier) {
 // testAndUpdate(1)
 
 // Super Slow Grabber
-bootstrapFindMissing(9000, 20)
+bootstrapFindMissing(100, 5)
 
 // updateRange(5741, 90000)
 

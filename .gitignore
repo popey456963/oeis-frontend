@@ -28,3 +28,7 @@ Thumbs.db
 
 # SASS Cache
 public/css/.sass-cache
+
+# Data
+data
+data/updates.json

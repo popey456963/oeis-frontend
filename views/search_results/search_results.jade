@@ -36,7 +36,7 @@ block content
                   .col-xs-12.col-sm-12.col-md-10
                     h3
                       a(href='/' + 'A' + sequenceGen(result.number, 6), title='')=result.name
-                    p=result.data.split(',').join(', ')
+                    p!=result.data.split(',').join(', ')
                   span.clearfix.borda
               hgroup.mb20
               center
