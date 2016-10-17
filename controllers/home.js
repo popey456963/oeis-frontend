@@ -165,7 +165,8 @@ exports.search = function(req, res) {
       res.render('./search_results/no_results', {
         title: 'No Results :: OEIS Lookup',
         page: 'Search Results',
-        query: req.query.q
+        query: req.query.q,
+        count: data.count
       })
     }
   })
@@ -184,6 +185,8 @@ exports.editSequence = function(req, res) {
     })
   } else {
     // Write code here to edit sequence...
+    // We'll want to do the following things:
+    // 1. 
   }
 }
 

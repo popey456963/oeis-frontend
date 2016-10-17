@@ -7,8 +7,11 @@ block content
         .panel
           .panel-body
             hgroup.mb20
-              h1='No Results Found'
+              if count == 0
+                h1='No Results Found'
+              else
+                h1='Too Many Results Found'
               h2.lead
-                strong.text-danger 0
+                strong.text-danger= count
                 |  results were found for the search  
                 strong.text-danger= query
