@@ -26,7 +26,7 @@ exports.superRequest = function(url, callback, ttl) {
             }
           })
         } else {
-          superRequest(url, callback, 0)
+          exports.superRequest(url, callback, 0)
         }
       }
     })

@@ -6,7 +6,9 @@ var Sequence = require('../models/Sequence')
 var old_updates = require('../data/updates')
 var seq_list = require('../config/sequences')
 var logger = require('./logger')()
+
 const GRAB_INTERVAL = 300
+const BASE_URL = 'https://oeis.org/'
 
 /**
  * GET /
@@ -35,7 +37,7 @@ exports.welcome = function(req, res) {
  */
 exports.test = function(req, res) {
   var sequence = req.body.sequence
-  var url = 'https://oeis.org/search?fmt=json&q=' + encodeURIComponent(sequence)
+  var url = BASE_URL + 'search?fmt=json&q=' + encodeURIComponent(sequence)
 
   if (sequence == '') {
     res.send('Sequence must not be blank')
@@ -75,35 +77,6 @@ exports.id = function(req, res) {
       title: 'ID Not Found :: OEIS Lookup'
     })
   } else {
-    /*
-    var url = 'https://oeis.org/search?fmt=json&q=id:A' + sequence
-    utils.superRequest(url, function(data) {
-      if (data) {
-        if (data.count == 0 || data.results == null) {
-          res.render('not_found', {
-            title: 'ID Not Found :: OEIS Lookup'
-          })
-        } else {
-          if (data.results[0].program != undefined) {
-            data.results[0].program = parseProgram(data.results[0].program)
-          }
-          for (var i in data.results[0]) {
-            data.results[0][i] = linkName(data.results[0][i])
-          }
-          res.render('id', {
-            page: 'A-Page',
-            title: 'A' + sequence + ' :: OEIS Lookup',
-            data: data.results[0],
-            toTitleCase: function(str){return str.replace(/\w\S<!INSERT "* /" HERE!>g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
-            sequenceName: 'A' + sequence,
-            id_page: true
-          })
-          logger.log('Successfully served user wanting to go to A' + sequence)
-        }
-      } else {
-        res.send('OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
-      }
-    })*/
     Sequence.findOne({
       number: sequence
     }).lean().exec(function(err, doc) {
@@ -152,7 +125,7 @@ function organiseData(data) {
 exports.search = function(req, res) {
   var sequence = decodeURIComponent(req.query.q);
   var page = (typeof req.query.page === 'undefined') ? 0 : parseInt(req.query.page) - 1
-  var url = 'https://oeis.org/search?fmt=json&q=' + sequence + '&start=' + (page * 10)
+  var url = BASE_URL + 'search?fmt=json&q=' + sequence + '&start=' + (page * 10)
 
   utils.superRequest(url, function(data) {
     if (data && data.results && data.count > 0) {
@@ -251,16 +224,6 @@ function parseSearch(data, query) {
   return data
 }
 
-/*
- * GET /langtest
- */
-exports.langtest = function(req, res) {
-  res.render('./test_lang', {
-    page: 'Test-Lang',
-    title: 'Lang Test :: OEIS Lookup'
-  })
-}
-
 function parseProgram(program) {
   var transform = {
     'PARI': 'apache',
@@ -312,8 +275,6 @@ function getRecentlyChanged(callback) {
   })
 }
 
-
-
 if (old_updates == {}) {
   getRecentlyChanged(function(updates) {
     old_updates = updates
@@ -364,7 +325,7 @@ function linkName(text) {
 }
 
 function updateItem(id, number) {
-  utils.superRequest('https://oeis.org/search?q=id:A' + id + '&fmt=json', function(data) {
+  utils.superRequest(BASE_URL + 'search?q=id:A' + id + '&fmt=json', function(data) {
     // Fix for some weird closure issues.
     var y = data
     Sequence.findOne({
@@ -402,20 +363,11 @@ function updateItem(id, number) {
   })
 }
 
-function listItems() {
-  Sequence.find({}, function(err, docs) {
-    logger.error(err)
-    logger.log(docs)
-  })
-}
-
-// Sequence.remove({}, function(err) { if (!err) logger.success('Collection Removed.') })
-
 function updateOne(id) {
   var text = ('000000' + String(id)).substring(String(id).length)
     // Possibly need to change this to just request.  We don't really want to
     // Use the super request because that includes logging...
-  utils.superRequest('https://oeis.org/search?q=id:A' + text + '&fmt=json', function(newData) {
+  utils.superRequest(BASE_URL + 'search?q=id:A' + text + '&fmt=json', function(newData) {
     var query = {
       number: id
     }
@@ -549,15 +501,4 @@ function bootstrapFindMissing(value, multiplier) {
   })
 }
 
-// testAndUpdate(1)
-
-// Super Slow Grabber
-bootstrapFindMissing(100000, 5)
-
-// updateRange(5741, 90000)
-
-// updateOne(105) 
-
-// updateItem('000011')
-
-// updateAll(100)
+bootstrapFindMissing(10000, 5)

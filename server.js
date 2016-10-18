@@ -71,6 +71,7 @@ var HomeController = require('./controllers/home')
 var UserController = require('./controllers/user')
 var AdminController = require('./controllers/admin')
 var StatsController = require('./controllers/stats')
+var DevController = require('./controllers/dev')
 
 // Passport OAuth strategies
 require('./config/passport')
@@ -142,7 +143,7 @@ app.get('/A:sequence', HomeController.id)
 app.get('/A:sequence/edit', UserController.ensureAuthenticated, HomeController.editSequence)
 app.get('/search', HomeController.search)
 app.post('/test', HomeController.test)
-app.get('/langtest', HomeController.langtest)
+app.get('/langtest', DevController.langtest)
 
 app.use(function(req,res){
   request('http://oeis.org' + req.url, function (error, response, body) {
