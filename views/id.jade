@@ -12,6 +12,9 @@ block content
                 h3.alignleft!=sequenceName + " <span style='font-size: 60%'>(Formerly " + data.id + ")</span>"
               else
                 h3.alignleft=sequenceName
+              - if (data.references == undefined) {
+              -   data.references = 0
+              - }
               h6.rev.alignright!="Rev: " + data.revision + "<br>" + "Ref: " + data.references
               div(style='clear: both;')
               h4.sequenceTitle=data.name

@@ -1,6 +1,6 @@
 var request = require('request')
-var cachedRequest = require('cached-request')(request)
 var fs = require('fs')
+var utils = require('../controllers/utils')
 var User = require('../models/User')
 var Sequence = require('../models/Sequence')
 var old_updates = require('../data/updates')
@@ -34,13 +34,13 @@ exports.welcome = function(req, res) {
  * POST /test
  */
 exports.test = function(req, res) {
-  var sequence = req.body.sequence  
+  var sequence = req.body.sequence
   var url = 'https://oeis.org/search?fmt=json&q=' + encodeURIComponent(sequence)
 
   if (sequence == '') {
     res.send('Sequence must not be blank')
   } else {
-    superRequest(url, function(data) {
+    utils.superRequest(url, function(data) {
       if (data) {
         if (data.count != 0 && data.results == null) {
           res.send('Too many results.')
@@ -64,7 +64,9 @@ exports.test = function(req, res) {
 exports.id = function(req, res) {
   var sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
-    while (sequence.length < 6) { sequence = '0' + sequence }
+    while (sequence.length < 6) {
+      sequence = '0' + sequence
+    }
     res.redirect('/A' + sequence)
     return
   }
@@ -75,7 +77,7 @@ exports.id = function(req, res) {
   } else {
     /*
     var url = 'https://oeis.org/search?fmt=json&q=id:A' + sequence
-    superRequest(url, function(data) {
+    utils.superRequest(url, function(data) {
       if (data) {
         if (data.count == 0 || data.results == null) {
           res.render('not_found', {
@@ -102,7 +104,9 @@ exports.id = function(req, res) {
         res.send('OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
       }
     })*/
-    Sequence.findOne({ number: sequence }).lean().exec(function(err, doc) {
+    Sequence.findOne({
+      number: sequence
+    }).lean().exec(function(err, doc) {
       if (!doc) {
         res.render('not_found', {
           title: 'ID Not Found :: OEIS Lookup'
@@ -118,7 +122,11 @@ exports.id = function(req, res) {
           page: 'A-Page',
           title: 'A' + sequence + ' :: OEIS Lookup',
           data: organiseData(doc),
-          toTitleCase: function(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});},
+          toTitleCase: function(str) {
+            return str.replace(/\w\S*/g, function(txt) {
+              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+          },
           sequenceName: 'A' + sequence,
           id_page: true
         })
@@ -146,7 +154,7 @@ exports.search = function(req, res) {
   var page = (typeof req.query.page === 'undefined') ? 0 : parseInt(req.query.page) - 1
   var url = 'https://oeis.org/search?fmt=json&q=' + sequence + '&start=' + (page * 10)
 
-  superRequest(url, function(data) {
+  utils.superRequest(url, function(data) {
     if (data && data.results && data.count > 0) {
       data = parseSearch(data, req.query.q)
       res.render('./search_results/search_results', {
@@ -157,8 +165,8 @@ exports.search = function(req, res) {
         numResults: data.count,
         currentPage: data.start / 10,
         maxPage: Math.ceil(data.count / 10),
-        sequenceGen: function padLeft(nr, n, str){
-          return Array(n-String(nr).length+1).join(str||'0')+nr;
+        sequenceGen: function padLeft(nr, n, str) {
+          return Array(n - String(nr).length + 1).join(str || '0') + nr;
         }
       })
     } else {
@@ -175,7 +183,9 @@ exports.search = function(req, res) {
 exports.editSequence = function(req, res) {
   var sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
-    while (sequence.length < 6) { sequence = '0' + sequence }
+    while (sequence.length < 6) {
+      sequence = '0' + sequence
+    }
     res.redirect('/A' + sequence + '/edit')
     return ""
   }
@@ -217,16 +227,13 @@ function parseSearch(data, query) {
     }
   }
 
-  console.log(numbers)
-  console.log(sequences)
-
   // Here we carry out the highlighting from the parsed search query
   for (var i = 0; i < data.results.length; i++) {
     var list_values = data.results[i].data.split(",")
-    // console.log(data.results[i].data)
-    // We start by highlighting the sequences:
+      // console.log(data.results[i].data)
+      // We start by highlighting the sequences:
     for (var j = 0; j < sequences.length; j++) {
-      var inner = findSubstring(list_values, sequences[j], 0)
+      var inner = utils.findSubstring(list_values, sequences[j], 0)
       if (inner != -1) {
         list_values[inner] = "<b>" + list_values[inner]
         list_values[inner + sequences[j].length - 1] = list_values[inner + sequences[j].length - 1] + "</b>"
@@ -269,7 +276,10 @@ function parseProgram(program) {
       var group = programNameRe.exec(program[i])[1]
       currentCounter++
       program[i] = program[i].replace(programNameRe, '').trim()
-      languages[currentCounter] = [[group, transform[group]], []]
+      languages[currentCounter] = [
+        [group, transform[group]],
+        []
+      ]
       trimmed = true
     }
     var replacement = matchAnythingRe.exec(program[i])
@@ -284,47 +294,8 @@ function parseProgram(program) {
   return languages
 }
 
-function superRequest(url, callback, ttl) {
-  ttl = (typeof ttl === 'undefined') ? 1000 * 60 * 60 * 24 : ttl
-  var options = { url: url, ttl: ttl }
-  // logger.log('Super Request Options: ' + options)
-  try {
-    cachedRequest(options, function(err, resp, body) {
-      try {
-        callback(JSON.parse(body))
-      } catch(e) {
-        logger.error(e)
-        if (ttl == 0) {
-          request(url, function(err, resp, body) {
-            try {
-              callback(JSON.parse(body))
-            } catch(e) {
-              logger.error(e)
-              logger.warning("We were forced to return false...")
-              callback(false)
-            }
-          })
-        } else {
-          superRequest(url, callback, 0)
-        }
-      }
-    })
-  } catch(e) {
-    logger.error("Cached Request had a fatal error whilst handling: " + url)
-    logger.error(e)
-    request(url, function(err, resp, body) {
-      try {
-        callback(JSON.parse(body))
-      } catch(e) {
-        logger.error(e)
-        callback(false)
-      }
-    })
-  }
-}
-
 function getRecentlyChanged(callback) {
-  request('https://oeis.org/recent.txt', function(err, resp, body) {
+  request('http://fastdl.sinisterheavens.com/recent.txt', function(err, resp, body) {
     if (body) {
       logger.success('Got /recent.txt successfully')
       var text = body.split('\n')
@@ -341,57 +312,46 @@ function getRecentlyChanged(callback) {
   })
 }
 
-function findSubstring(arr, subarr, fromIndex) {
-    var i = fromIndex >>> 0
-    var sl = subarr.length
-    var l = arr.length + 1 - sl
 
-    loop: for (; i<l; i++) {
-      for (var j=0; j<sl; j++)
-        if (arr[i+j] !== subarr[j])
-          continue loop
-      return i
-    }
-    return -1
-}
 
-if (old_updates = {}) {
+if (old_updates == {}) {
   getRecentlyChanged(function(updates) {
     old_updates = updates
-    setInterval(checkUpdate, 100000)
+    setInterval(checkUpdate, 10000)
   })
 } else {
-  setInterval(checkUpdate, 100000)
+  setInterval(checkUpdate, 10000)
 }
 
 function checkUpdate() {
   getRecentlyChanged(function(updates) {
-    var indexToFind = findSubstring(updates, old_updates.slice(0, 100), 0)
+    var indexToFind = utils.findSubstring(updates, old_updates.slice(0, 100), 0)
     if (indexToFind != 0) {
       for (var i = 0; i < indexToFind; i++) {
         logger.log('Updated Item: ' + updates[i])
-        // updateItem(updates[i])
+          updateOne(parseInt(updates[i].substring(1)))
       }
     }
     old_updates = updates
     fs.writeFile('./data/updates.json', JSON.stringify(old_updates, null, 4), function(err) {
-        if(err) {
-          logger.error(err);
-        } else {
-          logger.log("Updates Saved");
-        }
-    }); 
+      if (err) {
+        logger.error(err);
+      } else {
+        logger.log("Updates Saved");
+      }
+    });
   })
 }
 
-function linkName(text){
+function linkName(text) {
   if (text) {
     if (text.constructor === Array) {
-      for(var j in text) {
+      for (var j in text) {
         text[j] = linkName(text[j])
       }
       return text
-    } if (text.constructor === String) {
+    }
+    if (text.constructor === String) {
       var link = /_(\S([A-Za-z \.]+)?)_/gm;
       var html = text.replace(link, "<a  class='name_link' href='http://oeis.org/wiki/User:$1'>$1</a>");
       return html
@@ -404,10 +364,12 @@ function linkName(text){
 }
 
 function updateItem(id, number) {
-  superRequest('https://oeis.org/search?q=id:A' + id + '&fmt=json', function(data) {
+  utils.superRequest('https://oeis.org/search?q=id:A' + id + '&fmt=json', function(data) {
     // Fix for some weird closure issues.
     var y = data
-    Sequence.findOne({number: number}, function(err, seq) {
+    Sequence.findOne({
+      number: number
+    }, function(err, seq) {
       var data = y
       if (err) logger.error(err)
       else {
@@ -418,8 +380,7 @@ function updateItem(id, number) {
           itemID.save(function(err) {
             if (err) {
               logger.log('Error Saving Sequence: ' + err)
-            }
-            else {
+            } else {
               logger.log('Created New Item: ' + id)
             }
           })
@@ -452,13 +413,18 @@ function listItems() {
 
 function updateOne(id) {
   var text = ('000000' + String(id)).substring(String(id).length)
-  // Possibly need to change this to just request.  We don't really want to
-  // Use the super request because that includes logging...
-  superRequest('https://oeis.org/search?q=id:A' + text + '&fmt=json', function(newData) {
-    var query = { number: id }
+    // Possibly need to change this to just request.  We don't really want to
+    // Use the super request because that includes logging...
+  utils.superRequest('https://oeis.org/search?q=id:A' + text + '&fmt=json', function(newData) {
+    var query = {
+      number: id
+    }
     if (newData && newData.results && newData.results[0]) {
       var update = newData.results[0]
-      var options = { upsert: true, new: true }
+      var options = {
+        upsert: true,
+        new: true
+      }
 
       Sequence.findOneAndUpdate(query, update, options, function(err, result) {
         if (err) {
@@ -475,13 +441,25 @@ function updateOne(id) {
 
 function updateAll(max) {
   for (var i = 1; i <= max; i++) {
-    setTimeout(function(i) { try{ updateOne(i) } catch(e) { logger.error(e) } }, i * GRAB_INTERVAL, i)
+    setTimeout(function(i) {
+      try {
+        updateOne(i)
+      } catch (e) {
+        logger.error(e)
+      }
+    }, i * GRAB_INTERVAL, i)
   }
 }
 
 function updateRange(min, max) {
-  for (var i = min; i <=  max; i++) {
-    setTimeout(function(i, min) { try{ updateOne(i) } catch(e) { logger.error(e) } }, (i - min) * GRAB_INTERVAL, i, min)
+  for (var i = min; i <= max; i++) {
+    setTimeout(function(i, min) {
+      try {
+        updateOne(i)
+      } catch (e) {
+        logger.error(e)
+      }
+    }, (i - min) * GRAB_INTERVAL, i, min)
   }
 }
 
@@ -490,12 +468,22 @@ function makeNew(min, max) {
   currentTimeout = 0
   for (var i = min; i <= max; i++) {
     console.log("Tried Lookup For: " + i)
-    Sequence.find({ number: i }, function(err, docs) {
-      if (err) { console.log(err) }
+    Sequence.find({
+      number: i
+    }, function(err, docs) {
+      if (err) {
+        console.log(err)
+      }
       console.log(docs)
       if (!docs || docs == []) {
         console.log("Make New Registering Update For: " + i)
-        setTimeout(function(currentTimeout) { try{ updateOne(i) } catch(e) { logger.error(e) } }, currentTimeout * GRAB_INTERVAL, currentTimeout, i)
+        setTimeout(function(currentTimeout) {
+          try {
+            updateOne(i)
+          } catch (e) {
+            logger.error(e)
+          }
+        }, currentTimeout * GRAB_INTERVAL, currentTimeout, i)
         currentTimeout++
       }
     })
@@ -508,7 +496,9 @@ function findMissing(max, callback) {
     docs.forEach(function(item) {
       array.push(item.number);
     })
-    array = array.sort(function (a, b) {  return a - b;  })
+    array = array.sort(function(a, b) {
+      return a - b;
+    })
     var count = 1;
     var arrayEntry = 0;
     var missing = [];
@@ -530,7 +520,9 @@ function findMissing(max, callback) {
 }
 
 function testAndUpdate(value) {
-  Sequence.find({number: value}, function(err, docs) {
+  Sequence.find({
+    number: value
+  }, function(err, docs) {
     if (err) console.log(err)
     if (JSON.stringify(docs) == "[]") {
       console.log("Grabbing sequence number " + value)
@@ -545,7 +537,13 @@ function bootstrapFindMissing(value, multiplier) {
   findMissing(value, function(missing) {
     currentTimeout = 0;
     for (var i = 0; i < missing.length; i++) {
-      setTimeout(function(currentTimeout, j, multiplier) { try { updateOne(j) } catch(e) { logger.error(e) } }, currentTimeout * GRAB_INTERVAL * multiplier, currentTimeout, missing[i], multiplier)
+      setTimeout(function(currentTimeout, j, multiplier) {
+        try {
+          updateOne(j)
+        } catch (e) {
+          logger.error(e)
+        }
+      }, currentTimeout * GRAB_INTERVAL * multiplier, currentTimeout, missing[i], multiplier)
       currentTimeout++
     }
   })
@@ -554,7 +552,7 @@ function bootstrapFindMissing(value, multiplier) {
 // testAndUpdate(1)
 
 // Super Slow Grabber
-bootstrapFindMissing(100, 5)
+bootstrapFindMissing(100000, 5)
 
 // updateRange(5741, 90000)
 

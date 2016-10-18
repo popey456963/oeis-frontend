@@ -45,6 +45,7 @@ if (process.env.REPL == 'true') {
   function evalInContext(js, context) { return function() { return eval(js); }.call(context) }
   var empty = '(' + os.EOL + ')'
   repl.start({
+    prompt: '',
     input: process.stdin,
     output: process.stdout,
     eval: function(cmd, context, filename, callback) {
