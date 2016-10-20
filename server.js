@@ -97,7 +97,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'jade')
 app.set('port', process.env.PORT || 3005)
 app.use(compression())
-app.use(httpLogger('common', { stream: accessLogStream }))
+//app.use(httpLogger('common', { stream: accessLogStream }))
 app.use(httpLogger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -167,7 +167,7 @@ if (app.get('env') === 'production') {
 
 // We are avoiding sockets at all costs...
 io.on('connection', function (socket) {
-  socket.emit('news', 'Hello friendly individual who appears to be poking around this website.  You look lonely, wanna chat?  Send back an even with the name of "hello" with some way of contacting you.  I\d love to get in touch.)
+  socket.emit('news', 'Hello friendly individual who appears to be poking around this website.  You look lonely, wanna chat?  Send back an even with the name of "hello" with some way of contacting you.  I\'d love to get in touch.')
   socket.on('hello', function (data) {
     logger.log('Well, uhm, someone sent us some contact data:')
     logger.log(data)

@@ -12,6 +12,7 @@ if "%inputName%" == "nodemon" goto StartNodemon
 if "%inputName%" == "watch" goto StartGulpWatch
 if "%inputName%" == "mongod" goto StartMongod
 if "%inputName%" == "mongo" goto StartMongo
+if "%inputName%" == "forever" goto StartForever
 
 echo Unknown Start Command...
 goto :EndOfFile
@@ -43,6 +44,10 @@ goto :EndOfFile
 	mongo
 	goto :EndOfFile
 
+:StartForever
+	echo Starting Forever...
+	forever --uid "OEIS" -a server.js
+	goto :EndOfFile
 
 :EndOfFile
 endlocal
