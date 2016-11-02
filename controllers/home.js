@@ -7,18 +7,27 @@ var old_updates = require('../data/updates')
 var seq_list = require('../config/sequences')
 var logger = require('./logger')()
 
+/**
+ * @module HomeController
+ */
+
 const GRAB_INTERVAL = 300
 const BASE_URL = 'https://oeis.org/'
 
 /**
- * GET /
+ * Handles any get requests to `/`.  This program responds to the user with a
+ * rendered Jade template of the search page, including a random sequence.
+ * 
+ * @function index
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.index = function(req, res) {
-  var randomSequence = seq_list[Math.floor(Math.random() * seq_list.length)]
   res.render('search', {
     page: 'Search',
     title: 'Search :: OEIS Lookup',
-    sequence: randomSequence
+    sequence: seq_list[Math.floor(Math.random() * seq_list.length)]
   })
 }
 
@@ -173,6 +182,12 @@ exports.editSequence = function(req, res) {
   }
 }
 
+/**
+ * Parse a query and a data response to highlight the found data points.
+ *
+ * @param {object} data - The data returned from the OEIS API.
+ * @param {string} query - The query requested by the user.
+ */
 function parseSearch(data, query) {
   // We gotta go from a sequence of data points, to bolded data points.
 

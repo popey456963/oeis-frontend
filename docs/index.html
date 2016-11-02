@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#index">index</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#test">test</a></li><li><a href="global.html#unlink">unlink</a></li><li><a href="global.html#welcome">welcome</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#.test">test</a></li><li data-type='method'><a href="module-HomeController.html#.welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
 </nav>
 
 <div id="main">
@@ -45,6 +45,67 @@
     
 
 
+    <section class="readme">
+        <article><h1>OEIS Lookup</h1><p>This project provides a graphical interface to accessing the OEIS database of integers.  It aims to be more user-friendly and faster than the official OEIS.org website from which this gets it's data.</p>
+<p>One should note this project is going through massive changes at the moment, as it is in <em>Alpha</em>.  The website is often 2-3 weeks behind this master branch and should definitely not be taken as a &quot;finished product&quot;.</p>
+<h2>Getting Started</h2><p>These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.</p>
+<h3>Prerequisities</h3><p>To run this project, you will need the following items setup:</p>
+<ul>
+<li>Mongo Database</li>
+<li>Elastisearch Server</li>
+<li>Node (preferably v.4.x.x)</li>
+<li>NPM</li>
+<li>Gulp</li>
+</ul>
+<h3>Installing</h3><p>This is a step-by-step guide of how to get a dev environment up and running.  Start by cloning the repo and navigating to that directory:</p>
+<pre class="prettyprint source"><code>git clone https://github.com/popey456963/oeis-frontend
+cd oeis-frontend</code></pre><p>Install all required modules, and build all the .scss files</p>
+<pre class="prettyprint source"><code>gulp build
+npm i</code></pre><p>Ensure the elastisearch and mongo database is running, then start the server using node:</p>
+<pre class="prettyprint source"><code>node server.js</code></pre><p>If all works, you should be able to navigate to localhost:3005 and see the OEIS Lookup website.</p>
+<h2>Running the tests</h2><p>All tests are made using mocha, which can be installed via <code>npm i -g mocha</code>.  Once installed, you can run <code>mocha --recursive</code> or <code>npm test</code> in the OEIS-Frontend directory to run the test suite.</p>
+<h3>Creating Tests</h3><p>Tests are organised into sections based on what they are testing, these sections are as follows:</p>
+<ul>
+<li><code>page-loading</code> - For testing entire pages</li>
+</ul>
+<p>If you want to create a test, navigate to the desired section, duplicate the <code>_template.test.js</code> file and rename it to <code>testName.test.js</code>.  You can then fill the file with the test of your choice, an example for verifying whether <code>/</code> renders:</p>
+<pre class="prettyprint source lang-javascript"><code>var request = require('supertest');
+var server = require('../../server');
+
+describe('GET /', function() {
+  it('should render ok', function(done) {
+    request(server)
+      .get('/')
+      .expect(200, done);
+  });
+});</code></pre><p>If you feel that there is a whole section of tests that don't fit anywhere, feel free to create a new directory with a name signifying what the tests do.</p>
+<h3>Coding Style Tests</h3><p>We enforce several code standards in order to keep the codebase maintainable, the full list can be found <a href="http://standardjs.com/rules.html">here</a> but the key points are:</p>
+<ul>
+<li>We use two spaces for indentation.</li>
+<li>Always handle errors.</li>
+<li>Never have unused variables.</li>
+<li>Don't define multiple variables in one statement</li>
+<li>No semicolons at the end of lines</li>
+</ul>
+<h2>Deployment</h2><p>Deployment on a production server is identical to deployment on a development server apart from running <code>gulp build --production</code> instead of it's counterpart.</p>
+<h2>Built With</h2><ul>
+<li>Node</li>
+<li>Express</li>
+<li>Elasticsearch</li>
+<li>Mongo</li>
+</ul>
+<h2>Contributing</h2><p>Please read <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for details on our code of conduct, and the process for submitting pull requests to us.</p>
+<h2>Versioning</h2><p>We use <a href="http://semver.org/">SemVer</a> for versioning. For the versions available, see the <a href="https://github.com/popey456963/oeis-frontend/tags">tags on this repository</a>. </p>
+<h2>Authors</h2><ul>
+<li><strong>Alexander Craggs</strong> - <em>Initial work</em> - <a href="http://codefined.xyz">Codefined</a></li>
+</ul>
+<p>See also the list of <a href="https://github.com/popey456963/oeis-frontend/contributors">contributors</a> who participated in this project.</p>
+<h2>License</h2><p>This project is licensed under the MIT License - see the <a href="LICENSE.md">LICENSE.md</a> file for details</p>
+<h2>Acknowledgments</h2><ul>
+<li>Several amazing individuals helped provide me with the motivation and skills in order to complete this project, including Developius and Polarlemniscate.</li>
+</ul></article>
+    </section>
+
 
 
 
@@ -55,7 +116,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Oct 25 2016 21:11:24 GMT+0100 (GMT Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Nov 01 2016 15:57:38 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

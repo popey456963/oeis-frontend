@@ -7,12 +7,13 @@
     "build:production": "gulp build --production",
     "postinstall": "npm run build:production",
     "start": "node server.js",
-    "start:production": "pm2 start server.js -i 4",
-    "test": "mocha --recursive",
-    "watch": "gulp",
-    "generate-docs": "node_modules/.bin/jsdoc -c jsdoc.json"
+        "start:production": "pm2 start server.js -i 4",
+        "test": "mocha --recursive",
+        "watch": "gulp",
+    "generate-docs": "node_modules/.bin/jsdoc -R README.md -c jsdoc.json"
   },
   "dependencies": {
+    "async": "^2.1.2",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.1",
     "cached-request": "^1.0.0",
@@ -43,6 +44,7 @@
     "node-analytics": "^0.3.5",
     "node-eval": "^1.0.3",
     "nodemailer": "^2.3.0",
+    "null-loader": "^0.1.1",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "passport-local": "^1.0.0",
