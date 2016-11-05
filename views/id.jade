@@ -15,7 +15,8 @@ block content
               - if (data.references == undefined) {
               -   data.references = 0
               - }
-              h6.rev.alignright!="Rev: " + data.revision + "<br>" + "Ref: " + data.references
+              h6.rev.alignright!="Rev: " + data.revision + "<br>" + "Ref: " + data.references + "<br>"
+                a(href='/' + sequenceName + '/edit')="Edit Seq"
               div(style='clear: both;')
               h4.sequenceTitle=data.name
               for item, index in data

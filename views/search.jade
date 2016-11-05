@@ -7,7 +7,10 @@ block content
           .panel
             .panel-body
               .container-fluid
-                #error.hidden.alert.alert-danger(role='alert')
+                if !error
+                  #error.hidden.alert.alert-danger(role='alert')
+                else
+                  #error.alert.alert-danger(role='alert')=error
               h3 Search the OEIS Database
               br
               .form-group

@@ -1,0 +1,58 @@
+extends layout
+
+// html to markdown javascript library
+// github.com/domchristie/to-markdown
+
+block content
+    .container-fluid
+      .row
+        .col-xs-12.col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2.col-lg-8.col-lg-offset-2
+          .panel
+            .panel-body
+              .container-fluid
+                #error.hidden.alert.alert-danger(role='alert')
+              h3="Editting A" + id
+              b Note: Fields left blank will not be displayed to the user.
+              br
+              br
+              for value, index in data
+                if value != "<no data>"
+                  if index == "data"
+                    b="*" + toTitleCase(index) + ": "
+                    br
+                    textarea.form-control(rows=3, style="resize:auto")
+                      =value.split(",").join(", ")
+                    br
+                  else
+                    if typeof value == "object"
+                      if required.indexOf(index) != -1
+                        b="*" + toTitleCase(index) + ": "
+                      else
+                        b=toTitleCase(index) + ": "
+                      br
+                      textarea.form-control(rows=5, style="resize:auto")
+                        =value.join("\n")
+                      br
+                    else
+                      if required.indexOf(index) != -1
+                        b="*" + toTitleCase(index) + ": "
+                      else
+                        b=toTitleCase(index) + ": "
+                      br
+                      textarea.form-control(rows=1, style="resize:auto")
+                        =value
+                      br
+
+              h4 Optional Fields Previously Empty
+              br
+              for value, index in data
+                if value == "<no data>"
+                  b=toTitleCase(index) + ": "
+                  br
+                  if short.indexOf(index) != -1
+                    textarea.form-control(rows=1, style="resize:auto")
+                  else
+                    textarea.form-control(rows=5, style="resize:auto")
+                  br
+              a.btn.btn-success(href='#', role='button', onclick='editSequence()')
+                span#lookup-sequence Submit Edits

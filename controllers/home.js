@@ -41,6 +41,15 @@ exports.welcome = function(req, res) {
   })
 }
 
+function seqNotFound(res) {
+  res.render('search', {
+    page: 'Search',
+    title: 'Search :: OEIS Lookup',
+    sequence: seq_list[Math.floor(Math.random() * seq_list.length)],
+    error: 'Sequence Not Found'
+  })
+}
+
 /**
  * POST /test
  */
@@ -63,7 +72,7 @@ exports.test = function(req, res) {
           res.send('')
         }
       } else {
-        res.send('OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
+        res.send('The OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
       }
     })
   }
@@ -82,17 +91,13 @@ exports.id = function(req, res) {
     return
   }
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
-    res.render('not_found', {
-      title: 'ID Not Found :: OEIS Lookup'
-    })
+    return seqNotFound(res)
   } else {
     Sequence.findOne({
       number: sequence
     }).lean().exec(function(err, doc) {
       if (!doc) {
-        res.render('not_found', {
-          title: 'ID Not Found :: OEIS Lookup'
-        })
+        return seqNotFound(res)
       } else {
         if (doc.program) {
           doc.program = parseProgram(doc.program)
@@ -103,7 +108,7 @@ exports.id = function(req, res) {
         res.render('id', {
           page: 'A-Page',
           title: 'A' + sequence + ' :: OEIS Lookup',
-          data: organiseData(doc),
+          data: organiseData(doc, false),
           toTitleCase: function(str) {
             return str.replace(/\w\S*/g, function(txt) {
               return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -117,12 +122,14 @@ exports.id = function(req, res) {
   }
 }
 
-function organiseData(data) {
+function organiseData(data, edit) {
   headers = ['number', 'name', 'references', 'revision', 'id', 'data', 'comment', 'reference', 'link', 'formula', 'example', 'maple', 'mathematica', 'program', 'xref', 'keyword', 'author']
   obj = {}
   for (var i = 0; i < headers.length; i++) {
     if (data[headers[i]]) {
       obj[headers[i]] = data[headers[i]]
+    } else if (edit) {
+      obj[headers[i]] = "<no data>"
     }
   }
   return obj
@@ -172,13 +179,29 @@ exports.editSequence = function(req, res) {
     return ""
   }
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
-    res.render('not_found', {
-      title: 'ID Not Found :: OEIS Lookup'
-    })
+    return seqNotFound(res)
   } else {
-    // Write code here to edit sequence...
-    // We'll want to do the following things:
-    // 1. 
+    Sequence.findOne({
+      number: sequence
+    }).lean().exec(function(err, doc) {
+      if (!doc) {
+        return seqNotFound(res)
+      } else {
+        res.render('edit_seq', {
+          title: 'Edit A' + sequence + ' :: OEIS Lookup',
+          page: 'Edit Sequence',
+          data: organiseData(doc, true),
+          id: sequence,
+          required: ['number', 'name', 'data', 'keyword', 'author'],
+          short: ['number', 'name', 'references', 'revision', 'id', 'keyword', 'author'],
+          toTitleCase: function(str) {
+            return str.replace(/\w\S*/g, function(txt) {
+              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+          }
+        })
+      }
+    })
   }
 }
 
@@ -293,10 +316,10 @@ function getRecentlyChanged(callback) {
 if (old_updates == {}) {
   getRecentlyChanged(function(updates) {
     old_updates = updates
-    setInterval(checkUpdate, 10000)
+    setInterval(checkUpdate, 3600000)
   })
 } else {
-  setInterval(checkUpdate, 10000)
+  setInterval(checkUpdate, 3600000)
 }
 
 function checkUpdate() {
@@ -380,8 +403,8 @@ function updateItem(id, number) {
 
 function updateOne(id) {
   var text = ('000000' + String(id)).substring(String(id).length)
-    // Possibly need to change this to just request.  We don't really want to
-    // Use the super request because that includes logging...
+  // Some point might want to turn this to Request instead of SuperRequest
+  // We don't really want caching on updating id's.
   utils.superRequest(BASE_URL + 'search?q=id:A' + text + '&fmt=json', function(newData) {
     var query = {
       number: id
@@ -392,7 +415,6 @@ function updateOne(id) {
         upsert: true,
         new: true
       }
-
       Sequence.findOneAndUpdate(query, update, options, function(err, result) {
         if (err) {
           logger.error(err)
@@ -517,4 +539,4 @@ function bootstrapFindMissing(value, multiplier) {
 }
 
 // bootstrapFindMissing(100000, 30)
-bootstrapFindMissing(100000, 20)
+// bootstrapFindMissing(100000, 20)

@@ -4,22 +4,20 @@ var moment = require('moment')
 var logger = require('./logger')()
 var crypto = require('crypto')
 
-var adminNames = ['read', 'list', 'write', 'execute']
+var adminRanks = ['read', 'list', 'write', 'execute']
 exports.ensureAdmin = []
 ensurePerm = []
 
-for (var i = 0; i < adminNames.length; i++) {
-  exports.ensureAdmin[adminNames[i]] = new Function('req', 'res', 'next', `
+for (var i = 0; i < adminRanks.length; i++) {
+  exports.ensureAdmin[adminRanks[i]] = new Function('req', 'res', 'next', `
     if (req.isAuthenticated()) {
-      var adminNames = ` + JSON.stringify(adminNames) + `
-      var pad = new Array(adminNames.length + 1).join("0")
+      var adminRanks = ` + JSON.stringify(adminRanks) + `
+      var pad = new Array(adminRanks.length + 1).join("0")
       var admin = pad + (req.user.admin >>> 0).toString(2)
-      var perm = admin.slice(adminNames.length * -1).split("").reverse().join("")
+      var perm = admin.slice(adminRanks.length * -1).split("").reverse().join("")
       if (String(perm.charAt(` + i + `)) == "1") {
-        console.log("Calling that...")
         next()
       } else {
-        console.log("Calling this!")
         res.render('./admin/not_admin', {
           title: "Not An Admin :: OEIS Lookup"
         })
@@ -30,13 +28,13 @@ for (var i = 0; i < adminNames.length; i++) {
   `)
 }
 
-for (var i = 0; i < adminNames.length; i++) {
-  ensurePerm[adminNames[i]] = new Function('user', `
+for (var i = 0; i < adminRanks.length; i++) {
+  ensurePerm[adminRanks[i]] = new Function('user', `
     if (user) {
-      var adminNames = ` + JSON.stringify(adminNames) + `
-      var pad = new Array(adminNames.length + 1).join("0")
+      var adminRanks = ` + JSON.stringify(adminRanks) + `
+      var pad = new Array(adminRanks.length + 1).join("0")
       var admin = pad + (user.admin >>> 0).toString(2)
-      var perm = admin.slice(adminNames.length * -1).split("").reverse().join("")
+      var perm = admin.slice(adminRanks.length * -1).split("").reverse().join("")
       if (String(perm.charAt(` + i + `)) == "1") {
         return true
       } else {
@@ -152,7 +150,6 @@ function getLatestPages(callback) {
         uniquePages.push(pages[i].page)
       }
     }
-    console.log(sortedPages)
     callback(sortedPages.slice(0, 10))
   })
 }
@@ -171,12 +168,12 @@ function popularPages(callback) {
 }
 
 var getPerms = new Function('number', `
-  var adminNames = ` + JSON.stringify(adminNames) + `
-  var perms = String(new Array(adminNames.length + 1).join("0") + (number >>> 0).toString(2)).slice(-3)
+  var adminRanks = ` + JSON.stringify(adminRanks) + `
+  var perms = String(new Array(adminRanks.length + 1).join("0") + (number >>> 0).toString(2)).slice(-3)
   var roles = []
-  for (var i = 0; i < adminNames.length; i++) {
+  for (var i = 0; i < adminRanks.length; i++) {
     if (perms.charAt(i) == '1') {
-      roles.push(adminNames[i])
+      roles.push(adminRanks[i])
     }
   }
   return roles.join(', ')
