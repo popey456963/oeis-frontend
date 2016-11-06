@@ -21,7 +21,7 @@ block content
                 li *Text* - Bold
                 li **Text** - Italic
                 li _Username_ - Link to User Page
-                li (nomd)*Text*(/nomd) - No Markdown on Text
+                li= "<code>*Text*</code> - No Markdown on Text"
               for value, index in data
                 if value != "<no data>"
                   if index == "data"
@@ -49,17 +49,18 @@ block content
                       textarea.form-control(rows=1, style="resize:auto", id=index)
                         =value
                       br
-              h4 Optional Fields Previously Empty
-              br
-              for value, index in data
-                if value == "<no data>"
-                  b=toTitleCase(index) + ": "
-                  br
-                  if short.indexOf(index) != -1
-                    textarea.form-control(rows=1, style="resize:auto", id=index)
-                  else
-                    textarea.form-control(rows=5, style="resize:auto", id=index)
-                  br
+              if unused.length > 0
+                h4 Empty Fields
+                br
+                for value, index in data
+                  if value == "<no data>"
+                    b=toTitleCase(index) + ": "
+                    br
+                    if short.indexOf(index) != -1
+                      textarea.form-control(rows=1, style="resize:auto", id=index)
+                    else
+                      textarea.form-control(rows=5, style="resize:auto", id=index)
+                    br
               a.btn.btn-success(href='#', role='button', onclick='editSequence()')
                 span#lookup-sequence Submit Edits
             //.panel-body

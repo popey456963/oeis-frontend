@@ -188,10 +188,12 @@ exports.editSequence = function(req, res) {
       if (!doc) {
         return seqNotFound(res)
       } else {
+        [doc, unused] = toMarkdownData(organiseData(doc, true))
         res.render('edit_seq', {
           title: 'Edit A' + sequence + ' :: OEIS Lookup',
           page: 'Edit Sequence',
-          data: toMarkdownData(organiseData(doc, true)),
+          data: doc,
+          unused: unused,
           id: sequence,
           required: ['number', 'name', 'data', 'keyword', 'author'],
           short: ['number', 'name', 'references', 'revision', 'id', 'keyword', 'author'],
@@ -207,10 +209,11 @@ exports.editSequence = function(req, res) {
 }
 
 function toMarkdownData(doc) {
+  var unused = []
   if (1) { console.log = function() { /* Do Nothing */ } }
   for (var i in doc) {
     if (doc[i] == "<no data>") {
-      // Nothing
+      unused.push(i)
     } else {
       console.log("== Sorting out doc[" + i + "] ==")
       if (doc[i].constructor === Array) {
@@ -236,7 +239,7 @@ function toMarkdownData(doc) {
     }
   }
   console.log("Returned")
-  return doc
+  return [doc, unused]
 }
 
 /**
