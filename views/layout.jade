@@ -11,6 +11,8 @@ html
     link(href='/css/flag-icon.min.css', rel='stylesheet', type='text/css')
     if page == "Search" || page == "A-Page"
       link(href='/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    //if page == "Edit Sequence"
+      link(href='/css/simplemde.min.css', rel='stylesheet', type='text/css')
     link(href='/css/main.css', rel='stylesheet', type='text/css')
   body
     include includes/header
@@ -28,6 +30,9 @@ html
       script(src='/js/main.js')
     if page == "Test-Lang"
       script(src='/js/testLang.js')
+    //if page == "Edit Sequence"
+      script(src='/js/lib/simplemde.min.js')
+      script(src='/js/edit.js')
     script(src='/js/lib/pace.min.js')
     script.
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

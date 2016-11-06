@@ -7,9 +7,9 @@
     "build:production": "gulp build --production",
     "postinstall": "npm run build:production",
     "start": "node server.js",
-        "start:production": "pm2 start server.js -i 4",
-        "test": "mocha --recursive",
-        "watch": "gulp",
+    "start:production": "pm2 start server.js -i 4",
+    "test": "mocha --recursive",
+    "watch": "gulp",
     "generate-docs": "node_modules/.bin/jsdoc -R README.md -c jsdoc.json"
   },
   "dependencies": {
@@ -55,6 +55,7 @@
     "request": "^2.73.0",
     "socket.io": "^1.4.5",
     "stack-trace": "0.0.9",
+    "to-markdown": "^3.0.3",
     "vinyl-buffer": "^1.0.0",
     "yargs": "^4.3.2"
   },

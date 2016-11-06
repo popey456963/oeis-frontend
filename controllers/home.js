@@ -6,6 +6,7 @@ var Sequence = require('../models/Sequence')
 var old_updates = require('../data/updates')
 var seq_list = require('../config/sequences')
 var logger = require('./logger')()
+var toMarkdown = require('to-markdown')
 
 /**
  * @module HomeController
@@ -111,8 +112,8 @@ exports.id = function(req, res) {
           data: organiseData(doc, false),
           toTitleCase: function(str) {
             return str.replace(/\w\S*/g, function(txt) {
-              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
+              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+            })
           },
           sequenceName: 'A' + sequence,
           id_page: true
@@ -139,7 +140,7 @@ function organiseData(data, edit) {
  * GET /search
  */
 exports.search = function(req, res) {
-  var sequence = decodeURIComponent(req.query.q);
+  var sequence = decodeURIComponent(req.query.q)
   var page = (typeof req.query.page === 'undefined') ? 0 : parseInt(req.query.page) - 1
   var url = BASE_URL + 'search?fmt=json&q=' + sequence + '&start=' + (page * 10)
 
@@ -155,7 +156,7 @@ exports.search = function(req, res) {
         currentPage: data.start / 10,
         maxPage: Math.ceil(data.count / 10),
         sequenceGen: function padLeft(nr, n, str) {
-          return Array(n - String(nr).length + 1).join(str || '0') + nr;
+          return Array(n - String(nr).length + 1).join(str || '0') + nr
         }
       })
     } else {
@@ -190,19 +191,52 @@ exports.editSequence = function(req, res) {
         res.render('edit_seq', {
           title: 'Edit A' + sequence + ' :: OEIS Lookup',
           page: 'Edit Sequence',
-          data: organiseData(doc, true),
+          data: toMarkdownData(organiseData(doc, true)),
           id: sequence,
           required: ['number', 'name', 'data', 'keyword', 'author'],
           short: ['number', 'name', 'references', 'revision', 'id', 'keyword', 'author'],
           toTitleCase: function(str) {
             return str.replace(/\w\S*/g, function(txt) {
-              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
+              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+            })
           }
         })
       }
     })
   }
+}
+
+function toMarkdownData(doc) {
+  if (1) { console.log = function() { /* Do Nothing */ } }
+  for (var i in doc) {
+    if (doc[i] == "<no data>") {
+      // Nothing
+    } else {
+      console.log("== Sorting out doc[" + i + "] ==")
+      if (doc[i].constructor === Array) {
+        console.log("It's an array")
+        for (var j = 0; j < doc[i].length; j++) {
+          if (typeof doc[i][j] === "string") {
+            console.log("It's a string array")
+            doc[i][j] = toMarkdown(doc[i][j])
+            console.log("Parsing complete")
+          } else {
+            console.log("It's not a string, it's a: " + typeof doc[i][j])
+          }
+        }
+      } else {
+        if (typeof doc[i] === "string") {
+          console.log("It's a string")
+          doc[i] = toMarkdown(doc[i])
+          console.log("Parsing Complete")
+        } else {
+          console.log("It's not a string, it's a: " + typeof doc[i])
+        }
+      }
+    }
+  }
+  console.log("Returned")
+  return doc
 }
 
 /**
@@ -334,11 +368,11 @@ function checkUpdate() {
     old_updates = updates
     fs.writeFile('./data/updates.json', JSON.stringify(old_updates, null, 4), function(err) {
       if (err) {
-        logger.error(err);
+        logger.error(err)
       } else {
-        logger.log("Updates Saved");
+        logger.log("Updates Saved")
       }
-    });
+    })
   })
 }
 
@@ -351,8 +385,8 @@ function linkName(text) {
       return text
     }
     if (text.constructor === String) {
-      var link = /_(\S([A-Za-z \.]+)?)_/gm;
-      var html = text.replace(link, "<a  class='name_link' href='http://oeis.org/wiki/User:$1'>$1</a>");
+      var link = /_(\S([A-Za-z \.]+)?)_/gm
+      var html = text.replace(link, "<a class='name_link' href='http://oeis.org/wiki/User:$1'>$1</a>")
       return html
     } else {
       return text
@@ -483,14 +517,14 @@ function findMissing(max, callback) {
   Sequence.find({}, 'number -_id', function(err, docs) {
     var array = []
     docs.forEach(function(item) {
-      array.push(item.number);
+      array.push(item.number)
     })
     array = array.sort(function(a, b) {
-      return a - b;
+      return a - b
     })
-    var count = 1;
-    var arrayEntry = 0;
-    var missing = [];
+    var count = 1
+    var arrayEntry = 0
+    var missing = []
     while (arrayEntry != array.length && count < max) {
       if (array[arrayEntry] != count) {
         missing.push(count)
@@ -524,7 +558,7 @@ function testAndUpdate(value) {
 function bootstrapFindMissing(value, multiplier) {
   if (!multiplier) multiplier = 1
   findMissing(value, function(missing) {
-    currentTimeout = 0;
+    currentTimeout = 0
     for (var i = 0; i < missing.length; i++) {
       setTimeout(function(currentTimeout, j, multiplier) {
         try {
