@@ -1,2 +1,8 @@
 console.log("Loaded Edit.js")
-var simplemde = new SimpleMDE({ element: document.getElementById("editor") })
+$('#submitedit').click(function() {
+  console.log("Submitting Edit...")
+  $.post("edit", { func: "getNameAndTime" }, function(data) {
+    console.log( data.name ); // John
+    console.log( data.time ); // 2pm
+  }, "json");
+})

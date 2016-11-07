@@ -243,6 +243,14 @@ function toMarkdownData(doc) {
 }
 
 /**
+ * POST /A:sequence/edit
+ */
+exports.postEditSequence = function(req, res) {
+  console.log("Hey: " + req.body)
+  res.json({name: "John", time: "2pm"})
+}
+
+/**
  * Parse a query and a data response to highlight the found data points.
  *
  * @param {object} data - The data returned from the OEIS API.
