@@ -247,7 +247,10 @@ function toMarkdownData(doc) {
  */
 exports.postEditSequence = function(req, res) {
   console.log("Hey: " + req.body)
-  res.json({name: "John", time: "2pm"})
+  console.log("...?")
+  console.log(req.body)
+  res.send("Hey")
+  // res.json({name: "John", time: "2pm"})
 }
 
 /**
