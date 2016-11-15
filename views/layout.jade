@@ -14,15 +14,13 @@ html
     //if page == "Edit Sequence"
       link(href='/css/simplemde.min.css', rel='stylesheet', type='text/css')
     link(href='/css/main.css', rel='stylesheet', type='text/css')
+    link(rel='stylesheet', type='text/css', href='//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.2/cookieconsent.min.css')
   body
     include includes/header
     block content
       
     // script(src='/socket.io/socket.io.js')
     script(src='/js/lib/jquery.min.js')
-    script
-      window.cookieconsent_options = {"message":"This website uses cookies to ensure you get the best experience on our website","dismiss":"Got it!","learnMore":"More info","link":null,"theme":"light-floating"}
-    script(src='/js/lib/cookie-consent.min.js')
     script(src='/js/lib/bootstrap.min.js')
     if page == "A-Page" || page == "Test-Lang"
       script(src='/js/lib/highlight.min.js')
@@ -34,6 +32,8 @@ html
       //script(src='/js/lib/simplemde.min.js')
       script(src='/js/edit.js')
     script(src='/js/lib/pace.min.js')
+    script(src='/js/lib/cookie-consent.min.js')
+    script(src='/js/cookie.js')
     script.
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

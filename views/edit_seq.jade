@@ -1,8 +1,5 @@
 extends layout
 
-// html to markdown javascript library
-// github.com/domchristie/to-markdown
-
 block content
     .container-fluid
       .row
@@ -24,7 +21,7 @@ block content
                 li= "<code>*Text*</code> - No Markdown on Text"
               form.form-horizontal(method="POST")
                 for value, index in data
-                  if value != "<no data>"
+                  if value != "<no data>" && index != "references" && index != "revision"
                     if index == "data"
                       b!="<sup>*</sup>" + toTitleCase(index) + ": "
                       br
@@ -54,7 +51,7 @@ block content
                   h4 Empty Fields
                   br
                   for value, index in data
-                    if value == "<no data>"
+                    if value == "<no data>" && index != "references" && index != "revision"
                       b=toTitleCase(index) + ": "
                       br
                       if short.indexOf(index) != -1
