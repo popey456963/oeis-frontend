@@ -8,15 +8,31 @@ block content
             .panel-body
               .container-fluid
                 #error.hidden.alert.alert-danger(role='alert')
-              if data.id
-                h3.alignleft!=sequenceName + " <span style='font-size: 60%'>(Formerly " + data.id + ")</span>"
-              else
-                h3.alignleft=sequenceName
+              h3.alignleft
+                span.dropdown
+                  a(data-toggle='dropdown', href='#', style='font-size: 60%') &#x25BC;
+                  ul.dropdown-menu(role='menu', aria-labelledby='dLabel')
+                    li(role='presentation')
+                      if favourite == false
+                        a#favourite(role='menuitem', tabindex='-1', dest="favourite", href='/' + sequenceName + '/favourite')
+                          i.fa.fa-heart#heart
+                          span#favtext= " Favourite"
+                      else
+                        a#favourite(role='menuitem', tabindex='-1', dest="favourite", href='/' + sequenceName + '/unfavourite')
+                          i.fa.fa-heart#heart(style='color: red')
+                          span#favtext= " Unfavourite"
+                    li.divider(role='presentation')
+                    li(role='presentation')
+                      a(role='menuitem', tabindex='-1', href='/' + sequenceName + '/edit')
+                        i.fa.fa-pencil
+                        span= " Edit Sequence"
+                span= sequenceName
+                if data.id
+                  span(style='font-size: 60%')= "(Formerly " + data.id + ")"
               - if (data.references == undefined) {
               -   data.references = 0
               - }
-              h6.rev.alignright!="Rev: " + data.revision + "<br>" + "Ref: " + data.references + "<br>"
-                a(href='/' + sequenceName + '/edit')="Edit Seq"
+              h6.rev.alignright!="Rev: " + data.revision + "<br>" + "Ref: " + data.references
               div(style='clear: both;')
               h4.sequenceTitle=data.name
               for item, index in data
@@ -42,7 +58,7 @@ block content
                             // Let's try guessing... :)
                             !="<b>" + i[0][0] + "</b><br><code class='multiple_programs'>"
                           for j in i[1]
-                            =j + "\n"
+                            !=j + "\n"
                           !="</code>"
 
                     else if index == 'maple' || index == 'mathematica'

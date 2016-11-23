@@ -12,31 +12,41 @@ block content
             h3 Statistics
 
             p Number of User Logins (day, month, year)
-            p Total Views
-            p Views of Each Sequence (Top List?)
-            p Sequences Editted
-            p Page Views
+            p Page (day, month, year)
             p Server Stats
 
-            h4 Most Popular Pages:
-
-            for page in popularPages
-              span #[b #{page['page']}: ] #{page['totalViews']}
-              br
-
-            br
-
-            h4 Active Users:
-            ul
-              for user in activeUsers
-                li #[b #{user['name']}]
-
-            h4 Latest Viewed Pages:
-            ol
-              for page in latestPages
-                li #[b #{page['page']}]
-
-            h4 Latest Changes:
-            ol
-              for change in latestChanges
-                li The sequence #[b #{change['id']}] was #{change['change']}.
+            .masonry
+              .card
+                .card-header Most Popular Pages
+                .card-block
+                  ol
+                    for page in popularPages
+                      li #[b #{page['page']}: ] #{page['totalViews']}
+              .card
+                .card-header Latest Viewed Pages
+                .card-block
+                  ol
+                    for page in latestPages
+                      li #[b #{page['page']}]
+              .card
+                .card-header Active Users
+                .card-block
+                  ul
+                    for user in activeUsers
+                      li #[b #{user['name']}]
+              .card
+                .card-header Latest Changes
+                .card-block
+                  ol
+                    for change in latestChanges
+                      li Sequence #[b #{change['id']}] #{change['change']}.
+              .card
+                .card-header Uptime Information
+                .card-block
+                  p= stats
+              .card
+                .card-header Server Usage
+                .card-block
+                  //p=JSON.stringify(serverStats)
+                  for item in serverStats
+                    p= item

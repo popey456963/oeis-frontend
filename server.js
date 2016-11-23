@@ -1,5 +1,4 @@
-// At some point consider doing something with:
-// border-bottom: 1.5px dotted #888888;
+// Allow people to add a page to their "favourites" and display it on a list.
 
 var express = require('express')
 var path = require('path')
@@ -135,6 +134,7 @@ app.get('/auth/twitter', passport.authenticate('twitter'))
 app.get('/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' }))
 
 app.get('/', HomeController.index)
+app.get('/favourites', UserController.ensureAuthenticated, HomeController.favourites)
 app.get('/welcome', HomeController.welcome)
 app.get('/admin', AdminController.ensureAdmin['read'], AdminController.adminPage)
 app.get('/admin/stats', AdminController.ensureAdmin['read'], AdminController.adminStats)
@@ -142,6 +142,8 @@ app.get('/admin/users', AdminController.ensureAdmin['list'], AdminController.adm
 app.get('/A:sequence', HomeController.id)
 app.get('/A:sequence/edit', UserController.ensureAuthenticated, HomeController.editSequence)
 app.post('/A:sequence/edit', HomeController.postEditSequence)
+app.post('/A:sequence/favourite', UserController.ensureAuthenticated, HomeController.favourite)
+app.post('/A:sequence/unfavourite', UserController.ensureAuthenticated, HomeController.unfavourite)
 app.get('/search', HomeController.search)
 app.post('/test', HomeController.test)
 app.get('/langtest', DevController.langtest)

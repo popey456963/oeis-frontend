@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#.test">test</a></li><li data-type='method'><a href="module-HomeController.html#.welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#.postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
 </nav>
 
 <div id="main">
@@ -72,7 +72,7 @@
 
     
 
-    <h4 class="name" id=".test"><span class="type-signature">(static) </span>test<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".postEditSequence"><span class="type-signature">(static) </span>postEditSequence<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -84,7 +84,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line48">line 48</a>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line312">line 312</a>
     </li></ul></dd>
     
 
@@ -124,7 +124,7 @@
 
 
 <div class="description">
-    <p>POST /test</p>
+    <p>POST /A:sequence/edit</p>
 </div>
 
 
@@ -156,7 +156,7 @@
 
     
 
-    <h4 class="name" id=".welcome"><span class="type-signature">(static) </span>welcome<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="editSequence"><span class="type-signature"></span>editSequence<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
 
     
 
@@ -168,7 +168,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line38">line 38</a>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line227">line 227</a>
     </li></ul></dd>
     
 
@@ -208,7 +208,9 @@
 
 
 <div class="description">
-    <p>GET /welcome</p>
+    <p>Returns a rendered Jade template to any request that matches
+<code>/A:sequence/edit</code>.  In order to do this it checks the sequence
+exists before organising ing  and then parsing it into markdown.</p>
 </div>
 
 
@@ -219,6 +221,237 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The request object sent by the client</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The response object to reply to the client.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="id"><span class="type-signature"></span>id<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line107">line 107</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Handles any post requests to <code>/A:seq</code>.  This program responds to the user
+with either a redirect to a fully formed sequence page, an error page if
+the sequence is not found or a rendered Jade page giving information on
+an ID.  This program uses <code>parseProgram</code> and <code>linkName</code> to parse the data.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The request object sent by the client</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The response object to reply to the client.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -252,7 +485,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line17">line 17</a>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line19">line 19</a>
     </li></ul></dd>
     
 
@@ -397,6 +630,777 @@ rendered Jade template of the search page, including a random sequence.</p>
 
     
 
+    <h4 class="name" id="organiseData"><span class="type-signature"></span>organiseData<span class="signature">(data, edit)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line159">line 159</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Organises sequence data into a certain order to match the order shown
+on the official OEIS website.  Also optionally replaces all undefined values
+with <code>&lt;no data&gt;</code> depending on the <code>edit</code> boolean.  At the moment, this is
+only used on the edit page.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>All information on a specific sequence</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>edit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>If true, undefined values are replaced with <code>&lt;no data&gt;</code></p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="search"><span class="type-signature"></span>search<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line183">line 183</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Assuming the <code>/test</code> post has worked, search requests get routed to a
+<code>/search</code> url with parameters of <code>q</code> for the query string and <code>page</code>
+for the pagination.  This requests from the OEIS website to get the
+search results before displaying to the user a rendered Jade page or
+error message (if no results).</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The request object sent by the client</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The response object to reply to the client.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="seqNotFound"><span class="type-signature"></span>seqNotFound<span class="signature">(res)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line53">line 53</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Handles whenever a program cannot find a specific sequence, sending
+back a rendered Jade file of the home page with a <code>req.flash()</code> style
+error.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The response object to reply to the client.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="test"><span class="type-signature"></span>test<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line71">line 71</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Handles any post requests to <code>/test</code>.  This program responds to the user
+with a reply of whether or not the request has too many, none or just one
+repsonse.  Depending on this the client should then respond with an alert
+to the user or a redirect to the search results or A-page.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The request object sent by the client</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The response object to reply to the client.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="welcome"><span class="type-signature"></span>welcome<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line36">line 36</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Handles any get requests to <code>/welcome</code>.  This program responds to the user
+with a rendered Jade template of the welcome page, a static page that can
+be heavily cached.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The request object sent by the client</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The response object to reply to the client.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="~parseSearch"><span class="type-signature">(inner) </span>parseSearch<span class="signature">(data, query)</span><span class="type-signature"></span></h4>
 
     
@@ -409,7 +1413,7 @@ rendered Jade template of the search page, including a random sequence.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line192">line 192</a>
+        <a href="home.js.html">home.js</a>, <a href="home.js.html#line374">line 374</a>
     </li></ul></dd>
     
 
@@ -566,7 +1570,7 @@ rendered Jade template of the search page, including a random sequence.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Nov 01 2016 15:57:38 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Nov 22 2016 09:20:39 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

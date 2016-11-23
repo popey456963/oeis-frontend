@@ -408,8 +408,13 @@ textarea {
 
 .name_link {
     border-bottom: 1.5px dotted #888888;
+    // color: #1d7cf4 !important;
 }
 
 .dropdown-menu {
   width: 100%
+}
+
+.dropdown-menu > li > a {
+  padding: 3px 13px;
 }

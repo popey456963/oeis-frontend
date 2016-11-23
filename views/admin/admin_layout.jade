@@ -6,12 +6,19 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1')
     title= title
     link(href='//fonts.googleapis.com/css?family=Inconsolata:400,700', rel='stylesheet', type='text/css')
+    if page == "Admin-Stats"
+      link(href='/css/lib/bootstrap/bootstrap.min.css', rel='stylesheet', type='text/css')
+      link(href='/css/lib/bootstrap/bootstrap-flex.min.css', rel='stylesheet', type='text/css')
+      link(href='/css/lib/bootstrap/bootstrap-grid.min.css', rel='stylesheet', type='text/css')
+      link(href='/css/lib/bootstrap/bootstrap-reboot.min.css', rel='stylesheet', type='text/css')
     link(href='/css/main.css', rel='stylesheet', type='text/css')
     if page == "A-Page" || page == "Test-Lang"
       link(href='/css/highlight.default.css', rel='stylesheet', type='text/css')
     link(href='/css/flag-icon.min.css', rel='stylesheet', type='text/css')
     if page == "Search"
       link(href='/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    if page == "Admin-Stats"
+      link(href='/css/stats.css', rel='stylesheet', type='text/css')
   body
     include ../includes/header
     block content
@@ -22,6 +29,9 @@ html
     script(src='/js/main.js')
     if page == "User-List"
       script(src='/js/listUsers.js')
+    if page == "Admin-Stats"
+      //script(src='/js/lib/isotope.min.js')
+      script(src='/js/lib/masonry.min.js')
     script(src='/js/lib/pace.min.js')
     script.
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

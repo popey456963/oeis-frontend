@@ -3,6 +3,10 @@ var PageViews = require('../models/PageViews')
 var moment = require('moment')
 var logger = require('./logger')()
 var crypto = require('crypto')
+var async = require('async')
+var stats = require('simple-stats-server')()
+var timeout = require('async-timeout')
+var filesize = require('filesize')
 
 var adminRanks = ['read', 'list', 'write', 'execute']
 exports.ensureAdmin = []
@@ -100,6 +104,7 @@ exports.adminPage = function(req, res) {
     title: "Admin Actions :: OEIS Lookup"
   })
 }
+
 /*
  * GET /admin/stats
  */
@@ -110,35 +115,78 @@ exports.adminStats = function(req, res) {
    *  - PageViews (ALL)
    *  - Latest Changes
    */
-  popularPages(function(popularPages) {
-    getLatestPages(function(latestPages) {
-      getDocuments('HourViews', function(HourViews) {
-        getDocuments('DayViews', function(DayViews) {
-          getDocuments('WeekViews', function(WeekViews) {
-            getDocuments('ActiveUsers', function(ActiveUsers) {
-              var LatestChanges = [{ "id": "A000045", change: "editted" }]
-              res.render('./admin/stats', {
-                page: "Admin-Stats",
-                section: "Admin",
-                title: "Statistics :: OEIS Lookup",
-                popularPages: popularPages,
-                hourViews: HourViews,
-                dayViews: DayViews,
-                weekViews: WeekViews,
-                activeUsers: ActiveUsers,
-                latestChanges: LatestChanges,
-                latestPages: latestPages
-              })
-            })
-          })
-        })
-      })
-    })
+  // MyModel.distinct('_id', { foo: 'bar' }, function(error, ids)
+
+  async.parallel({
+    popularPages: function(callback) { popularPages(callback) },
+    latestPages: function(callback) { getLatestPages(callback) },
+    latestChanges: function(callback) { getLatestChanges(callback) },
+    hourViews: function(callback) { getDocuments('HourViews', callback) },
+    dayViews: function(callback) { getDocuments('DayViews', callback) },
+    weekViews: function(callback) { getDocuments('WeekViews', callback) },
+    activeUsers: function(callback) { getDocuments('ActiveUsers', callback) },
+    stats: timeout(function(callback){ stats.get('/', callback) }, 2000, 'Stats Timed Out')
+  }, function(err, results) {
+    var obj = {
+      page: "Admin-Stats",
+      section: "Admin",
+      title: "Statistics :: OEIS Lookup"
+    }
+
+    for (var attrname in results) {
+      obj[attrname] = results[attrname]
+    }
+
+    obj.stats = generateStats(results.stats)
+    obj.serverStats = generateServerStats(results.stats)
+    res.render('./admin/stats', obj)
   })
 }
 
+function generateStats(stats) {
+  if (stats == "Stats Timed Out") {
+    return "Statistics engine is still spinning up!"
+  }
+  var processTime = moment.duration(stats.uptime.process * 1000).humanize()
+  var systemTime = moment.duration(stats.uptime.system * 1000).humanize()
+  var result = "The program is currently running successfully on Node V." + stats.versions.node
+  result += " with " + stats.versions.modules + " modules installed.  This process has been "
+  result += "running for " + processTime + ", whilst the system has been running "
+  result += "for " + systemTime + "."
+  return result
+}
+
+function generateServerStats(stats) {
+  if (stats == "Stats Timed Out") {
+    return ["Statistics engine is still spinning up!"]
+  }
+  var length = 0
+  var sum = 0
+  for (var i in stats.cpu['1m']) { length++; sum+= stats.cpu['1m'][i] }
+  var cpuMinAvg = Math.round(sum*100/length)
+  length = 0; sum = 0
+  for (var i in stats.cpu['15s']) { length++; sum+= stats.cpu['15s'][i] }
+  var cpuSecAvg = Math.round(sum*100/length)
+  var result = []
+
+  var rss = filesize(stats.memory.process.rss, {base: 2})
+  var free = filesize(stats.memory.system.free , {base: 2})
+  var total = filesize(stats.memory.system.total, {base: 2})
+
+  result.push("CPU (1m):    " + cpuMinAvg + "%")
+  result.push("CPU (15s):   " + cpuSecAvg + "%")
+  result.push("Mem (Proc):  " + rss + " (" + parseInt(stats.memory.process.rss*100/stats.memory.system.total) + "%)")
+  result.push("Mem (Free):  " + free + " (" + parseInt(stats.memory.system.free*100/stats.memory.system.total) + "%)")
+  result.push("Mem (Total): " + total)
+  return result
+}
+
+function getLatestChanges(callback) {
+  callback(null, [{ "id": "A000045", change: "editted" }])
+}
+
 function getLatestPages(callback) {
-  PageViews.WeekViews.find({}).sort({ createdAt: -1 }).limit(300).exec(function(err, pages) {
+  PageViews.WeekViews.find({ page: /^(?!(\/js|\/css)).+$/g }).sort({ createdAt: -1 }).limit(300).exec(function(err, pages) {
     var sortedPages = []
     var uniquePages = []
     for (var i = 0; i < pages.length; i++) {
@@ -150,20 +198,32 @@ function getLatestPages(callback) {
         uniquePages.push(pages[i].page)
       }
     }
-    callback(sortedPages.slice(0, 10))
+    callback(null, sortedPages.slice(0, 10))
   })
 }
 
 function getDocuments(name, callback) {
-  PageViews[name].find({}, function(err, documents) {
-    if (err) logger.error(err)
-    callback(documents)
-  })
+  if (name == "ActiveUsers") {
+    PageViews.ActiveUsers.count({}, function(err, count) {
+      PageViews.ActiveUsers.find({}).limit(9).exec(function(err, documents) {
+        PageViews.ActiveUsers.count({}, function(err, count) {
+          if (count > 9) {
+            documents.push({ email:"nope", name:"And " + (count - 9) + " more..." })
+          }
+          callback(null, documents)
+        })
+      })    
+    })
+  } else {
+    PageViews[name].find({}).limit(10).exec(function(err, documents) {
+      callback(null, documents)
+    })
+  }
 }
 
 function popularPages(callback) {
-  PageViews.PageViews.find({}).sort({ totalViews: -1 }).limit(10).exec(function(err, pages) {
-    callback(pages)
+  PageViews.PageViews.find({ page: /^(?!(\/js|\/css)).+$/g }).sort({ totalViews: -1 }).limit(10).exec(function(err, pages) {
+    callback(null, pages)
   })
 }
 

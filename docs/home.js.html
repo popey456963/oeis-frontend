@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#.test">test</a></li><li data-type='method'><a href="module-HomeController.html#.welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#.postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
 </nav>
 
 <div id="main">
@@ -42,9 +42,11 @@ var fs = require('fs')
 var utils = require('../controllers/utils')
 var User = require('../models/User')
 var Sequence = require('../models/Sequence')
+var Favourite = require('../models/Favourite')
 var old_updates = require('../data/updates')
 var seq_list = require('../config/sequences')
 var logger = require('./logger')()
+var toMarkdown = require('to-markdown')
 
 /**
  * @module HomeController
@@ -59,7 +61,6 @@ const BASE_URL = 'https://oeis.org/'
  * 
  * @function index
  * @instance
- * @public
  * @param {object} req - The request object sent by the client
  * @param {object} res - The response object to reply to the client.
  */
@@ -72,7 +73,14 @@ exports.index = function(req, res) {
 }
 
 /**
- * GET /welcome
+ * Handles any get requests to `/welcome`.  This program responds to the user
+ * with a rendered Jade template of the welcome page, a static page that can
+ * be heavily cached.
+ *
+ * @function welcome
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.welcome = function(req, res) {
   res.render('welcome', {
@@ -82,7 +90,33 @@ exports.welcome = function(req, res) {
 }
 
 /**
- * POST /test
+ * Handles whenever a program cannot find a specific sequence, sending
+ * back a rendered Jade file of the home page with a `req.flash()` style
+ * error.
+ *
+ * @function seqNotFound
+ * @instance
+ * @param {object} res - The response object to reply to the client.
+ */
+function seqNotFound(res) {
+  res.render('search', {
+    page: 'Search',
+    title: 'Sequence Not Found :: OEIS Lookup',
+    sequence: seq_list[Math.floor(Math.random() * seq_list.length)],
+    error: 'Sequence Not Found'
+  })
+}
+
+/**
+ * Handles any post requests to `/test`.  This program responds to the user
+ * with a reply of whether or not the request has too many, none or just one
+ * repsonse.  Depending on this the client should then respond with an alert
+ * to the user or a redirect to the search results or A-page.
+ *
+ * @function test
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.test = function(req, res) {
   var sequence = req.body.sequence
@@ -103,14 +137,22 @@ exports.test = function(req, res) {
           res.send('')
         }
       } else {
-        res.send('OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
+        res.send('The OEIS didn\'t provide a good response, despite multiple attempts.  Check their website, or contact us.')
       }
     })
   }
 }
 
-/*
- * GET /A******
+/**
+ * Handles any post requests to `/A:seq`.  This program responds to the user
+ * with either a redirect to a fully formed sequence page, an error page if
+ * the sequence is not found or a rendered Jade page giving information on
+ * an ID.  This program uses `parseProgram` and `linkName` to parse the data.
+ *
+ * @function id
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.id = function(req, res) {
   var sequence = req.params.sequence
@@ -122,17 +164,13 @@ exports.id = function(req, res) {
     return
   }
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
-    res.render('not_found', {
-      title: 'ID Not Found :: OEIS Lookup'
-    })
+    return seqNotFound(res)
   } else {
     Sequence.findOne({
       number: sequence
     }).lean().exec(function(err, doc) {
       if (!doc) {
-        res.render('not_found', {
-          title: 'ID Not Found :: OEIS Lookup'
-        })
+        return seqNotFound(res)
       } else {
         if (doc.program) {
           doc.program = parseProgram(doc.program)
@@ -143,11 +181,11 @@ exports.id = function(req, res) {
         res.render('id', {
           page: 'A-Page',
           title: 'A' + sequence + ' :: OEIS Lookup',
-          data: organiseData(doc),
+          data: organiseData(doc, false),
           toTitleCase: function(str) {
             return str.replace(/\w\S*/g, function(txt) {
-              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
+              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+            })
           },
           sequenceName: 'A' + sequence,
           id_page: true
@@ -157,22 +195,45 @@ exports.id = function(req, res) {
   }
 }
 
-function organiseData(data) {
+/**
+ * Organises sequence data into a certain order to match the order shown
+ * on the official OEIS website.  Also optionally replaces all undefined values
+ * with `&lt;no data>` depending on the `edit` boolean.  At the moment, this is
+ * only used on the edit page.
+ *
+ * @function organiseData
+ * @instance
+ * @param {object} data - All information on a specific sequence
+ * @param {boolean} edit - If true, undefined values are replaced with `&lt;no data>`
+ */
+function organiseData(data, edit) {
   headers = ['number', 'name', 'references', 'revision', 'id', 'data', 'comment', 'reference', 'link', 'formula', 'example', 'maple', 'mathematica', 'program', 'xref', 'keyword', 'author']
   obj = {}
   for (var i = 0; i &lt; headers.length; i++) {
     if (data[headers[i]]) {
       obj[headers[i]] = data[headers[i]]
+    } else if (edit) {
+      obj[headers[i]] = "&lt;no data>"
     }
   }
   return obj
 }
 
-/*
- * GET /search
+/**
+ * Assuming the `/test` post has worked, search requests get routed to a
+ * `/search` url with parameters of `q` for the query string and `page`
+ * for the pagination.  This requests from the OEIS website to get the
+ * search results before displaying to the user a rendered Jade page or
+ * error message (if no results).
+ * 
+ *
+ * @function search
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.search = function(req, res) {
-  var sequence = decodeURIComponent(req.query.q);
+  var sequence = decodeURIComponent(req.query.q)
   var page = (typeof req.query.page === 'undefined') ? 0 : parseInt(req.query.page) - 1
   var url = BASE_URL + 'search?fmt=json&amp;q=' + sequence + '&amp;start=' + (page * 10)
 
@@ -188,7 +249,7 @@ exports.search = function(req, res) {
         currentPage: data.start / 10,
         maxPage: Math.ceil(data.count / 10),
         sequenceGen: function padLeft(nr, n, str) {
-          return Array(n - String(nr).length + 1).join(str || '0') + nr;
+          return Array(n - String(nr).length + 1).join(str || '0') + nr
         }
       })
     } else {
@@ -202,6 +263,16 @@ exports.search = function(req, res) {
   })
 }
 
+/**
+ * Returns a rendered Jade template to any request that matches
+ * `/A:sequence/edit`.  In order to do this it checks the sequence
+ * exists before organising ing  and then parsing it into markdown.
+ *
+ * @function editSequence
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
+ */
 exports.editSequence = function(req, res) {
   var sequence = req.params.sequence
   if (sequence.length &lt; 6 &amp;&amp; !isNaN(sequence)) {
@@ -212,13 +283,124 @@ exports.editSequence = function(req, res) {
     return ""
   }
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
-    res.render('not_found', {
-      title: 'ID Not Found :: OEIS Lookup'
-    })
+    return seqNotFound(res)
   } else {
-    // Write code here to edit sequence...
-    // We'll want to do the following things:
-    // 1. 
+    Sequence.findOne({
+      number: sequence
+    }).lean().exec(function(err, doc) {
+      if (!doc) {
+        return seqNotFound(res)
+      } else {
+        [doc, unused] = toMarkdownData(organiseData(doc, true))
+        res.render('edit_seq', {
+          title: 'Edit A' + sequence + ' :: OEIS Lookup',
+          page: 'Edit Sequence',
+          data: doc,
+          unused: unused,
+          id: sequence,
+          required: ['number', 'name', 'data', 'keyword', 'author'],
+          short: ['number', 'name', 'references', 'revision', 'id', 'keyword', 'author'],
+          toTitleCase: function(str) {
+            return str.replace(/\w\S*/g, function(txt) {
+              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+            })
+          }
+        })
+      }
+    })
+  }
+}
+
+function toMarkdownData(doc) {
+  var unused = []
+  if (1) { console.log = function() { /* Do Nothing */ } }
+  for (var i in doc) {
+    if (doc[i] == "&lt;no data>") {
+      unused.push(i)
+    } else {
+      console.log("== Sorting out doc[" + i + "] ==")
+      if (doc[i].constructor === Array) {
+        console.log("It's an array")
+        for (var j = 0; j &lt; doc[i].length; j++) {
+          if (typeof doc[i][j] === "string") {
+            console.log("It's a string array")
+            doc[i][j] = toMarkdown(doc[i][j])
+            console.log("Parsing complete")
+          } else {
+            console.log("It's not a string, it's a: " + typeof doc[i][j])
+          }
+        }
+      } else {
+        if (typeof doc[i] === "string") {
+          console.log("It's a string")
+          doc[i] = toMarkdown(doc[i])
+          console.log("Parsing Complete")
+        } else {
+          console.log("It's not a string, it's a: " + typeof doc[i])
+        }
+      }
+    }
+  }
+  console.log("Returned")
+  return [doc, unused]
+}
+
+/**
+ * POST /A:sequence/edit
+ */
+exports.postEditSequence = function(req, res) {
+  console.log("Hey: " + req.body)
+  console.log(req.body)
+  res.send("Hey")
+  // res.json({name: "John", time: "2pm"})
+}
+
+exports.favourite = function(req, res) {
+  var sequence = req.params.sequence
+  if (sequence.length &lt; 6 &amp;&amp; !isNaN(sequence)) {
+    while (sequence.length &lt; 6) {
+      sequence = '0' + sequence
+    }
+    res.redirect('/A' + sequence + '/favourite')
+    return ""
+  }
+  console.log(sequence)
+  if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
+    return seqNotFound(res)
+  } else {
+    Favourite.findOneAndUpdate({
+      email: req.user.email,
+      seq: sequence
+    }, {}, {
+      upsert: true
+    }, function(err, docs) {
+      if (err) logger.error(err)
+      logger.success("[+] Favourite Email: " + req.user.email + " Seq: " + sequence)
+      res.send("Favourited")
+    })
+  }
+}
+
+exports.unfavourite = function(req, res) {
+  var sequence = req.params.sequence
+  if (sequence.length &lt; 6 &amp;&amp; !isNaN(sequence)) {
+    while (sequence.length &lt; 6) {
+      sequence = '0' + sequence
+    }
+    res.redirect('/A' + sequence + '/unfavourite')
+    return ""
+  }
+  if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
+    return seqNotFound(res)
+  } else {
+    Favourite.remove({
+      email: req.user.email,
+      seq: sequence
+    }, function(err) {
+      if (err) logger.error(err)
+      logger.success("[-] Unfavourite Email: " + req.user.email + " Seq: " + sequence)
+    res.send("Unfavourited")
+    })
   }
 }
 
@@ -333,10 +515,10 @@ function getRecentlyChanged(callback) {
 if (old_updates == {}) {
   getRecentlyChanged(function(updates) {
     old_updates = updates
-    setInterval(checkUpdate, 10000)
+    setInterval(checkUpdate, 3600000)
   })
 } else {
-  setInterval(checkUpdate, 10000)
+  setInterval(checkUpdate, 3600000)
 }
 
 function checkUpdate() {
@@ -351,11 +533,11 @@ function checkUpdate() {
     old_updates = updates
     fs.writeFile('./data/updates.json', JSON.stringify(old_updates, null, 4), function(err) {
       if (err) {
-        logger.error(err);
+        logger.error(err)
       } else {
-        logger.log("Updates Saved");
+        logger.log("Updates Saved")
       }
-    });
+    })
   })
 }
 
@@ -368,8 +550,8 @@ function linkName(text) {
       return text
     }
     if (text.constructor === String) {
-      var link = /_(\S([A-Za-z \.]+)?)_/gm;
-      var html = text.replace(link, "&lt;a  class='name_link' href='http://oeis.org/wiki/User:$1'>$1&lt;/a>");
+      var link = /_(\S([A-Za-z \.]+)?)_/gm
+      var html = text.replace(link, "&lt;a class='name_link' href='http://oeis.org/wiki/User:$1'>$1&lt;/a>")
       return html
     } else {
       return text
@@ -420,8 +602,8 @@ function updateItem(id, number) {
 
 function updateOne(id) {
   var text = ('000000' + String(id)).substring(String(id).length)
-    // Possibly need to change this to just request.  We don't really want to
-    // Use the super request because that includes logging...
+  // Some point might want to turn this to Request instead of SuperRequest
+  // We don't really want caching on updating id's.
   utils.superRequest(BASE_URL + 'search?q=id:A' + text + '&amp;fmt=json', function(newData) {
     var query = {
       number: id
@@ -432,7 +614,6 @@ function updateOne(id) {
         upsert: true,
         new: true
       }
-
       Sequence.findOneAndUpdate(query, update, options, function(err, result) {
         if (err) {
           logger.error(err)
@@ -501,14 +682,14 @@ function findMissing(max, callback) {
   Sequence.find({}, 'number -_id', function(err, docs) {
     var array = []
     docs.forEach(function(item) {
-      array.push(item.number);
+      array.push(item.number)
     })
     array = array.sort(function(a, b) {
-      return a - b;
+      return a - b
     })
-    var count = 1;
-    var arrayEntry = 0;
-    var missing = [];
+    var count = 1
+    var arrayEntry = 0
+    var missing = []
     while (arrayEntry != array.length &amp;&amp; count &lt; max) {
       if (array[arrayEntry] != count) {
         missing.push(count)
@@ -542,7 +723,7 @@ function testAndUpdate(value) {
 function bootstrapFindMissing(value, multiplier) {
   if (!multiplier) multiplier = 1
   findMissing(value, function(missing) {
-    currentTimeout = 0;
+    currentTimeout = 0
     for (var i = 0; i &lt; missing.length; i++) {
       setTimeout(function(currentTimeout, j, multiplier) {
         try {
@@ -557,7 +738,7 @@ function bootstrapFindMissing(value, multiplier) {
 }
 
 // bootstrapFindMissing(100000, 30)
-bootstrapFindMissing(100000, 20)</code></pre>
+// bootstrapFindMissing(100000, 20)</code></pre>
         </article>
     </section>
 
@@ -569,7 +750,7 @@ bootstrapFindMissing(100000, 20)</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Nov 01 2016 15:57:38 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Nov 22 2016 09:20:39 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

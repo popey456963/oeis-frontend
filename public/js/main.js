@@ -1,11 +1,15 @@
 $(function() {
-  hljs.initHighlightingOnLoad()
-  $('.floating-button').on('click', function(event) {
-    event.preventDefault()
-    randomSequence()
-  });
-  if (getParameterByName('random', location.href) == "1") {
-    $('.floating-button').css('display', '')
+  if (hljs) {
+    hljs.initHighlightingOnLoad()    
+  }
+  if ($('.floating-button').length) {
+    $('.floating-button').on('click', function(event) {
+      event.preventDefault()
+      randomSequence()
+    });
+    if (getParameterByName('random', location.href) == "1") {
+      $('.floating-button').css('display', '')
+    }
   }
 })
 

@@ -3,10 +3,13 @@ var fs = require('fs')
 var utils = require('../controllers/utils')
 var User = require('../models/User')
 var Sequence = require('../models/Sequence')
+var Favourite = require('../models/Favourite')
 var old_updates = require('../data/updates')
 var seq_list = require('../config/sequences')
 var logger = require('./logger')()
 var toMarkdown = require('to-markdown')
+var async = require('async')
+var escape = require('escape-html')
 
 /**
  * @module HomeController
@@ -33,7 +36,14 @@ exports.index = function(req, res) {
 }
 
 /**
- * GET /welcome
+ * Handles any get requests to `/welcome`.  This program responds to the user
+ * with a rendered Jade template of the welcome page, a static page that can
+ * be heavily cached.
+ *
+ * @function welcome
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.welcome = function(req, res) {
   res.render('welcome', {
@@ -42,17 +52,34 @@ exports.welcome = function(req, res) {
   })
 }
 
+/**
+ * Handles whenever a program cannot find a specific sequence, sending
+ * back a rendered Jade file of the home page with a `req.flash()` style
+ * error.
+ *
+ * @function seqNotFound
+ * @instance
+ * @param {object} res - The response object to reply to the client.
+ */
 function seqNotFound(res) {
   res.render('search', {
     page: 'Search',
-    title: 'Search :: OEIS Lookup',
+    title: 'Sequence Not Found :: OEIS Lookup',
     sequence: seq_list[Math.floor(Math.random() * seq_list.length)],
     error: 'Sequence Not Found'
   })
 }
 
 /**
- * POST /test
+ * Handles any post requests to `/test`.  This program responds to the user
+ * with a reply of whether or not the request has too many, none or just one
+ * repsonse.  Depending on this the client should then respond with an alert
+ * to the user or a redirect to the search results or A-page.
+ *
+ * @function test
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.test = function(req, res) {
   var sequence = req.body.sequence
@@ -79,8 +106,16 @@ exports.test = function(req, res) {
   }
 }
 
-/*
- * GET /A******
+/**
+ * Handles any post requests to `/A:seq`.  This program responds to the user
+ * with either a redirect to a fully formed sequence page, an error page if
+ * the sequence is not found or a rendered Jade page giving information on
+ * an ID.  This program uses `parseProgram` and `linkName` to parse the data.
+ *
+ * @function id
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.id = function(req, res) {
   var sequence = req.params.sequence
@@ -106,23 +141,43 @@ exports.id = function(req, res) {
         for (var i in doc) {
           doc[i] = linkName(doc[i])
         }
-        res.render('id', {
-          page: 'A-Page',
-          title: 'A' + sequence + ' :: OEIS Lookup',
-          data: organiseData(doc, false),
-          toTitleCase: function(str) {
-            return str.replace(/\w\S*/g, function(txt) {
-              return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-            })
-          },
-          sequenceName: 'A' + sequence,
-          id_page: true
+        Favourite.find({ email: req.user.email, seq: sequence }, function(err, docs) {
+          var isFavourite = false
+          if (docs.length > 0) {
+            console.log("Favourite")
+            console.log(docs)
+            isFavourite = true
+          }
+          res.render('id', {
+            page: 'A-Page',
+            title: 'A' + sequence + ' :: OEIS Lookup',
+            favourite: isFavourite,
+            data: organiseData(doc, false),
+            toTitleCase: function(str) {
+              return str.replace(/\w\S*/g, function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+              })
+            },
+            sequenceName: 'A' + sequence,
+            id_page: true
+          })
         })
       }
     })
   }
 }
 
+/**
+ * Organises sequence data into a certain order to match the order shown
+ * on the official OEIS website.  Also optionally replaces all undefined values
+ * with `<no data>` depending on the `edit` boolean.  At the moment, this is
+ * only used on the edit page.
+ *
+ * @function organiseData
+ * @instance
+ * @param {object} data - All information on a specific sequence
+ * @param {boolean} edit - If true, undefined values are replaced with `<no data>`
+ */
 function organiseData(data, edit) {
   headers = ['number', 'name', 'references', 'revision', 'id', 'data', 'comment', 'reference', 'link', 'formula', 'example', 'maple', 'mathematica', 'program', 'xref', 'keyword', 'author']
   obj = {}
@@ -136,8 +191,18 @@ function organiseData(data, edit) {
   return obj
 }
 
-/*
- * GET /search
+/**
+ * Assuming the `/test` post has worked, search requests get routed to a
+ * `/search` url with parameters of `q` for the query string and `page`
+ * for the pagination.  This requests from the OEIS website to get the
+ * search results before displaying to the user a rendered Jade page or
+ * error message (if no results).
+ * 
+ *
+ * @function search
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.search = function(req, res) {
   var sequence = decodeURIComponent(req.query.q)
@@ -170,6 +235,67 @@ exports.search = function(req, res) {
   })
 }
 
+/**
+ * Renders a Jade file that contains a list of all sequences that
+ * have been favourited by an individual.
+ * 
+ * @function search
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
+ */
+exports.favourites = function(req, res) {
+  Favourite.find({ email: req.user.email }, 'seq -_id', function(err, docs) {
+    var seq_info = []
+
+    async.forEachOf(docs, function (doc, key, callback) {
+      getFavInfo(doc.seq, function(data) {
+        seq_info.push(data)
+        callback()
+      })
+    }, function (err) {
+      seq_info.sort(function(a, b){
+        var a = a.number
+        var b = b.number
+        if(a < b) return -1;
+        if(b > a) return 1;
+        return 0;
+      })
+      res.render('./account/favourites', {
+        title: 'Favourites :: OEIS Lookup',
+        page: 'Favourites',
+        favourites: seq_info,
+        number: docs.length,
+        sequenceGen: function padLeft(nr, n, str) {
+          return Array(n - String(nr).length + 1).join(str || '0') + nr
+        }
+      })
+    })
+  })
+}
+
+function getFavInfo(seq, callback) {
+  Sequence.findOne({ number: parseInt(seq) }).lean().exec(function(err, doc){
+    callback({
+      number: doc.number,
+      time: doc.time,
+      keyword: doc.keyword,
+      name: doc.name,
+      data: doc.data
+    })
+  })
+}
+
+/**
+ * Returns a rendered Jade template to any request that matches
+ * `/A:sequence/edit`.  In order to do this it checks the sequence
+ * exists before organising ing  and then parsing it into markdown.
+ *
+ * @function editSequence
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
+ */
 exports.editSequence = function(req, res) {
   var sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
@@ -243,13 +369,67 @@ function toMarkdownData(doc) {
 }
 
 /**
- * POST /A:sequence/edit
+ * Handles any post requests to `/A:seq/edit`.
+ *
+ * @function postEditSequence 
+ * @instance
+ * @param {object} req - The request object sent by the client
+ * @param {object} res - The response object to reply to the client.
  */
 exports.postEditSequence = function(req, res) {
   console.log("Hey: " + req.body)
   console.log(req.body)
   res.send("Hey")
   // res.json({name: "John", time: "2pm"})
+}
+
+exports.favourite = function(req, res) {
+  var sequence = req.params.sequence
+  if (sequence.length < 6 && !isNaN(sequence)) {
+    while (sequence.length < 6) {
+      sequence = '0' + sequence
+    }
+    res.redirect('/A' + sequence + '/favourite')
+    return ""
+  }
+  console.log(sequence)
+  if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
+    return seqNotFound(res)
+  } else {
+    Favourite.findOneAndUpdate({
+      email: req.user.email,
+      seq: sequence
+    }, {}, {
+      upsert: true
+    }, function(err, docs) {
+      if (err) logger.error(err)
+      logger.success("[+] Favourite Email: " + req.user.email + " Seq: " + sequence)
+      res.send("Favourited")
+    })
+  }
+}
+
+exports.unfavourite = function(req, res) {
+  var sequence = req.params.sequence
+  if (sequence.length < 6 && !isNaN(sequence)) {
+    while (sequence.length < 6) {
+      sequence = '0' + sequence
+    }
+    res.redirect('/A' + sequence + '/unfavourite')
+    return ""
+  }
+  if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
+    return seqNotFound(res)
+  } else {
+    Favourite.remove({
+      email: req.user.email,
+      seq: sequence
+    }, function(err) {
+      if (err) logger.error(err)
+      logger.success("[-] Unfavourite Email: " + req.user.email + " Seq: " + sequence)
+    res.send("Unfavourited")
+    })
+  }
 }
 
 /**
@@ -321,7 +501,7 @@ function parseProgram(program) {
   for (var i = 0; i < program.length; i++) {
     var trimmed = false
     if (programNameRe.test(program[i])) {
-      var group = programNameRe.exec(program[i])[1]
+      var group = programNameRe.exec(program[i])[0]
       currentCounter++
       program[i] = program[i].replace(programNameRe, '').trim()
       languages[currentCounter] = [
@@ -343,7 +523,7 @@ function parseProgram(program) {
 }
 
 function getRecentlyChanged(callback) {
-  request('http://fastdl.sinisterheavens.com/recent.txt', function(err, resp, body) {
+  request('http://oeis.org/recent.txt', function(err, resp, body) {
     if (body) {
       logger.success('Got /recent.txt successfully')
       var text = body.split('\n')
@@ -398,9 +578,43 @@ function linkName(text) {
       return text
     }
     if (text.constructor === String) {
-      var link = /_(\S([A-Za-z \.]+)?)_/gm
+      /*
+      var link = /_(\S([A-Za-z \.])?)_/g
       var html = text.replace(link, "<a class='name_link' href='http://oeis.org/wiki/User:$1'>$1</a>")
-      return html
+      */
+
+      // _Joseph-Harry P. Shoulak_
+      // _Gary Detlefs_
+      // _Sergei N. Gladkovskii_
+      // _Richard R. Forberg_
+      var regex
+      var names = []
+
+      text = escape(text)
+
+      var link = /_([A-Za-z .-]{1,80})_/g
+      do {
+          regex = link.exec(text)
+          if (regex && regex[1].indexOf(" ") != -1) {
+              names.push(regex[1])
+          }
+      } while (regex)
+
+      console.log("Replaced: " + JSON.stringify(names))
+
+      for (var i = 0; i < names.length; i++) {
+        text = text.replace(new RegExp(("_"+names[i]+"_").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g'),
+          "<a class='name_link' href='http://oeis.org/wiki/User:" + names[i] + "'>" + names[i] + "</a>")
+      }
+
+      // 2-4 words
+      // 1-20 characters in each word + -.
+      // spaces between words
+
+      // Our final regex matches letters, dots, dashes and must be of length 1-->80
+
+      // /_[A-Za-z .-]{8,80}_/g
+      return text
     } else {
       return text
     }

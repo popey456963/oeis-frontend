@@ -1,0 +1,40 @@
+extends favourites_layout
+
+block content
+  .container-fluid
+    .row
+      .col-xs-10.col-sm-10.col-sm-offset-1.col-md-10.col-md-offset-1.col-lg-10.col-lg-offset-1
+        .panel
+          .panel-body
+            hgroup.mb20
+              h1='Favourite Sequences'
+              h2.lead
+                | You have favourited 
+                strong.text-danger= number
+                |  different sequences
+            section.col-xs-12.col-sm-6.col-md-12
+              for result in favourites
+                article.search-result.row
+                  .col-xs-12.col-sm-12.col-md-2
+                    ul.meta-search
+                      li
+                        i.glyphicon.glyphicon-pushpin
+                        span='A' + sequenceGen(result.number, 6)
+                      li
+                        i.glyphicon.glyphicon-calendar
+                          - var d = new Date(result.time);
+                        span=d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear()
+                      li
+                        i.glyphicon.glyphicon-tags
+                        - var keyword = result.keyword.split(',')
+                        if keyword.length > 4
+                          span=keyword.slice(0, 4).join(', ') + '...'
+                        else if keyword.length == 4
+                          span=keyword.slice(0, 4).join(', ')
+                        else
+                          span=keyword.join(', ')
+                  .col-xs-12.col-sm-12.col-md-10
+                    h3
+                      a(href='/' + 'A' + sequenceGen(result.number, 6), title='')=result.name
+                    p!=result.data.split(',').join(', ')
+                  span.clearfix.borda
