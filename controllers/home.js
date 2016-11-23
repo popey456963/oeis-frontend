@@ -9,8 +9,9 @@ var seq_list = require('../config/sequences')
 var logger = require('./logger')()
 var toMarkdown = require('to-markdown')
 var async = require('async')
-var escape = require('escape-html')
-
+var entities = new (require('html-entities').XmlEntities)()
+var XRegExp = require('xregexp')
+ 
 /**
  * @module HomeController
  */
@@ -578,21 +579,21 @@ function linkName(text) {
       return text
     }
     if (text.constructor === String) {
-      /*
-      var link = /_(\S([A-Za-z \.])?)_/g
-      var html = text.replace(link, "<a class='name_link' href='http://oeis.org/wiki/User:$1'>$1</a>")
-      */
+      text = entities.encode(text)
+      var match
+      var link = /&lt;a([^>]+)&gt;(.+?)&lt;\/a&gt;/gi
 
-      // _Joseph-Harry P. Shoulak_
-      // _Gary Detlefs_
-      // _Sergei N. Gladkovskii_
-      // _Richard R. Forberg_
+      do {
+          match = link.exec(text)
+          if (match) {
+            text = text.replace(match[0], entities.decode(match[0]))
+          }
+      } while (match)
+
       var regex
       var names = []
+      var link = new XRegExp('_([\\p{L} .-]{1,80})_', 'g')
 
-      text = escape(text)
-
-      var link = /_([A-Za-z .-]{1,80})_/g
       do {
           regex = link.exec(text)
           if (regex && regex[1].indexOf(" ") != -1) {
@@ -600,20 +601,10 @@ function linkName(text) {
           }
       } while (regex)
 
-      console.log("Replaced: " + JSON.stringify(names))
-
       for (var i = 0; i < names.length; i++) {
         text = text.replace(new RegExp(("_"+names[i]+"_").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g'),
           "<a class='name_link' href='http://oeis.org/wiki/User:" + names[i] + "'>" + names[i] + "</a>")
       }
-
-      // 2-4 words
-      // 1-20 characters in each word + -.
-      // spaces between words
-
-      // Our final regex matches letters, dots, dashes and must be of length 1-->80
-
-      // /_[A-Za-z .-]{8,80}_/g
       return text
     } else {
       return text
