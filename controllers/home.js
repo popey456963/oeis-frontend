@@ -145,30 +145,38 @@ exports.id = function(req, res) {
         for (var i in doc) {
           doc[i] = linkName(doc[i])
         }
-        Favourite.find({ email: req.user.email, seq: sequence }, function(err, docs) {
-          var isFavourite = false
-          if (docs.length > 0) {
-            console.log("Favourite")
-            console.log(docs)
-            isFavourite = true
-          }
-          res.render('id', {
-            page: 'A-Page',
-            title: 'A' + sequence + ' :: OEIS Lookup',
-            favourite: isFavourite,
-            data: organiseData(doc, false),
-            toTitleCase: function(str) {
-              return str.replace(/\w\S*/g, function(txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-              })
-            },
-            sequenceName: 'A' + sequence,
-            id_page: true
+        if (req.user) {
+          Favourite.find({ email: req.user.email, seq: sequence }, function(err, docs) {
+            var isFavourite = false
+            if (docs.length > 0) {
+              console.log("Favourite")
+              console.log(docs)
+              isFavourite = true
+              finalRender(sequence, isFavourite, doc, res)
+            }
           })
-        })
+        } else {
+          finalRender(sequence, false, doc, res)
+        }
       }
     })
   }
+}
+
+function finalRender(sequence, isFavourite, doc, res) {
+  res.render('id', {
+    page: 'A-Page',
+    title: 'A' + sequence + ' :: OEIS Lookup',
+    favourite: isFavourite,
+    data: organiseData(doc, false),
+    toTitleCase: function(str) {
+      return str.replace(/\w\S*/g, function(txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+      })
+    },
+    sequenceName: 'A' + sequence,
+    id_page: true
+  })
 }
 
 /**
@@ -633,31 +641,11 @@ function linkName(text, group) {
     }
     if (text.constructor === String) {
       text = entities.encode(text)
-      var match
-      var link = /&lt;a([^>]+)&gt;(.+?)&lt;\/a&gt;/gi
 
-      do {
-          match = link.exec(text)
-          if (match) {
-            text = text.replace(match[0], entities.decode(match[0]))
-          }
-      } while (match)
+      text = findSeqs(text)
+      text = findLinks(text)
+      text = replaceNames(text)
 
-      var regex
-      var names = []
-      var link = new XRegExp('_([\\p{L} .-]{1,80})_', 'g')
-
-      do {
-          regex = link.exec(text)
-          if (regex && regex[1].indexOf(" ") != -1) {
-              names.push(regex[1])
-          }
-      } while (regex)
-
-      for (var i = 0; i < names.length; i++) {
-        text = text.replace(new RegExp(("_"+names[i]+"_").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g'),
-          "<a class='name_link' href='http://oeis.org/wiki/User:" + names[i] + "'>" + names[i] + "</a>")
-      }
       return text
     } else {
       return text
@@ -665,6 +653,45 @@ function linkName(text, group) {
   } else {
     return text
   }
+}
+
+function findSeqs(text) {
+  // Implementation of this seems harder than expected.
+  return text
+}
+
+function findLinks(text) {
+  var match
+  var link = /&lt;a([^>]+)&gt;(.+?)&lt;\/a&gt;/gi
+
+  do {
+      match = link.exec(text)
+      if (match) {
+        text = text.replace(match[0], entities.decode(match[0]))
+      }
+  } while (match)
+
+  return text
+}
+
+function replaceNames(text) {
+  var regex
+  var names = []
+  var link = new XRegExp('_([\\p{L} .-]{1,80})_', 'g')
+
+  do {
+      regex = link.exec(text)
+      if (regex && regex[1].indexOf(" ") != -1) {
+          names.push(regex[1])
+      }
+  } while (regex)
+
+  for (var i = 0; i < names.length; i++) {
+    text = text.replace(new RegExp(("_"+names[i]+"_").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g'),
+      "<a class='name_link' href='http://oeis.org/wiki/User:" + names[i] + "'>" + names[i] + "</a>")
+  }
+
+  return text
 }
 
 function updateItem(id, number) {
