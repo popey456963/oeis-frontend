@@ -39,6 +39,7 @@ $panel-body-padding: 30px;
 html {
   position: relative;
   min-height: 100%;
+  overflow-y: scroll;
 }
 
 body {
@@ -417,4 +418,8 @@ textarea {
 
 .dropdown-menu > li > a {
   padding: 3px 13px;
+}
+
+.none {
+  display: none;
 }

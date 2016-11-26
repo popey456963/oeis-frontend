@@ -1,12 +1,24 @@
 .masonry { /* Masonry container */
     column-count: 4;
-    column-gap: 1em;
+    column-gap: 2em;
 }
 
-.card { /* Masonry bricks or child elements */
+.panel { /* Masonry bricks or child elements */
     display: inline-block;
-    margin: 0 0 1em;
+    margin: 0 0 2em;
     width: 100%;
+}
+
+.panel-heading {
+	padding: 15px 20px;
+}
+
+.panel-body {
+	padding: 11px 20px !important;
+}
+
+.serverItem {
+	margin: 0px 0 0px;
 }
 
 @media only screen and (min-width: 1px) {

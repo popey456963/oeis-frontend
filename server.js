@@ -71,6 +71,7 @@ var UserController = require('./controllers/user')
 var AdminController = require('./controllers/admin')
 var StatsController = require('./controllers/stats')
 var DevController = require('./controllers/dev')
+var ApiController = require('./controllers/api')
 
 // Passport OAuth strategies
 require('./config/passport')
@@ -132,6 +133,8 @@ app.get('/auth/facebook', passport.authenticate('facebook', { scope: ['email', '
 app.get('/auth/facebook/callback', passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/login' }))
 app.get('/auth/twitter', passport.authenticate('twitter'))
 app.get('/auth/twitter/callback', passport.authenticate('twitter', { successRedirect: '/', failureRedirect: '/login' }))
+
+app.get('/api', ApiController.api)
 
 app.get('/', HomeController.index)
 app.get('/favourites', UserController.ensureAuthenticated, HomeController.favourites)

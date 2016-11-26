@@ -134,6 +134,9 @@ exports.id = function(req, res) {
       number: sequence
     }).lean().exec(function(err, doc) {
       if (!doc) {
+        if (0 < parseInt(sequence) < 277000) {
+          updateOne(parseInt(sequence))
+        }
         return seqNotFound(res)
       } else {
         if (doc.program) {
@@ -378,10 +381,60 @@ function toMarkdownData(doc) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.postEditSequence = function(req, res) {
-  console.log("Hey: " + req.body)
-  console.log(req.body)
-  res.send("Hey")
-  // res.json({name: "John", time: "2pm"})
+  Sequence.findOne({ number: req.body.number }, function(err, doc) {
+    if (!doc) {
+      res.json({ "success": false, "err": "Sequence Number Not Found..."})
+    } else {
+      var changes = {}
+      for (var item in req.body) {
+        if (req.body[item].indexOf('\n') != -1) {
+          req.body[item] = req.body[item].split(/\r?\n/)
+        }
+        if (item == "data") {
+          req.body[item] = req.body[item].split(", ").join(",")
+        }
+        if (req.body[item].constructor === Array) {
+          changes[item] = "Unchanged"
+          var check = arrayCheck(doc[item], req.body[item])
+          if (!check[0]) {
+            changes[item] = "Changed, " + JSON.stringify(check[1])
+          }
+          if (doc[item] == "" || doc[item] == [] || !doc[item]) {
+            if (req.body[item] && req.body[item] != "" && req.body[item] != []) {
+              changes[item] = "Created"
+            }
+          }
+          if (doc[item] && doc[item] != "" || req.body[item] != []) {
+            if (!req.body[item] && req.body[item] == "" && req.body[item] == []) {
+              changes[item] = "Removed"
+            }
+          } 
+        } else {
+          changes[item] = "Unchanged"
+          if (doc[item] != req.body[item]) {
+            changes[item] = "Changed, " + JSON.stringify([doc[item], req.body[item]])
+          }
+          if (!doc[item] && req.body[item]) {
+            changes[item] = "Created"
+          }
+          if (doc[item] && !req.body[item]) {
+            changes[item] = "Removed"
+          }
+        }
+      }
+      res.json([req.body, changes])
+    }
+  })
+}
+
+function arrayCheck(arr1, arr2) {
+  if(arr1.length !== arr2.length)
+    return [false, ["length", arr1.length, arr2.length]]
+  for(var i = arr1.length; i--;) {
+    if(arr1[i] !== arr2[i])
+      return [false, [arr1[i], arr2[i]]]
+  }
+  return [true, "true"];
 }
 
 exports.favourite = function(req, res) {
@@ -497,7 +550,7 @@ function parseProgram(program) {
   }
   var languages = []
   var currentCounter = -1
-  var programNameRe = /^\(([a-zA-Z0-9\/\-.])+\)/
+  var programNameRe = /^\(([a-zA-Z0-9\/\-. ])+\)/
   var matchAnythingRe = /^([.]+)/
   for (var i = 0; i < program.length; i++) {
     var trimmed = false
@@ -570,7 +623,7 @@ function checkUpdate() {
   })
 }
 
-function linkName(text) {
+function linkName(text, group) {
   if (text) {
     if (text.constructor === Array) {
       for (var j in text) {

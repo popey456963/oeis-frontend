@@ -1,6 +1,6 @@
 $(function() {
-  if (hljs) {
-    hljs.initHighlightingOnLoad()    
+  if (typeof hljs !== 'undefined') {
+    hljs.initHighlightingOnLoad()        
   }
   if ($('.floating-button').length) {
     $('.floating-button').on('click', function(event) {

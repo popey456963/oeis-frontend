@@ -26,7 +26,7 @@ goto :EndOfFile
 
 :StartNodemon
 	echo Starting Nodemon...
-	nodemon server.js -e js
+	nodemon server.js -e js --ignore public/
 	goto :EndOfFile
 
 :StartGulpWatch

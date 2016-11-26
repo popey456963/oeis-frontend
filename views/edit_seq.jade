@@ -9,23 +9,21 @@ block content
               .container-fluid
                 #error.hidden.alert.alert-danger(role='alert')
               h3="Editting A" + id
-              p
-                b Note: Fields left blank will not be displayed to the user.
-              p
-                b Available Syntax:
+              p #[b Note: Fields left blank will not be displayed to the user. ]
+              p #[b Available Syntax: ]
               ul
                 li [Text](http://link.com) - Hyperlink
                 li *Text* - Bold
                 li **Text** - Italic
                 li _Username_ - Link to User Page
                 li= "<code>*Text*</code> - No Markdown on Text"
-              form.form-horizontal(method="POST")
+              form.form-horizontal
                 for value, index in data
                   if value != "<no data>" && index != "references" && index != "revision"
                     if index == "data"
                       b!="<sup>*</sup>" + toTitleCase(index) + ": "
                       br
-                      textarea.form-control(rows=3, style="resize:auto", id=index)
+                      textarea.form-control(rows=3, style="resize:auto", id=index, name=index)
                         =value.split(",").join(", ")
                       br
                     else
@@ -35,7 +33,7 @@ block content
                         else
                           b=toTitleCase(index) + ": "
                         br
-                        textarea.form-control(rows=5, style="resize:auto", id=index)
+                        textarea.form-control(rows=5, style="resize:auto", id=index, name=index)
                           =value.join("\n")
                         br
                       else
@@ -44,7 +42,7 @@ block content
                         else
                           b=toTitleCase(index) + ": "
                         br
-                        textarea.form-control(rows=1, style="resize:auto", id=index)
+                        textarea.form-control(rows=1, style="resize:auto", id=index, name=index)
                           =value
                         br
                 if unused.length > 0
@@ -55,10 +53,10 @@ block content
                       b=toTitleCase(index) + ": "
                       br
                       if short.indexOf(index) != -1
-                        textarea.form-control(rows=1, style="resize:auto", id=index)
+                        textarea.form-control(rows=1, style="resize:auto", id=index, name=index)
                       else
-                        textarea.form-control(rows=5, style="resize:auto", id=index)
+                        textarea.form-control(rows=5, style="resize:auto", id=index, name=index)
                       br
-                button.btn.btn-success(type='submit') Submit Edit
+                button.btn.btn-success#submitedit Submit Edit
             //.panel-body
               textarea#editor=JSON.stringify(data)

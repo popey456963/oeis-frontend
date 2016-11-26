@@ -8,44 +8,67 @@ block content
           .panel-body
             .container-fluid
               #error.hidden.alert.alert-danger(role='alert')
-              
+            br
             h3 Statistics
-
-            p Number of User Logins (day, month, year)
-            p Page (day, month, year)
-
+            br
             .masonry
-              .card
-                .card-header Most Popular Pages
-                .card-block
+              .panel.panel-default
+                .panel-heading Most Popular Pages
+                .panel-body
                   ol
                     for page in popularPages
                       li #[b #{page['page']}: ] #{page['totalViews']}
-              .card
-                .card-header Latest Viewed Pages
-                .card-block
+              .panel.panel-default
+                .panel-heading Latest Viewed Pages
+                .panel-body
                   ol
                     for page in latestPages
                       li #[b #{page['page']}]
-              .card
-                .card-header Active Users
-                .card-block
+              .panel.panel-default
+                .panel-heading Active Users
+                .panel-body
                   ul
                     for user in activeUsers
                       li #[b #{user['name']}]
-              .card
-                .card-header Latest Changes
-                .card-block
+              .panel.panel-default
+                .panel-heading Latest Changes
+                .panel-body
                   ol
                     for change in latestChanges
                       li Sequence #[b #{change['id']}] #{change['change']}.
-              .card
-                .card-header Uptime Information
-                .card-block
-                  p= stats
-              .card
-                .card-header Server Usage
-                .card-block
+              .panel.panel-default
+                .panel-heading Uptime Information
+                .panel-body
+                  p!= stats
+              .panel.panel-default
+                .panel-heading Server Usage
+                .panel-body
                   //p=JSON.stringify(serverStats)
                   for item in serverStats
-                    p= item
+                    p.serverItem!= item
+              .panel.panel-default
+                .panel-heading
+                  div(style="float:left")
+                    span#weektitle Week Top Views
+                    span#daytitle(style='display:none') Day Top Views
+                    span#hourtitle(style='display:none') Hour Top Views
+                  div(style="float:right")
+                    a(style='cursor: pointer')#weekselect Week
+                    span= " | "
+                    a(style='cursor: pointer')#dayselect Day
+                    span= " | "
+                    a(style='cursor: pointer')#hourselect Hour
+                  div(style="clear: both")
+                .panel-body
+                  div#weektop
+                    ol
+                      for page in popularWeekPages
+                        li #[b #{page[0]}: ] #{page[1]}
+                  div#daytop(style='display:none')
+                    ol
+                      for page in popularDayPages
+                        li #[b #{page[0]}: ] #{page[1]}
+                  div#hourtop(style='display:none')
+                    ol
+                      for page in popularHourPages
+                        li #[b #{page[0]}: ] #{page[1]}

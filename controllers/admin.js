@@ -115,10 +115,12 @@ exports.adminStats = function(req, res) {
    *  - PageViews (ALL)
    *  - Latest Changes
    */
-  // MyModel.distinct('_id', { foo: 'bar' }, function(error, ids)
 
   async.parallel({
     popularPages: function(callback) { popularPages(callback) },
+    popularWeekPages: function(callback) { getMostTime('WeekViews', 10, callback) },
+    popularDayPages: function(callback) { getMostTime('DayViews', 10, callback) },
+    popularHourPages: function(callback) { getMostTime('HourViews', 10, callback) },
     latestPages: function(callback) { getLatestPages(callback) },
     latestChanges: function(callback) { getLatestChanges(callback) },
     hourViews: function(callback) { getDocuments('HourViews', callback) },
@@ -146,13 +148,13 @@ exports.adminStats = function(req, res) {
 function generateStats(stats) {
   if (stats == "Stats Timed Out") {
     return "Statistics engine is still spinning up!"
-  }
+  } 
   var processTime = moment.duration(stats.uptime.process * 1000).humanize()
   var systemTime = moment.duration(stats.uptime.system * 1000).humanize()
-  var result = "The program is currently running successfully on Node V." + stats.versions.node
-  result += " with " + stats.versions.modules + " modules installed.  This process has been "
-  result += "running for " + processTime + ", whilst the system has been running "
-  result += "for " + systemTime + "."
+  var result = "The program is currently running successfully on <b>Node V." + stats.versions.node
+  result += "</b> with <b>" + stats.versions.modules + " modules</b> installed.  This process has been "
+  result += "running for <b>" + processTime + "</b>, whilst the system has been running "
+  result += "for <b>" + systemTime + "</b>."
   return result
 }
 
@@ -173,11 +175,11 @@ function generateServerStats(stats) {
   var free = filesize(stats.memory.system.free , {base: 2})
   var total = filesize(stats.memory.system.total, {base: 2})
 
-  result.push("CPU (1m):    " + cpuMinAvg + "%")
-  result.push("CPU (15s):   " + cpuSecAvg + "%")
-  result.push("Mem (Proc):  " + rss + " (" + parseInt(stats.memory.process.rss*100/stats.memory.system.total) + "%)")
-  result.push("Mem (Free):  " + free + " (" + parseInt(stats.memory.system.free*100/stats.memory.system.total) + "%)")
-  result.push("Mem (Total): " + total)
+  result.push("<b>CPU (1m):    </b>" + cpuMinAvg + "%")
+  result.push("<b>CPU (15s):   </b>" + cpuSecAvg + "%")
+  result.push("<b>Mem (Proc):  </b>" + rss + " (" + parseInt(stats.memory.process.rss*100/stats.memory.system.total) + "%)")
+  result.push("<b>Mem (Free):  </b>" + free + " (" + parseInt(stats.memory.system.free*100/stats.memory.system.total) + "%)")
+  result.push("<b>Mem (Total): </b>" + total)
   return result
 }
 
@@ -199,6 +201,29 @@ function getLatestPages(callback) {
       }
     }
     callback(null, sortedPages.slice(0, 10))
+  })
+}
+
+function getMostTime(table, amount, callback) {
+  var count = {}
+  PageViews[table].distinct('page', { page: /^(?!(\/js|\/css)).+$/g }, function(err, pages) {
+    async.forEachOf(pages, function(value, key, cb) {
+      PageViews[table].count({ page: value }, function(err, counter) {
+        count[value] = counter
+        cb()
+      })
+    }, function(err) {
+      if (err) logger.error(err)
+      var sortable = []
+      for (var page in count)
+            sortable.push([page, count[page]])
+      sortable.sort(
+          function(a, b) {
+              return b[1] - a[1]
+          }
+      )
+      callback(null, sortable.slice(0, amount))
+    })
   })
 }
 
