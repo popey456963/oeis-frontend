@@ -6081,3 +6081,7 @@ textarea {
 
 .none {
   display: none; }
+
+.flag-style {
+  width: 1.666666666em;
+  line-height: 1em; }

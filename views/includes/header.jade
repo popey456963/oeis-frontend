@@ -19,14 +19,23 @@ nav.navbar.navbar-default.navbar-static-top
       ul.nav.navbar-nav.navbar-right
         li.dropdown
           a.navbar-avatar.dropdown-toggle(href='#', data-toggle='dropdown')
-            span.flag-icon.flag-icon-gb
-            span(style='line-height: 220%;')   English 
-            i.caret
+            if cookies && cookies.lang
+              span(class='flag-icon flag-icon-' + langs[cookies.lang][1])
+              span(style='line-height: 220%;')= "  " + langs[cookies.lang][0]
+              i.caret
+            else              
+              span.flag-icon.flag-icon-gb
+              span(style='line-height: 220%;')   English 
+              i.caret
           ul.dropdown-menu
-            li
-              a(href='#')
-                span.flag-icon.flag-icon-gb(style='width:1.666666666em; line-height:1em')
-                span    English 
+            for index, item in langs
+              if item != "divide"
+                li
+                  a(href='javascript:void(0);', onclick='changeLang("' + item + '");')
+                    span(class='flag-style flag-icon flag-icon-' + langs[item][1])
+                    span= "   " + langs[item][0] 
+              else
+                li.divider
         if user
           li.dropdown
             a.navbar-avatar.dropdown-toggle(href='#', data-toggle='dropdown')

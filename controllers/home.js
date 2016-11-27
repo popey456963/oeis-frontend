@@ -1,17 +1,17 @@
-var request = require('request')
-var fs = require('fs')
-var utils = require('../controllers/utils')
-var User = require('../models/User')
-var Sequence = require('../models/Sequence')
-var Favourite = require('../models/Favourite')
-var old_updates = require('../data/updates')
-var seq_list = require('../config/sequences')
-var logger = require('./logger')()
-var toMarkdown = require('to-markdown')
-var async = require('async')
-var entities = new (require('html-entities').XmlEntities)()
-var XRegExp = require('xregexp')
- 
+const XRegExp = require('xregexp')
+const toMarkdown = require('to-markdown')
+const async = require('async')
+const request = require('request')
+const entities = new (require('html-entities').XmlEntities)()
+const fs = require('fs')
+const logger = require('./logger')()
+const User = require('../models/User')
+const Sequence = require('../models/Sequence')
+const Favourite = require('../models/Favourite')
+const utils = require('../controllers/utils')
+let old_updates = require('../data/updates')
+let seq_list = require('../config/sequences')
+
 /**
  * @module HomeController
  */
@@ -25,10 +25,11 @@ const BASE_URL = 'https://oeis.org/'
  * 
  * @function index
  * @instance
- * @param {object} req - The request object sent by the client
+ * @param {object} req - The request object sent by the client.
  * @param {object} res - The response object to reply to the client.
  */
 exports.index = function(req, res) {
+  console.log(res.__('Search the OEIS Database'))
   res.render('search', {
     page: 'Search',
     title: 'Search :: OEIS Lookup',
@@ -43,7 +44,7 @@ exports.index = function(req, res) {
  *
  * @function welcome
  * @instance
- * @param {object} req - The request object sent by the client
+ * @param {object} req - The request object sent by the client.
  * @param {object} res - The response object to reply to the client.
  */
 exports.welcome = function(req, res) {
@@ -79,7 +80,7 @@ function seqNotFound(res) {
  *
  * @function test
  * @instance
- * @param {object} req - The request object sent by the client
+ * @param {object} req - The request object sent by the client.
  * @param {object} res - The response object to reply to the client.
  */
 exports.test = function(req, res) {
@@ -115,7 +116,7 @@ exports.test = function(req, res) {
  *
  * @function id
  * @instance
- * @param {object} req - The request object sent by the client
+ * @param {object} req - The request object sent by the client.
  * @param {object} res - The response object to reply to the client.
  */
 exports.id = function(req, res) {
@@ -140,22 +141,28 @@ exports.id = function(req, res) {
         return seqNotFound(res)
       } else {
         if (doc.program) {
+          logger.log("Parsing Program")
           doc.program = parseProgram(doc.program)
         }
         for (var i in doc) {
+          logger.log("Linking Names")
           doc[i] = linkName(doc[i])
+          logger.log("Finished Linking Names")
         }
         if (req.user) {
+          logger.log("User Found")
           Favourite.find({ email: req.user.email, seq: sequence }, function(err, docs) {
             var isFavourite = false
             if (docs.length > 0) {
-              console.log("Favourite")
-              console.log(docs)
+              logger.log("Favourite")
+              logger.log(docs)
               isFavourite = true
-              finalRender(sequence, isFavourite, doc, res)
+              logger.log("Favourite: " + isFavourite + ", Rendering.")
             }
+            finalRender(sequence, isFavourite, doc, res)
           })
         } else {
+          logger.log("No User Found, Rendering")
           finalRender(sequence, false, doc, res)
         }
       }
@@ -163,6 +170,19 @@ exports.id = function(req, res) {
   }
 }
 
+/**
+ * Handles the actaul rendering of the `id` page, including passing the required
+ * data to the Jade rendered and sending the response to the client specified.
+ * It organises the data properly, given a Mongoose document (or any similarly
+ * structured object).
+ *
+ * @function finalRender
+ * @instance
+ * @param {int} sequence - A 1-6 digit number containing the rendered sequence number.
+ * @param {boolean} isFavourite - Whether the user has favourited this sequence or not.
+ * @param {object} doc - Mongoose-like object containing information on the sequence.
+ * @param {object} res - The response object to reply to the client.
+ */
 function finalRender(sequence, isFavourite, doc, res) {
   res.render('id', {
     page: 'A-Page',
@@ -213,7 +233,7 @@ function organiseData(data, edit) {
  *
  * @function search
  * @instance
- * @param {object} req - The request object sent by the client
+ * @param {object} req - The request object sent by the client.
  * @param {object} res - The response object to reply to the client.
  */
 exports.search = function(req, res) {
@@ -253,7 +273,7 @@ exports.search = function(req, res) {
  * 
  * @function search
  * @instance
- * @param {object} req - The request object sent by the client
+ * @param {object} req - The request object sent by the client.
  * @param {object} res - The response object to reply to the client.
  */
 exports.favourites = function(req, res) {
@@ -261,7 +281,7 @@ exports.favourites = function(req, res) {
     var seq_info = []
 
     async.forEachOf(docs, function (doc, key, callback) {
-      getFavInfo(doc.seq, function(data) {
+      getFavInfo(doc.seq, function(err, data) {
         seq_info.push(data)
         callback()
       })
@@ -286,15 +306,28 @@ exports.favourites = function(req, res) {
   })
 }
 
+/**
+ * Gathers a very small portion of the sequence data in order to display
+ * on the favourites page.  Returns the `number`, `time`, `keyword`,
+ * `name` and `data` fields in the callback, as an object.
+ * 
+ * @function getFavInfo
+ * @instance
+ * @param {object} seq - The numerical value of the sequence to grab.
+ * @param {function} callback - A function called when the DB call has succeeded.
+ */
 function getFavInfo(seq, callback) {
   Sequence.findOne({ number: parseInt(seq) }).lean().exec(function(err, doc){
-    callback({
-      number: doc.number,
-      time: doc.time,
-      keyword: doc.keyword,
-      name: doc.name,
-      data: doc.data
-    })
+    if (err) callback(err, null)
+    else {
+      callback(null, {
+        number: doc.number,
+        time: doc.time,
+        keyword: doc.keyword,
+        name: doc.name,
+        data: doc.data
+      })
+    }
   })
 }
 
@@ -305,7 +338,7 @@ function getFavInfo(seq, callback) {
  *
  * @function editSequence
  * @instance
- * @param {object} req - The request object sent by the client
+ * @param {object} req - The request object sent by the client.
  * @param {object} res - The response object to reply to the client.
  */
 exports.editSequence = function(req, res) {
@@ -346,37 +379,48 @@ exports.editSequence = function(req, res) {
   }
 }
 
+/**
+ * Parses a Mongoose-like object (which may either be straight from
+ * the database or generated manually), converting any strings to markdown
+ * and returning an array of both the new document (again in Mongoose-like
+ * form) and a list of items that weren't filled in at the time.
+ *
+ * @function editSequence
+ * @instance
+ * @param {object} req - The request object sent by the client.
+ * @param {object} res - The response object to reply to the client.
+ */
 function toMarkdownData(doc) {
   var unused = []
-  if (1) { console.log = function() { /* Do Nothing */ } }
+  if (1) { logger.log = function() { /* Do Nothing */ } }
   for (var i in doc) {
     if (doc[i] == "<no data>") {
       unused.push(i)
     } else {
-      console.log("== Sorting out doc[" + i + "] ==")
+      logger.log("== Sorting out doc[" + i + "] ==")
       if (doc[i].constructor === Array) {
-        console.log("It's an array")
+        logger.log("It's an array")
         for (var j = 0; j < doc[i].length; j++) {
           if (typeof doc[i][j] === "string") {
-            console.log("It's a string array")
+            logger.log("It's a string array")
             doc[i][j] = toMarkdown(doc[i][j])
-            console.log("Parsing complete")
+            logger.log("Parsing complete")
           } else {
-            console.log("It's not a string, it's a: " + typeof doc[i][j])
+            logger.log("It's not a string, it's a: " + typeof doc[i][j])
           }
         }
       } else {
         if (typeof doc[i] === "string") {
-          console.log("It's a string")
+          logger.log("It's a string")
           doc[i] = toMarkdown(doc[i])
-          console.log("Parsing Complete")
+          logger.log("Parsing Complete")
         } else {
-          console.log("It's not a string, it's a: " + typeof doc[i])
+          logger.log("It's not a string, it's a: " + typeof doc[i])
         }
       }
     }
   }
-  console.log("Returned")
+  logger.log("Returned")
   return [doc, unused]
 }
 
@@ -385,7 +429,7 @@ function toMarkdownData(doc) {
  *
  * @function postEditSequence 
  * @instance
- * @param {object} req - The request object sent by the client
+ * @param {object} req - The request object sent by the client.
  * @param {object} res - The response object to reply to the client.
  */
 exports.postEditSequence = function(req, res) {
@@ -402,6 +446,9 @@ exports.postEditSequence = function(req, res) {
           req.body[item] = req.body[item].split(", ").join(",")
         }
         if (req.body[item].constructor === Array) {
+          for (var i = 0; i < req.body[item].length; i++) {
+            req.body[item][i] = req.body[item][i].replace(/\\./g, '.')
+          }
           changes[item] = "Unchanged"
           var check = arrayCheck(doc[item], req.body[item])
           if (!check[0]) {
@@ -418,6 +465,9 @@ exports.postEditSequence = function(req, res) {
             }
           } 
         } else {
+          if (req.body[item].constructor === String) {
+            req.body[item] = req.body[item].replace(/\\./g, '.')            
+          }
           changes[item] = "Unchanged"
           if (doc[item] != req.body[item]) {
             changes[item] = "Changed, " + JSON.stringify([doc[item], req.body[item]])
@@ -454,7 +504,7 @@ exports.favourite = function(req, res) {
     res.redirect('/A' + sequence + '/favourite')
     return ""
   }
-  console.log(sequence)
+  logger.log(sequence)
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
     return seqNotFound(res)
   } else {
@@ -530,7 +580,7 @@ function parseSearch(data, query) {
   // Here we carry out the highlighting from the parsed search query
   for (var i = 0; i < data.results.length; i++) {
     var list_values = data.results[i].data.split(",")
-      // console.log(data.results[i].data)
+      // logger.log(data.results[i].data)
       // We start by highlighting the sequences:
     for (var j = 0; j < sequences.length; j++) {
       var inner = utils.findSubstring(list_values, sequences[j], 0)
@@ -642,8 +692,11 @@ function linkName(text, group) {
     if (text.constructor === String) {
       text = entities.encode(text)
 
+      logger.log("Finding Seqs")
       text = findSeqs(text)
+      logger.log("Finding Links")
       text = findLinks(text)
+      logger.log("Replacing Names")
       text = replaceNames(text)
 
       return text
@@ -785,19 +838,19 @@ function updateRange(min, max) {
 }
 
 function makeNew(min, max) {
-  console.log("I got called with: " + min + " " + max)
+  logger.log("I got called with: " + min + " " + max)
   currentTimeout = 0
   for (var i = min; i <= max; i++) {
-    console.log("Tried Lookup For: " + i)
+    logger.log("Tried Lookup For: " + i)
     Sequence.find({
       number: i
     }, function(err, docs) {
       if (err) {
-        console.log(err)
+        logger.log(err)
       }
-      console.log(docs)
+      logger.log(docs)
       if (!docs || docs == []) {
-        console.log("Make New Registering Update For: " + i)
+        logger.log("Make New Registering Update For: " + i)
         setTimeout(function(currentTimeout) {
           try {
             updateOne(i)
@@ -844,11 +897,11 @@ function testAndUpdate(value) {
   Sequence.find({
     number: value
   }, function(err, docs) {
-    if (err) console.log(err)
+    if (err) logger.log(err)
     if (JSON.stringify(docs) == "[]") {
-      console.log("Grabbing sequence number " + value)
+      logger.log("Grabbing sequence number " + value)
     } else {
-      console.log("Sequence number " + value + "exists and hasn't been grabbed")
+      logger.log("Sequence number " + value + "exists and hasn't been grabbed")
     }
   })
 }

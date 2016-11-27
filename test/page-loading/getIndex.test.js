@@ -1,10 +1,10 @@
-var request = require('supertest');
-var server = require('../../server');
+var request = require('supertest')
+var server = require('../../server')
 
 describe('GET /', function() {
   it('should render ok', function(done) {
     request(server)
       .get('/')
-      .expect(200, done);
-  });
-});
+      .expect(200, done)
+  })
+})

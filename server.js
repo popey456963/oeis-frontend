@@ -18,6 +18,8 @@ var logger = require('./controllers/logger')()
 var repl = require('repl')
 var os = require('os')
 var MongoStore = require('connect-mongo')(session)
+var i18n = require('i18n')
+var cookieParser = require('cookie-parser')
 
 // Pretty errors
 var pe = require('pretty-error').start()
@@ -82,6 +84,15 @@ var app = express()
 var server = require('http').Server(app)
 var io = require('socket.io').listen(server)
 
+// Configure Localisation
+i18n.configure({
+    locales:['en', 'de'],
+    directory: __dirname + '/locales',
+    cookie: 'lang',
+    queryParameter: 'lang',
+    debug: true
+})
+
 // Logger Settings
 httpLogger.token('user', function(req, res) { return JSON.stringify(req.user) })
 var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
@@ -103,7 +114,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(expressValidator())
 app.use(methodOverride('_method'))
-app.use(session({ 
+app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: true,
   saveUninitialized: true,
@@ -112,8 +123,17 @@ app.use(session({
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(function(req, res, next) { res.locals.user = req.user; next() })
+app.use(cookieParser())
+app.use(i18n.init)
+app.use(function(req, res, next) { 
+  res.locals.user = req.user; 
+  res.locals.cookies = req.cookies;
+  res.locals.langs = require('./config/langnames.json')
+  next() 
+})
+app.use(function(req, res, next) { res.locals.cookies = req.cookies; next() })
 app.use(express.static(path.join(__dirname, 'public')))
+app.use('/docs', express.static(path.join(__dirname, 'docs')))
 app.use(StatsController.statsDaemon)
 
 app.get('/account', UserController.ensureAuthenticated, UserController.accountGet)
