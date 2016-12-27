@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#finalRender">finalRender</a></li><li data-type='method'><a href="module-HomeController.html#getFavInfo">getFavInfo</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#arrayCheck">arrayCheck</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#finalRender">finalRender</a></li><li data-type='method'><a href="module-HomeController.html#getFavInfo">getFavInfo</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#donut">donut</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
 </nav>
 
 <div id="main">
@@ -72,6 +72,163 @@
 
     
 
+    <h4 class="name" id="arrayCheck"><span class="type-signature"></span>arrayCheck<span class="signature">(arr1, arr2)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line486">line 486</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Takes two one-dimensional arrays and checks whether the contents
+are identical.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr1</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>First array to check equivalence of.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>arr2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Second array to check equivalence of.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="editSequence"><span class="type-signature"></span>editSequence<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
 
     
@@ -84,7 +241,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line381">line 381</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line378">line 378</a>
     </li></ul></dd>
     
 
@@ -243,7 +400,7 @@ form) and a list of items that weren't filled in at the time.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line333">line 333</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line330">line 330</a>
     </li></ul></dd>
     
 
@@ -285,7 +442,7 @@ form) and a list of items that weren't filled in at the time.</p>
 <div class="description">
     <p>Returns a rendered Jade template to any request that matches
 <code>/A:sequence/edit</code>.  In order to do this it checks the sequence
-exists before organising ing  and then parsing it into markdown.</p>
+exists before organising it and then parsing it into markdown.</p>
 </div>
 
 
@@ -401,7 +558,7 @@ exists before organising ing  and then parsing it into markdown.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line172">line 172</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line171">line 171</a>
     </li></ul></dd>
     
 
@@ -606,7 +763,7 @@ structured object).</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line308">line 308</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line305">line 305</a>
     </li></ul></dd>
     
 
@@ -764,7 +921,7 @@ on the favourites page.  Returns the <code>number</code>, <code>time</code>, <co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line110">line 110</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line110">line 110</a>
     </li></ul></dd>
     
 
@@ -923,7 +1080,7 @@ an ID.  This program uses <code>parseProgram</code> and <code>linkName</code> to
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line22">line 22</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -1080,7 +1237,7 @@ rendered Jade template of the search page, including a random sequence.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line201">line 201</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line200">line 200</a>
     </li></ul></dd>
     
 
@@ -1239,7 +1396,7 @@ only used on the edit page.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line426">line 426</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line423">line 423</a>
     </li></ul></dd>
     
 
@@ -1279,7 +1436,9 @@ only used on the edit page.</p>
 
 
 <div class="description">
-    <p>Handles any post requests to <code>/A:seq/edit</code>.</p>
+    <p>Handles any post requests to <code>/A:seq/edit</code>.  This function cannot do
+any <code>logger.log()</code> or <code>console.log()</code> functions for an unknown reason,
+but does function well otherwise.</p>
 </div>
 
 
@@ -1395,164 +1554,7 @@ only used on the edit page.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line269">line 269</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Renders a Jade file that contains a list of all sequences that
-have been favourited by an individual.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The request object sent by the client.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The response object to reply to the client.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="search"><span class="type-signature"></span>search<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line225">line 225</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line224">line 224</a>
     </li></ul></dd>
     
 
@@ -1700,6 +1702,163 @@ error message (if no results).</p>
 
     
 
+    <h4 class="name" id="search"><span class="type-signature"></span>search<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line268">line 268</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Renders a Jade file that contains a list of all sequences that
+have been favourited by an individual.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The request object sent by the client.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The response object to reply to the client.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="seqNotFound"><span class="type-signature"></span>seqNotFound<span class="signature">(res)</span><span class="type-signature"></span></h4>
 
     
@@ -1712,7 +1871,7 @@ error message (if no results).</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line56">line 56</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line39">line 39</a>
     </li></ul></dd>
     
 
@@ -1847,7 +2006,7 @@ error.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line74">line 74</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line74">line 74</a>
     </li></ul></dd>
     
 
@@ -2006,7 +2165,7 @@ to the user or a redirect to the search results or A-page.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line39">line 39</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -2164,7 +2323,7 @@ be heavily cached.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="home.js.html">home.js</a>, <a href="home.js.html#line546">line 546</a>
+        <a href="controllers_home.js.html">controllers/home.js</a>, <a href="controllers_home.js.html#line560">line 560</a>
     </li></ul></dd>
     
 
@@ -2321,7 +2480,7 @@ be heavily cached.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Sat Nov 26 2016 20:58:57 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Dec 06 2016 09:06:23 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -28,7 +28,7 @@ block content
                         span= " Edit Sequence"
                 span= sequenceName
                 if data.id
-                  span(style='font-size: 60%')= "(Formerly " + data.id + ")"
+                  span(style='font-size: 60%')= " (Formerly " + data.id + ")"
               - if (data.references == undefined) {
               -   data.references = 0
               - }
@@ -52,10 +52,10 @@ block content
                     else if index == 'program'
                       pre
                         for i in item
+                          - console.log(i)
                           if i[0][1] != undefined
                             !="<b>" + i[0][0] + "</b><br><code class='" + i[0][1].toLowerCase() + " multiple_programs'>"
                           else
-                            // Let's try guessing... :)
                             !="<b>" + i[0][0] + "</b><br><code class='multiple_programs'>"
                           for j in i[1]
                             !=j + "\n"

@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#finalRender">finalRender</a></li><li data-type='method'><a href="module-HomeController.html#getFavInfo">getFavInfo</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#arrayCheck">arrayCheck</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#finalRender">finalRender</a></li><li data-type='method'><a href="module-HomeController.html#getFavInfo">getFavInfo</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#donut">donut</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
 </nav>
 
 <div id="main">
@@ -106,6 +106,76 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="donut"><span class="type-signature"></span>donut<span class="type-signature"></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dashboard.js.html">dashboard.js</a>, <a href="dashboard.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Donut Options
+  self.options.radius = options.radius || 14; // how wide is it? over 5 is best
+  self.options.arcWidth = options.arcWidth || 4; //width of the donut
+  self.options.yPadding = options.yPadding || 2; //padding from the top</p>
+</div>
+
+
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -127,7 +197,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line172">line 172</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line172">line 172</a>
     </li></ul></dd>
     
 
@@ -211,7 +281,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line119">line 119</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line119">line 119</a>
     </li></ul></dd>
     
 
@@ -295,7 +365,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line129">line 129</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -380,7 +450,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="contact.js.html">contact.js</a>, <a href="contact.js.html#line13">line 13</a>
+        <a href="controllers_contact.js.html">controllers/contact.js</a>, <a href="controllers_contact.js.html#line13">line 13</a>
     </li></ul></dd>
     
 
@@ -464,7 +534,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="contact.js.html">contact.js</a>, <a href="contact.js.html#line22">line 22</a>
+        <a href="controllers_contact.js.html">controllers/contact.js</a>, <a href="controllers_contact.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -548,7 +618,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line10">line 10</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -632,7 +702,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line215">line 215</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line215">line 215</a>
     </li></ul></dd>
     
 
@@ -716,7 +786,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line227">line 227</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line227">line 227</a>
     </li></ul></dd>
     
 
@@ -800,7 +870,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line21">line 21</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -884,7 +954,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line33">line 33</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -968,7 +1038,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line64">line 64</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line64">line 64</a>
     </li></ul></dd>
     
 
@@ -1052,7 +1122,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line287">line 287</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line287">line 287</a>
     </li></ul></dd>
     
 
@@ -1136,7 +1206,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line307">line 307</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line307">line 307</a>
     </li></ul></dd>
     
 
@@ -1220,7 +1290,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line72">line 72</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line72">line 72</a>
     </li></ul></dd>
     
 
@@ -1304,7 +1374,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line84">line 84</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -1388,7 +1458,7 @@ Update profile information OR change password.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="user.js.html">user.js</a>, <a href="user.js.html#line183">line 183</a>
+        <a href="controllers_user.js.html">controllers/user.js</a>, <a href="controllers_user.js.html#line183">line 183</a>
     </li></ul></dd>
     
 
@@ -1473,7 +1543,7 @@ Update profile information OR change password.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Sat Nov 26 2016 20:58:57 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Dec 06 2016 09:06:23 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

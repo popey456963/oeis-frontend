@@ -31,7 +31,7 @@ nav.navbar.navbar-default.navbar-static-top
             for index, item in langs
               if item != "divide"
                 li
-                  a(href='javascript:void(0);', onclick='changeLang("' + item + '");')
+                  a(href='javascript:void(0);', onclick="document.cookie = 'lang=" + item + "'; location.reload()")
                     span(class='flag-style flag-icon flag-icon-' + langs[item][1])
                     span= "   " + langs[item][0] 
               else

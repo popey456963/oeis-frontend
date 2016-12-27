@@ -29,28 +29,10 @@ const BASE_URL = 'https://oeis.org/'
  * @param {object} res - The response object to reply to the client.
  */
 exports.index = function(req, res) {
-  console.log(res.__('Search the OEIS Database'))
   res.render('search', {
     page: 'Search',
     title: 'Search :: OEIS Lookup',
     sequence: seq_list[Math.floor(Math.random() * seq_list.length)]
-  })
-}
-
-/**
- * Handles any get requests to `/welcome`.  This program responds to the user
- * with a rendered Jade template of the welcome page, a static page that can
- * be heavily cached.
- *
- * @function welcome
- * @instance
- * @param {object} req - The request object sent by the client.
- * @param {object} res - The response object to reply to the client.
- */
-exports.welcome = function(req, res) {
-  res.render('welcome', {
-    title: 'Welcome :: OEIS Lookup',
-    page: 'Welcome'
   })
 }
 
@@ -73,6 +55,23 @@ function seqNotFound(res) {
 }
 
 /**
+ * Handles any get requests to `/welcome`.  This program responds to the user
+ * with a rendered Jade template of the welcome page, a static page that can
+ * be heavily cached.
+ *
+ * @function welcome
+ * @instance
+ * @param {object} req - The request object sent by the client.
+ * @param {object} res - The response object to reply to the client.
+ */
+exports.welcome = function(req, res) {
+  res.render('welcome', {
+    title: 'Welcome :: OEIS Lookup',
+    page: 'Welcome'
+  })
+}
+
+/**
  * Handles any post requests to `/test`.  This program responds to the user
  * with a reply of whether or not the request has too many, none or just one
  * repsonse.  Depending on this the client should then respond with an alert
@@ -84,8 +83,8 @@ function seqNotFound(res) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.test = function(req, res) {
-  var sequence = req.body.sequence
-  var url = BASE_URL + 'search?fmt=json&q=' + encodeURIComponent(sequence)
+  const sequence = req.body.sequence
+  const url = BASE_URL + 'search?fmt=json&q=' + encodeURIComponent(sequence)
 
   if (sequence == '') {
     res.send('Sequence must not be blank')
@@ -120,7 +119,7 @@ exports.test = function(req, res) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.id = function(req, res) {
-  var sequence = req.params.sequence
+  const sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
     while (sequence.length < 6) {
       sequence = '0' + sequence
@@ -141,20 +140,19 @@ exports.id = function(req, res) {
         return seqNotFound(res)
       } else {
         if (doc.program) {
-          logger.log("Parsing Program")
+          // logger.log("Parsing Program")
           doc.program = parseProgram(doc.program)
         }
-        for (var i in doc) {
-          logger.log("Linking Names")
+        for (let i in doc) {
+          // logger.log("Linking Names")
           doc[i] = linkName(doc[i])
-          logger.log("Finished Linking Names")
+          // logger.log("Finished Linking Names")
         }
         if (req.user) {
           logger.log("User Found")
           Favourite.find({ email: req.user.email, seq: sequence }, function(err, docs) {
-            var isFavourite = false
+            let isFavourite = false
             if (docs.length > 0) {
-              logger.log("Favourite")
               logger.log(docs)
               isFavourite = true
               logger.log("Favourite: " + isFavourite + ", Rendering.")
@@ -213,7 +211,7 @@ function finalRender(sequence, isFavourite, doc, res) {
 function organiseData(data, edit) {
   headers = ['number', 'name', 'references', 'revision', 'id', 'data', 'comment', 'reference', 'link', 'formula', 'example', 'maple', 'mathematica', 'program', 'xref', 'keyword', 'author']
   obj = {}
-  for (var i = 0; i < headers.length; i++) {
+  for (let i = 0; i < headers.length; i++) {
     if (data[headers[i]]) {
       obj[headers[i]] = data[headers[i]]
     } else if (edit) {
@@ -237,9 +235,9 @@ function organiseData(data, edit) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.search = function(req, res) {
-  var sequence = decodeURIComponent(req.query.q)
-  var page = (typeof req.query.page === 'undefined') ? 0 : parseInt(req.query.page) - 1
-  var url = BASE_URL + 'search?fmt=json&q=' + sequence + '&start=' + (page * 10)
+  const sequence = decodeURIComponent(req.query.q)
+  const page = (typeof req.query.page === 'undefined') ? 0 : parseInt(req.query.page) - 1
+  const url = BASE_URL + 'search?fmt=json&q=' + sequence + '&start=' + (page * 10)
 
   utils.superRequest(url, function(data) {
     if (data && data.results && data.count > 0) {
@@ -278,7 +276,7 @@ exports.search = function(req, res) {
  */
 exports.favourites = function(req, res) {
   Favourite.find({ email: req.user.email }, 'seq -_id', function(err, docs) {
-    var seq_info = []
+    let seq_info = []
 
     async.forEachOf(docs, function (doc, key, callback) {
       getFavInfo(doc.seq, function(err, data) {
@@ -287,10 +285,8 @@ exports.favourites = function(req, res) {
       })
     }, function (err) {
       seq_info.sort(function(a, b){
-        var a = a.number
-        var b = b.number
-        if(a < b) return -1;
-        if(b > a) return 1;
+        if(a.number < b.number) return -1;
+        if(b.number > a.number) return 1;
         return 0;
       })
       res.render('./account/favourites', {
@@ -334,7 +330,7 @@ function getFavInfo(seq, callback) {
 /**
  * Returns a rendered Jade template to any request that matches
  * `/A:sequence/edit`.  In order to do this it checks the sequence
- * exists before organising ing  and then parsing it into markdown.
+ * exists before organising it and then parsing it into markdown.
  *
  * @function editSequence
  * @instance
@@ -342,13 +338,13 @@ function getFavInfo(seq, callback) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.editSequence = function(req, res) {
-  var sequence = req.params.sequence
+  const sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
     while (sequence.length < 6) {
       sequence = '0' + sequence
     }
     res.redirect('/A' + sequence + '/edit')
-    return ""
+    return null
   }
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
     return seqNotFound(res)
@@ -391,16 +387,16 @@ exports.editSequence = function(req, res) {
  * @param {object} res - The response object to reply to the client.
  */
 function toMarkdownData(doc) {
-  var unused = []
+  let unused = []
   if (1) { logger.log = function() { /* Do Nothing */ } }
-  for (var i in doc) {
+  for (let i in doc) {
     if (doc[i] == "<no data>") {
       unused.push(i)
     } else {
       logger.log("== Sorting out doc[" + i + "] ==")
       if (doc[i].constructor === Array) {
         logger.log("It's an array")
-        for (var j = 0; j < doc[i].length; j++) {
+        for (let j = 0; j < doc[i].length; j++) {
           if (typeof doc[i][j] === "string") {
             logger.log("It's a string array")
             doc[i][j] = toMarkdown(doc[i][j])
@@ -425,7 +421,9 @@ function toMarkdownData(doc) {
 }
 
 /**
- * Handles any post requests to `/A:seq/edit`.
+ * Handles any post requests to `/A:seq/edit`.  This function cannot do
+ * any `logger.log()` or `console.log()` functions for an unknown reason,
+ * but does function well otherwise.
  *
  * @function postEditSequence 
  * @instance
@@ -437,8 +435,8 @@ exports.postEditSequence = function(req, res) {
     if (!doc) {
       res.json({ "success": false, "err": "Sequence Number Not Found..."})
     } else {
-      var changes = {}
-      for (var item in req.body) {
+      let changes = {}
+      for (let item in req.body) {
         if (req.body[item].indexOf('\n') != -1) {
           req.body[item] = req.body[item].split(/\r?\n/)
         }
@@ -446,11 +444,11 @@ exports.postEditSequence = function(req, res) {
           req.body[item] = req.body[item].split(", ").join(",")
         }
         if (req.body[item].constructor === Array) {
-          for (var i = 0; i < req.body[item].length; i++) {
+          for (let i = 0; i < req.body[item].length; i++) {
             req.body[item][i] = req.body[item][i].replace(/\\./g, '.')
           }
           changes[item] = "Unchanged"
-          var check = arrayCheck(doc[item], req.body[item])
+          let check = arrayCheck(doc[item], req.body[item])
           if (!check[0]) {
             changes[item] = "Changed, " + JSON.stringify(check[1])
           }
@@ -485,10 +483,19 @@ exports.postEditSequence = function(req, res) {
   })
 }
 
+/**
+ * Takes two one-dimensional arrays and checks whether the contents
+ * are identical.
+ *
+ * @function arrayCheck
+ * @instance
+ * @param {array} arr1 - First array to check equivalence of.
+ * @param {array} arr2 - Second array to check equivalence of.
+ */
 function arrayCheck(arr1, arr2) {
   if(arr1.length !== arr2.length)
     return [false, ["length", arr1.length, arr2.length]]
-  for(var i = arr1.length; i--;) {
+  for(let i = arr1.length; i--;) {
     if(arr1[i] !== arr2[i])
       return [false, [arr1[i], arr2[i]]]
   }
@@ -496,13 +503,13 @@ function arrayCheck(arr1, arr2) {
 }
 
 exports.favourite = function(req, res) {
-  var sequence = req.params.sequence
+  const sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
     while (sequence.length < 6) {
       sequence = '0' + sequence
     }
     res.redirect('/A' + sequence + '/favourite')
-    return ""
+    return null
   }
   logger.log(sequence)
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
@@ -522,13 +529,13 @@ exports.favourite = function(req, res) {
 }
 
 exports.unfavourite = function(req, res) {
-  var sequence = req.params.sequence
+  const sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
     while (sequence.length < 6) {
       sequence = '0' + sequence
     }
     res.redirect('/A' + sequence + '/unfavourite')
-    return ""
+    return null
   }
   if (sequence.length != 6 || isNaN(sequence) || sequence.indexOf('e') > -1) {
     return seqNotFound(res)
@@ -554,17 +561,17 @@ function parseSearch(data, query) {
   // We gotta go from a sequence of data points, to bolded data points.
 
   // Here we parse the search query
-  var query = query.split(" ")
-  numbers = []
-  sequences = []
-  for (var i = 0; i < query.length; i++) {
+  query = query.split(" ")
+  let numbers = []
+  let sequences = []
+  for (let i = 0; i < query.length; i++) {
     if (!isNaN(query[i])) {
       numbers.push(query[i])
     } else {
       // We need to work out if it's a sequence of numbers.
-      var seq = true
-      var seq_query = query[i].split(",")
-      for (var j = 0; j < seq_query.length; j++) {
+      let seq = true
+      const seq_query = query[i].split(",")
+      for (let j = 0; j < seq_query.length; j++) {
         if (isNaN(seq_query[j])) {
           // We're afraid it isn't a sequence...
           seq = false
@@ -578,19 +585,19 @@ function parseSearch(data, query) {
   }
 
   // Here we carry out the highlighting from the parsed search query
-  for (var i = 0; i < data.results.length; i++) {
-    var list_values = data.results[i].data.split(",")
+  for (let i = 0; i < data.results.length; i++) {
+    let list_values = data.results[i].data.split(",")
       // logger.log(data.results[i].data)
       // We start by highlighting the sequences:
-    for (var j = 0; j < sequences.length; j++) {
-      var inner = utils.findSubstring(list_values, sequences[j], 0)
+    for (let j = 0; j < sequences.length; j++) {
+      const inner = utils.findSubstring(list_values, sequences[j], 0)
       if (inner != -1) {
         list_values[inner] = "<b>" + list_values[inner]
         list_values[inner + sequences[j].length - 1] = list_values[inner + sequences[j].length - 1] + "</b>"
       }
     }
-    for (var j = 0; j < list_values.length; j++) {
-      for (var k = 0; k < numbers.length; k++) {
+    for (let j = 0; j < list_values.length; j++) {
+      for (let k = 0; k < numbers.length; k++) {
         if (numbers[k] == list_values[j]) {
           list_values[j] = "<b>" + list_values[j] + "</b>"
         }
@@ -602,18 +609,19 @@ function parseSearch(data, query) {
 }
 
 function parseProgram(program) {
-  var transform = {
+  const transform = {
     'PARI': 'apache',
     'S/R': 'css'
   }
-  var languages = []
-  var currentCounter = -1
-  var programNameRe = /^\(([a-zA-Z0-9\/\-. ])+\)/
-  var matchAnythingRe = /^([.]+)/
-  for (var i = 0; i < program.length; i++) {
-    var trimmed = false
+  const programNameRe = /^\(([a-zA-Z0-9\/\-. ])+\)/
+  const matchAnythingRe = /^([.]+)/
+  let languages = []
+  let currentCounter = -1
+  for (let i = 0; i < program.length; i++) {
+    let trimmed = false
     if (programNameRe.test(program[i])) {
-      var group = programNameRe.exec(program[i])[0]
+      let group = programNameRe.exec(program[i])[0].slice(1, -1)
+      // logger.log("Found Language: " + group)
       currentCounter++
       program[i] = program[i].replace(programNameRe, '').trim()
       languages[currentCounter] = [
@@ -622,7 +630,7 @@ function parseProgram(program) {
       ]
       trimmed = true
     }
-    var replacement = matchAnythingRe.exec(program[i])
+    const replacement = matchAnythingRe.exec(program[i])
     if (replacement && replacement.length > 0) {
       program[i] = program[i].replace(replacement[1], new Array(replacement[1].length + 1).join(' '))
     }
@@ -635,12 +643,12 @@ function parseProgram(program) {
 }
 
 function getRecentlyChanged(callback) {
-  request('http://oeis.org/recent.txt', function(err, resp, body) {
+  request(BASE_URL + 'recent.txt', function(err, resp, body) {
     if (body) {
       logger.success('Got /recent.txt successfully')
-      var text = body.split('\n')
-      var updates = []
-      for (var i = 0; i < text.length; i++) {
+      const text = body.split('\n')
+      let updates = []
+      for (let i = 0; i < text.length; i++) {
         if (text[i].substring(0, 2) == '%I') {
           updates.push(text[i].split(' ')[1])
         }
@@ -663,9 +671,9 @@ if (old_updates == {}) {
 
 function checkUpdate() {
   getRecentlyChanged(function(updates) {
-    var indexToFind = utils.findSubstring(updates, old_updates.slice(0, 100), 0)
+    const indexToFind = utils.findSubstring(updates, old_updates.slice(0, 100), 0)
     if (indexToFind != 0) {
-      for (var i = 0; i < indexToFind; i++) {
+      for (let i = 0; i < indexToFind; i++) {
         logger.log('Updated Item: ' + updates[i])
           updateOne(parseInt(updates[i].substring(1)))
       }
@@ -684,7 +692,7 @@ function checkUpdate() {
 function linkName(text, group) {
   if (text) {
     if (text.constructor === Array) {
-      for (var j in text) {
+      for (let j in text) {
         text[j] = linkName(text[j])
       }
       return text
@@ -692,11 +700,11 @@ function linkName(text, group) {
     if (text.constructor === String) {
       text = entities.encode(text)
 
-      logger.log("Finding Seqs")
+      // logger.log("Finding Seqs")
       text = findSeqs(text)
-      logger.log("Finding Links")
+      // logger.log("Finding Links")
       text = findLinks(text)
-      logger.log("Replacing Names")
+      // logger.log("Replacing Names")
       text = replaceNames(text)
 
       return text
@@ -714,8 +722,8 @@ function findSeqs(text) {
 }
 
 function findLinks(text) {
-  var match
-  var link = /&lt;a([^>]+)&gt;(.+?)&lt;\/a&gt;/gi
+  let match
+  const link = /&lt;a([^>]+)&gt;(.+?)&lt;\/a&gt;/gi
 
   do {
       match = link.exec(text)
@@ -728,9 +736,9 @@ function findLinks(text) {
 }
 
 function replaceNames(text) {
-  var regex
-  var names = []
-  var link = new XRegExp('_([\\p{L} .-]{1,80})_', 'g')
+  let regex
+  let names = []
+  const link = new XRegExp('_([\\p{L} .-]{1,80})_', 'g')
 
   do {
       regex = link.exec(text)
@@ -739,9 +747,9 @@ function replaceNames(text) {
       }
   } while (regex)
 
-  for (var i = 0; i < names.length; i++) {
+  for (let i = 0; i < names.length; i++) {
     text = text.replace(new RegExp(("_"+names[i]+"_").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), 'g'),
-      "<a class='name_link' href='http://oeis.org/wiki/User:" + names[i] + "'>" + names[i] + "</a>")
+      "<a class='name_link' href='" + BASE_URL + "wiki/User:" + names[i] + "'>" + names[i] + "</a>")
   }
 
   return text
@@ -750,16 +758,16 @@ function replaceNames(text) {
 function updateItem(id, number) {
   utils.superRequest(BASE_URL + 'search?q=id:A' + id + '&fmt=json', function(data) {
     // Fix for some weird closure issues.
-    var y = data
+    const y = data
     Sequence.findOne({
       number: number
     }, function(err, seq) {
-      var data = y
+      const data = y
       if (err) logger.error(err)
       else {
         if (seq === null) {
           logger.log('Sequence Not Found... Creating... ')
-          var itemID = new Sequence(data.results[0])
+          let itemID = new Sequence(data.results[0])
           itemID.data = itemID.data.split(',')
           itemID.save(function(err) {
             if (err) {
@@ -770,7 +778,7 @@ function updateItem(id, number) {
           })
         } else {
           logger.log('Sequence Found')
-          for (var i in data.results[0]) {
+          for (let i in data.results[0]) {
             seq[i] = data.results[0][i]
           }
           seq.data = seq.data.split(',')
@@ -787,16 +795,16 @@ function updateItem(id, number) {
 }
 
 function updateOne(id) {
-  var text = ('000000' + String(id)).substring(String(id).length)
+  const text = ('000000' + String(id)).substring(String(id).length)
   // Some point might want to turn this to Request instead of SuperRequest
   // We don't really want caching on updating id's.
   utils.superRequest(BASE_URL + 'search?q=id:A' + text + '&fmt=json', function(newData) {
-    var query = {
+    const query = {
       number: id
     }
     if (newData && newData.results && newData.results[0]) {
-      var update = newData.results[0]
-      var options = {
+      const update = newData.results[0]
+      const options = {
         upsert: true,
         new: true
       }
@@ -814,7 +822,7 @@ function updateOne(id) {
 }
 
 function updateAll(max) {
-  for (var i = 1; i <= max; i++) {
+  for (let i = 1; i <= max; i++) {
     setTimeout(function(i) {
       try {
         updateOne(i)
@@ -826,7 +834,7 @@ function updateAll(max) {
 }
 
 function updateRange(min, max) {
-  for (var i = min; i <= max; i++) {
+  for (let i = min; i <= max; i++) {
     setTimeout(function(i, min) {
       try {
         updateOne(i)
@@ -840,7 +848,7 @@ function updateRange(min, max) {
 function makeNew(min, max) {
   logger.log("I got called with: " + min + " " + max)
   currentTimeout = 0
-  for (var i = min; i <= max; i++) {
+  for (let i = min; i <= max; i++) {
     logger.log("Tried Lookup For: " + i)
     Sequence.find({
       number: i
@@ -866,16 +874,16 @@ function makeNew(min, max) {
 
 function findMissing(max, callback) {
   Sequence.find({}, 'number -_id', function(err, docs) {
-    var array = []
+    let array = []
     docs.forEach(function(item) {
       array.push(item.number)
     })
     array = array.sort(function(a, b) {
       return a - b
     })
-    var count = 1
-    var arrayEntry = 0
-    var missing = []
+    let count = 1
+    let arrayEntry = 0
+    let missing = []
     while (arrayEntry != array.length && count < max) {
       if (array[arrayEntry] != count) {
         missing.push(count)
@@ -910,7 +918,7 @@ function bootstrapFindMissing(value, multiplier) {
   if (!multiplier) multiplier = 1
   findMissing(value, function(missing) {
     currentTimeout = 0
-    for (var i = 0; i < missing.length; i++) {
+    for (let i = 0; i < missing.length; i++) {
       setTimeout(function(currentTimeout, j, multiplier) {
         try {
           updateOne(j)

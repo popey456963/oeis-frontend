@@ -1,4 +1,4 @@
 function changeLang(lang) {
-	Cookies.set('lang', lang)
+	document.cookie = 'lang=' + lang
 	location.reload()
 }

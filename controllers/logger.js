@@ -18,7 +18,8 @@ var logger = function(m, n){
     success: chalk.green,  // (2)
     log:     chalk.gray,   // (3)
     info:    chalk.gray,   // (4)
-    date:    chalk.cyan
+    date:    chalk.cyan,
+    loc:     chalk.white
   }
 
   this.logLevel = 4
@@ -81,15 +82,28 @@ logger.prototype.print   = function(msg, code) {
         console.log(stackTrace.get()[i].getFunctionName())
       }*/
       if (stack.getFunctionName()) {
-        var locName = this.capitalise(stack.getFunctionName()) + '()'
+        var functionName = stack.getFunctionName().split(".")
+        functionName = functionName[functionName.length - 1]
+        var locName = this.capitalise(functionName) + '()'
       } else {
         var locName = this.capitalise(fileName)
       }
       while (locName.length < 9) { locName += ' ' }
-      console.log(this.date() + ' [' + locName + '] ' + this.l[code](fullMessage.join(" ")))      
+      var getDate = this.date()
+      if (code == "log" || code == "info") {
+        var color2 = chalk.blue
+      } else {
+        var color2 = this.l[code]
+      }
+      var color = this.l[code]
+      var loc = this.l.loc
+      console.log(getDate + ' [' + locName + '] ' + color(fullMessage.join(" ")))
+      if (!global.wserror) {
+        global.ws.send(JSON.stringify(['msg', getDate + loc(' [' + locName + '] ') + color2(fullMessage.join(" "))]))
+      }
     }
   }
 }
 
 
-module.exports = function(m, n){ return new logger(m, n) };
+module.exports = function(m, n){ return new logger(m, n) }

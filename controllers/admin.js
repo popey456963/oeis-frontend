@@ -271,7 +271,7 @@ exports.makeAdmin = function(email, level) {
       user.admin = level
       user.save(function(err, updatedUser) {
         if (err) logger.error(err)
-        logger.log('Successfully Made ' + email + ' Admin Lvl.' + String(level))
+        logger.log('Successfully made ' + email + ' admin lvl.' + String(level))
       })
     } else {
       logger.log('No User Found...')
