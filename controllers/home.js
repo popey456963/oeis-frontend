@@ -135,9 +135,11 @@ exports.id = function(req, res) {
     }).lean().exec(function(err, doc) {
       if (!doc) {
         if (0 < parseInt(sequence) < 277000) {
-          updateOne(parseInt(sequence))
+          updateOne(parseInt(sequence), function() {
+            exports.id(req, res)
+          })
         }
-        return seqNotFound(res)
+        // return seqNotFound(res)
       } else {
         if (doc.program) {
           // logger.log("Parsing Program")
@@ -794,7 +796,7 @@ function updateItem(id, number) {
   })
 }
 
-function updateOne(id) {
+function updateOne(id, callback) {
   const text = ('000000' + String(id)).substring(String(id).length)
   // Some point might want to turn this to Request instead of SuperRequest
   // We don't really want caching on updating id's.
@@ -814,6 +816,9 @@ function updateOne(id) {
           throw err
         }
         logger.success(text + ' was updated successfully!')
+        if (callback) {
+          callback()
+        }
       })
     } else {
       logger.error('Request returned something wrong when trying to update one...')

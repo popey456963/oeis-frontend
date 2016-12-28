@@ -1,36 +1,35 @@
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var FacebookStrategy = require('passport-facebook').Strategy;
-var TwitterStrategy = require('passport-twitter').Strategy;
+var passport = require('passport')
+var LocalStrategy = require('passport-local').Strategy
+var FacebookStrategy = require('passport-facebook').Strategy
+var TwitterStrategy = require('passport-twitter').Strategy
 
-
-var User = require('../models/User');
+var User = require('../models/User')
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
+  done(null, user.id)
+})
 
 passport.deserializeUser(function(id, done) {
   User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
+    done(err, user)
+  })
+})
 
 // Sign in with Email and Password
 passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, password, done) {
   User.findOne({ email: email }, function(err, user) {
     if (!user) {
       return done(null, false, { msg: 'The email address ' + email + ' is not associated with any account. ' +
-      'Double-check your email address and try again.' });
+      'Double-check your email address and try again.' })
     }
     user.comparePassword(password, function(err, isMatch) {
       if (!isMatch) {
-        return done(null, false, { msg: 'Invalid email or password' });
+        return done(null, false, { msg: 'Invalid email or password' })
       }
-      return done(null, user);
-    });
-  });
-}));
+      return done(null, user)
+    })
+  })
+}))
 
 // Sign in with Facebook
 passport.use(new FacebookStrategy({
@@ -43,30 +42,30 @@ passport.use(new FacebookStrategy({
   if (req.user) {
     User.findOne({ facebook: profile.id }, function(err, user) {
       if (user) {
-        req.flash('error', { msg: 'There is already an existing account linked with Facebook that belongs to you.' });
-        done(err);
+        req.flash('error', { msg: 'There is already an existing account linked with Facebook that belongs to you.' })
+        done(err)
       } else {
         User.findById(req.user.id, function(err, user) {
-          user.name = user.name || profile.name.givenName + ' ' + profile.name.familyName;
-          user.gender = user.gender || profile._json.gender;
-          user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
-          user.facebook = profile.id;
+          user.name = user.name || profile.name.givenName + ' ' + profile.name.familyName
+          user.gender = user.gender || profile._json.gender
+          user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large'
+          user.facebook = profile.id
           user.save(function(err) {
-            req.flash('success', { msg: 'Your Facebook account has been linked.' });
-            done(err, user);
-          });
-        });
+            req.flash('success', { msg: 'Your Facebook account has been linked.' })
+            done(err, user)
+          })
+        })
       }
-    });
+    })
   } else {
     User.findOne({ facebook: profile.id }, function(err, user) {
       if (user) {
-        return done(err, user);
+        return done(err, user)
       }
       User.findOne({ email: profile._json.email }, function(err, user) {
         if (user) {
-          req.flash('error', { msg: user.email + ' is already associated with another account.' });
-          done(err);
+          req.flash('error', { msg: user.email + ' is already associated with another account.' })
+          done(err)
         } else {
           var newUser = new User({
             name: profile.name.givenName + ' ' + profile.name.familyName,
@@ -75,15 +74,15 @@ passport.use(new FacebookStrategy({
             location: profile._json.location && profile._json.location.name,
             picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large',
             facebook: profile.id
-          });
+          })
           newUser.save(function(err) {
             done(err, newUser);
-          });
+          })
         }
-      });
-    });
+      })
+    })
   }
-}));
+}))
 
 // Sign in with Twitter
 passport.use(new TwitterStrategy({
@@ -95,25 +94,25 @@ passport.use(new TwitterStrategy({
   if (req.user) {
     User.findOne({ twitter: profile.id }, function(err, user) {
       if (user) {
-        req.flash('error', { msg: 'There is already an existing account linked with Twitter that belongs to you.' });
-        done(err);
+        req.flash('error', { msg: 'There is already an existing account linked with Twitter that belongs to you.' })
+        done(err)
       } else {
         User.findById(req.user.id, function(err, user) {
-          user.name = user.name || profile.displayName;
-          user.location = user.location || profile._json.location;
-          user.picture = user.picture || profile._json.profile_image_url_https;
-          user.twitter = profile.id;
+          user.name = user.name || profile.displayName
+          user.location = user.location || profile._json.location
+          user.picture = user.picture || profile._json.profile_image_url_https
+          user.twitter = profile.id
           user.save(function(err) {
-            req.flash('success', { msg: 'Your Twitter account has been linked.' });
-            done(err, user);
-          });
-        });
+            req.flash('success', { msg: 'Your Twitter account has been linked.' })
+            done(err, user)
+          })
+        })
       }
-    });
+    })
   } else {
     User.findOne({ twitter: profile.id }, function(err, existingUser) {
       if (existingUser) {
-        return done(null, existingUser);
+        return done(null, existingUser)
       }
       // Twitter does not provide an email address, but email is a required field in our User schema.
       // We can "fake" a Twitter email address as follows: username@twitter.com.
@@ -126,10 +125,10 @@ passport.use(new TwitterStrategy({
         location: profile._json.location,
         picture: profile._json.profile_image_url_https,
         twitter: profile.id
-      });
+      })
       newUser.save(function(err) {
-        done(err, newUser);
-      });
-    });
+        done(err, newUser)
+      })
+    })
   }
-}));
+}))

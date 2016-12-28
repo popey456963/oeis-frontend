@@ -37,333 +37,331 @@ $panel-body-padding: 30px;
 // -------------------------
 
 html {
-  position: relative;
-  min-height: 100%;
-  overflow-y: scroll;
+    position: relative;
+    min-height: 100%;
+    overflow-y: scroll;
 }
 
 body {
-  margin-bottom: 44px;
+    margin-bottom: 44px;
 }
 
-pre{
-  white-space:pre-wrap;
+pre {
+    white-space: pre-wrap;
 }
 
 footer {
-  position: absolute;
-  width: 100%;
-  height: 44px;
-  padding: 10px 30px;
-  bottom: 0;
-  background-color: #fff;
-  border-top: 1px solid #e0e0e0;
+    position: absolute;
+    width: 100%;
+    height: 44px;
+    padding: 10px 30px;
+    bottom: 0;
+    background-color: #fff;
+    border-top: 1px solid #e0e0e0;
 }
 
 .login-container {
-  max-width: 555px;
+    max-width: 555px;
 }
 
 // Alerts
 // -------------------------
 
 .alert {
-  border-width: 0 0 0 3px;
+    border-width: 0 0 0 3px;
 }
 
 // Navbar
 // -------------------------
 
 .navbar-default .navbar-nav > li > a {
-  border-bottom: 3px solid transparent;
-  padding-bottom: ($navbar-padding-vertical - 3);
-  transition: all 0.25s;
-  &:hover {
-    border-bottom-color: #bdbdbd;
-  }
-  &.navbar-avatar {
-    padding-top: $navbar-padding-vertical - 4.5;
-    padding-bottom: ($navbar-padding-vertical - 4.5) - 3;
-    img {
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
+    border-bottom: 3px solid transparent;
+    padding-bottom: ($navbar-padding-vertical - 3);
+    transition: all 0.25s;
+    &:hover {
+        border-bottom-color: #bdbdbd;
     }
-  }
+    &.navbar-avatar {
+        padding-top: $navbar-padding-vertical - 4.5;
+        padding-bottom: ($navbar-padding-vertical - 4.5) - 3;
+        img {
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+        }
+    }
 }
 
 .navbar-default .navbar-nav > li.active > a {
-  border-bottom-color: #3f51b5;
+    border-bottom-color: #3f51b5;
 }
 
 // Panels
 // -------------------------
 
 .panel {
-  border: solid 1px rgba(160, 160, 160, 0.3);
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+    border: solid 1px rgba(160, 160, 160, 0.3);
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.1);
 }
 
 .panel-heading + .panel-body {
-  padding-top: 0;
+    padding-top: 0;
 }
 
 .panel-body {
-  h1, h2, h3, h4, h5, h6 {
-    margin-top: 0;
-  }
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 0;
+    }
 }
 
 .panel-title {
-  font-size: 18px;
-  color: #424242;
+    font-size: 18px;
+    color: #424242;
 }
 
 // Buttons
 // -------------------------
 
 .btn-toolbar > .btn {
-  float: none;
-  margin-bottom: 5px;
+    float: none;
+    margin-bottom: 5px;
 }
 
 .btn {
-  font-weight: 600;
-  border-radius: 3px;
-  &:focus {
-    outline: 0 !important;
-  }
+    font-weight: 600;
+    border-radius: 3px;
+    &:focus {
+        outline: 0 !important;
+    }
 }
 
 .btn-default {
-  border-color: #ccc;
-  background: #f5f5f5 linear-gradient(to bottom, #fff, #f5f5f5);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 -1px 4px rgba(151, 159, 175, 0.2);
-  &:active {
-    background: darken(#f5f5f5, 6%) linear-gradient(to bottom, darken(#fff, 6%), darken(#f5f5f5, 6%));
-  }
+    border-color: #ccc;
+    background: #f5f5f5 linear-gradient(to bottom, #fff, #f5f5f5);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 -1px 4px rgba(151, 159, 175, 0.2);
+    &:active {
+        background: darken(#f5f5f5, 6%) linear-gradient(to bottom, darken(#fff, 6%), darken(#f5f5f5, 6%));
+    }
 }
 
 .btn-success {
-  border-color: #208a46;
-  background: #29b35b linear-gradient(to bottom, #2ec866, #29b35b);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(32, 138, 70, 0.3);
-  &:active {
-    background: darken(#29b35b, 6%) linear-gradient(to bottom, darken(#2ec866, 6%), darken(#29b35b, 6%));
-  }
+    border-color: #208a46;
+    background: #29b35b linear-gradient(to bottom, #2ec866, #29b35b);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(32, 138, 70, 0.3);
+    &:active {
+        background: darken(#29b35b, 6%) linear-gradient(to bottom, darken(#2ec866, 6%), darken(#29b35b, 6%));
+    }
 }
 
 .btn-danger {
-  border-color: #8c1512;
-  background: #b61b17 linear-gradient(to bottom, #cc1e1a, #b61b17);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(140, 21, 18, 0.3);
-  &:active {
-    background: darken(#b61b17, 6%) linear-gradient(to bottom, darken(#cc1e1a, 6%), darken(#b61b17, 6%));
-  }
+    border-color: #8c1512;
+    background: #b61b17 linear-gradient(to bottom, #cc1e1a, #b61b17);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(140, 21, 18, 0.3);
+    &:active {
+        background: darken(#b61b17, 6%) linear-gradient(to bottom, darken(#cc1e1a, 6%), darken(#b61b17, 6%));
+    }
 }
 
 .btn-facebook {
-  color: #fff;
-  border-color: #335190;
-  background: #3b5998 linear-gradient(to bottom, #4263a9, #3b5998);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(59, 89, 152, 0.3);
-  &:hover,
-  &:focus {
     color: #fff;
-  }
+    border-color: #335190;
+    background: #3b5998 linear-gradient(to bottom, #4263a9, #3b5998);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(59, 89, 152, 0.3);
+    &:hover, &:focus {
+        color: #fff;
+    }
 }
 
 .btn-twitter {
-  color: #fff;
-  border-color: #009fdb;
-  background: #00aced linear-gradient(to bottom, #05baff, #00aced);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(0, 172, 237, 0.3);
-  &:hover,
-  &:focus {
     color: #fff;
-  }
+    border-color: #009fdb;
+    background: #00aced linear-gradient(to bottom, #05baff, #00aced);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(0, 172, 237, 0.3);
+    &:hover, &:focus {
+        color: #fff;
+    }
 }
 
 .btn-google {
-  color: #fff;
-  border-color: #d54331;
-  background: #dd4b39 linear-gradient(to bottom, #e05d4d, #dd4b39);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(221, 75, 57, 0.3);
-  &:hover,
-  &:focus {
     color: #fff;
-  }
+    border-color: #d54331;
+    background: #dd4b39 linear-gradient(to bottom, #e05d4d, #dd4b39);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(221, 75, 57, 0.3);
+    &:hover, &:focus {
+        color: #fff;
+    }
 }
 
 .btn-vk {
-  color: #fff;
-  border-color: #4f7192;
-  background: #587ea3 linear-gradient(to bottom, #678aad, #587ea3);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(79, 113, 146, 0.3);
-  &:hover,
-  &:focus {
     color: #fff;
-  }
+    border-color: #4f7192;
+    background: #587ea3 linear-gradient(to bottom, #678aad, #587ea3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(79, 113, 146, 0.3);
+    &:hover, &:focus {
+        color: #fff;
+    }
 }
 
 .btn-github {
-  color: #fff;
-  border-color: #444;
-  background: #545454 linear-gradient(to bottom, #616161, #545454);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(68, 68, 68, 0.3);
-  &:hover,
-  &:focus {
     color: #fff;
-  }
+    border-color: #444;
+    background: #545454 linear-gradient(to bottom, #616161, #545454);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1), inset 0 -1px 4px rgba(68, 68, 68, 0.3);
+    &:hover, &:focus {
+        color: #fff;
+    }
 }
 
 // Forms
 // -------------------------
 
 textarea {
-  resize: none;
+    resize: none;
 }
 
 .form-control {
-  height: auto;
-  padding: 8px 12px;
-  border: 2px solid #ebebeb;
-  border-radius: 0;
-  box-shadow: inset 0 1px 2px rgba(150, 160, 175, 0.1), inset 0 1px 15px rgba(150, 160, 175, 0.05);
+    height: auto;
+    padding: 8px 12px;
+    border: 2px solid #ebebeb;
+    border-radius: 0;
+    box-shadow: inset 0 1px 2px rgba(150, 160, 175, 0.1), inset 0 1px 15px rgba(150, 160, 175, 0.05);
 }
 
 .form-group > label {
-  text-transform: uppercase;
-  font-size: 13px;
+    text-transform: uppercase;
+    font-size: 13px;
 }
 
 .hr-title {
-  height: auto;
-  margin-top: 20px;
-  border-top: 1px solid;
-  color: #bbb;
-  font-size: 16px;
-  text-align: center;
-  line-height: 20px;
+    height: auto;
+    margin-top: 20px;
+    border-top: 1px solid;
+    color: #bbb;
+    font-size: 16px;
+    text-align: center;
+    line-height: 20px;
 }
 
 .hr-title span {
-  position: relative;
-  padding: 2px 10px;
-  top: -10px;
-  background-color: #fff;
-  border-radius: 2px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+    position: relative;
+    padding: 2px 10px;
+    top: -10px;
+    background-color: #fff;
+    border-radius: 2px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
 }
 
+// Created for OEIS
+// -------------------------
+
 .hidden {
-  display: none
+    display: none
 }
 
 .alignleft {
-  float: left;
+    float: left;
 }
 
 .alignright {
-  float: right;
+    float: right;
 }
 
 .rev {
-  margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 
 .circle {
-  list-style-type: circle;
+    list-style-type: circle;
 }
 
 .hljs {
-  background: #f5f5f5 !important;
-  border-radius: 15px;
+    background: #f5f5f5 !important;
+    border-radius: 15px;
 }
 
 .multiple_programs {
-  background: #F0F0F0 !important;
-  border-radius: 7px !important;
-  border-style: solid;
-  border-width: 1px;
-  border-color: rgb(204, 204, 204);
+    background: #F0F0F0 !important;
+    border-radius: 7px !important;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(204, 204, 204);
 }
 
 .floating-button {
-  position: fixed;
-  right: 30px;
-  bottom: 30px;
-  text-align: center;
-  font-size: 32px;
-  width: 2em;
-  height: 2em;
-  border-radius: 50%;
-  border: .1em solid;
-  color: #aaaaaa;
-  text-decoration: none;
-  transition: all .2s ease-in-out;
-  
-  > .fa {
-    font-size: 1em;
-    line-height: 182.5%;
-    animation: .4s toggle;
-  }
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    text-align: center;
+    font-size: 32px;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    border: .1em solid;
+    color: #aaaaaa;
+    text-decoration: none;
+    transition: all .2s ease-in-out;
+    > .fa {
+        font-size: 1em;
+        line-height: 182.5%;
+        animation: .4s toggle;
+    }
 }
 
 .floating-button:hover {
-  transform: scale(1.1);
+    transform: scale(1.1);
 }
 
 .sequenceTitle {
-  line-height: 130%;
+    line-height: 130%;
 }
 
 .adminListSpan {
-  float: left;
-  width: 80px;
+    float: left;
+    width: 80px;
 }
 
 .pace {
-  -webkit-pointer-events: none;
-  pointer-events: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
+    -webkit-pointer-events: none;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 .pace-inactive {
-  display: none;
+    display: none;
 }
 
 .pace .pace-progress {
-  background: #29d;
-  position: fixed;
-  z-index: 2000;
-  top: 0;
-  right: 100%;
-  width: 100%;
-  height: 2px;
+    background: #29d;
+    position: fixed;
+    z-index: 2000;
+    top: 0;
+    right: 100%;
+    width: 100%;
+    height: 2px;
 }
 
 .link {
-  display: block;
+    display: block;
 }
 
 .adminHeader {
-  border-bottom: 0px;
-  padding-bottom: 0px;
-  padding-top: 15px;
-  border-top: 15px;
+    border-bottom: 0px;
+    padding-bottom: 0px;
+    padding-top: 15px;
+    border-top: 15px;
 }
 
-// An attempt to copy the design of the MyBB admin page style.
+// User List (From MyBB)
+// -------------------------
 
 .fieldset {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 
 .userFieldset {
@@ -377,7 +375,8 @@ textarea {
 }
 
 .userCheckbox {
-  margin: 10px 5px 10px 5px !important;
+
+    margin: 10px 5px 10px 5px !important;
 }
 
 .userLegend {
@@ -413,18 +412,78 @@ textarea {
 }
 
 .dropdown-menu {
-  width: 100%
+    width: 100%
 }
 
 .dropdown-menu > li > a {
-  padding: 3px 13px;
+    padding: 3px 13px;
 }
 
 .none {
-  display: none;
+    display: none;
 }
 
 .flag-style {
-  width:1.666666666em;
-  line-height:1em;
+    width: 1.666666666em;
+    line-height: 1em;
+}
+
+// Tags (By Wouter Beeftink - https://codepen.io/wbeeftink/pen/dIaDH)
+// -------------------------
+
+.tags {
+    list-style: none;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+.tags li {
+    float: left;
+}
+
+.tag {
+    background: #eee;
+    border-radius: 3px 0 0 3px;
+    color: #999;
+    display: inline-block;
+    height: 26px;
+    line-height: 26px;
+    padding: 0 20px 0 23px;
+    position: relative;
+    margin: 0 10px 10px 0;
+    text-decoration: none;
+    -webkit-transition: color 0.2s;
+}
+
+.tag::before {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: inset 0 1px rgba(0, 0, 0, 0.25);
+    content: '';
+    height: 6px;
+    left: 10px;
+    position: absolute;
+    width: 6px;
+    top: 10px;
+}
+
+.tag::after {
+    background: #fff;
+    border-bottom: 13px solid transparent;
+    border-left: 10px solid #eee;
+    border-top: 13px solid transparent;
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.tag:hover {
+    background-color: crimson;
+    color: white;
+}
+
+.tag:hover::after {
+    border-left-color: crimson;
 }

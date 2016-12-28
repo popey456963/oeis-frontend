@@ -21,7 +21,7 @@ block content
                         a#favourite(role='menuitem', tabindex='-1', dest="favourite", href='/' + sequenceName + '/unfavourite')
                           i.fa.fa-heart#heart(style='color: red')
                           span#favtext= " Unfavourite"
-                    li.divider(role='presentation')
+                    // li.divider(role='presentation')
                     li(role='presentation')
                       a(role='menuitem', tabindex='-1', href='/' + sequenceName + '/edit')
                         i.fa.fa-pencil
@@ -70,6 +70,10 @@ block content
                       p
                         for i in item
                           !=i + "<br>"
+                    else if index == 'keyword'
+                      ul.tags
+                        for i in item.split(",")
+                          li.tag= i
                     else
                       p!=item
         a.floating-button(href='#', style='display: none;')

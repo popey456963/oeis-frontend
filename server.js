@@ -1,7 +1,5 @@
-// Allow people to add a page to their "favourites" and display it on a list.
-
 var express = require('express')
-var path = requi3re('path')
+var path = require('path')
 var httpLogger = require('morgan')
 var compression = require('compression')
 var methodOverride = require('method-override')
@@ -78,7 +76,7 @@ function startServer() {
     })
   }
 
-  /*
+  /* Old, now defunct REPL code, left for posterity.
   process.stdin.resume();
   process.stdin.setEncoding('utf8');
   var util = require('util');
@@ -205,7 +203,7 @@ function startServer() {
   app.use(function(req,res){
     request('http://oeis.org' + req.url, function (error, response, body) {
       if (!error && response.statusCode == 404) {
-        res.render('404.jade')
+        res.status(404).render('404.jade')
       } else {
         res.status(response.statusCode).render('frame.jade', { url: 'http://oeis.org' + req.url })
       }
