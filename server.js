@@ -22,6 +22,9 @@ var WebSocket = require('ws')
 var url = require('url')
 // var httpProxy = require('http-proxy')
 
+// Load environment variables from .env file
+dotenv.load()
+
 // Initiate Websocket
 global.ws = new WebSocket('ws://localhost:8080')
 
@@ -33,7 +36,7 @@ global.ws.onerror = function(event) {
 
 global.ws.on('open', function open() {
   global.ws.on('message', function(data, flags) {
-    console.log(data)
+    logger.log(data)
   })
   logger.success("Connected to websocket server")
   startServer()
@@ -57,9 +60,6 @@ function startServer() {
     }
   })
 
-  // Load environment variables from .env file
-  dotenv.load()
-
   // REPL
   if (process.env.REPL == 'true') {
     function evalInContext(js, context) { return function() { return eval(js); }.call(context) }
@@ -82,7 +82,7 @@ function startServer() {
   var util = require('util');
 
   process.stdin.on('data', function (text) {
-    console.log('received data:', util.inspect(text.replace('\r\n', '')));
+    logger.log('received data:', util.inspect(text.replace('\r\n', '')));
   });
   */
 
@@ -93,6 +93,7 @@ function startServer() {
   var StatsController = require('./controllers/stats')
   var DevController = require('./controllers/dev')
   var ApiController = require('./controllers/api')
+  var SearchController = require('./controllers/search')
 
   // Passport OAuth strategies
   require('./config/passport')
@@ -148,8 +149,8 @@ function startServer() {
   app.use(cookieParser())
   app.use(i18n.init)
   app.use(function(req, res, next) { 
-    res.locals.user = req.user; 
-    res.locals.cookies = req.cookies;
+    res.locals.user = req.user
+    res.locals.cookies = req.cookies
     res.locals.langs = require('./config/langnames.json')
     next() 
   })
@@ -160,7 +161,7 @@ function startServer() {
 
   /*
   app.all('/wiki/*', function(req, res) {
-    console.log("Redirecting Iframe Request")
+    logger.log("Redirecting Iframe Request")
     iframeProxy.web(req, res, { target: 'http://oeis.org' });
   })
   */
@@ -197,8 +198,10 @@ function startServer() {
   app.post('/A:sequence/favourite', UserController.ensureAuthenticated, HomeController.favourite)
   app.post('/A:sequence/unfavourite', UserController.ensureAuthenticated, HomeController.unfavourite)
   app.get('/search', HomeController.search)
+  app.get('/search2', SearchController.search)
   app.post('/test', HomeController.test)
   app.get('/langtest', DevController.langtest)
+
 
   app.use(function(req,res){
     request('http://oeis.org' + req.url, function (error, response, body) {

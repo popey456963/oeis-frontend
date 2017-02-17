@@ -78,9 +78,6 @@ logger.prototype.print   = function(msg, code) {
     } else {
       var stack = stackTrace.get()[2]
       var fileName = path.basename(stack.getFileName())
-      /*for (var i = 0; i < stackTrace.get().length; i++) {
-        console.log(stackTrace.get()[i].getFunctionName())
-      }*/
       if (stack.getFunctionName()) {
         var functionName = stack.getFunctionName().split(".")
         functionName = functionName[functionName.length - 1]
@@ -99,7 +96,12 @@ logger.prototype.print   = function(msg, code) {
       var loc = this.l.loc
       console.log(getDate + ' [' + locName + '] ' + color(fullMessage.join(" ")))
       if (!global.wserror) {
-        global.ws.send(JSON.stringify(['msg', getDate + loc(' [' + locName + '] ') + color2(fullMessage.join(" "))]))
+        try {
+          global.ws.send(JSON.stringify(['msg', getDate + loc(' [' + locName + '] ') + color2(fullMessage.join(" "))]))
+        } catch(e) {
+          global.wserror = true
+          this.print("error", "A websocket error ocurred...", e)
+        }
       }
     }
   }

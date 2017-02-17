@@ -9,16 +9,20 @@ block content
               .container-fluid
                 #error.hidden.alert.alert-danger(role='alert')
               h3 List of OEIS Users
-              for user in users
-                .col-md-6.col-lg-6
-                  fieldset.userFieldset
-                    legend.userLegend
-                      input(type='checkbox').userCheckbox
-                      a.userLink(href='#')= user.name
-                    .userProfile
-                      img(src=user.gravatar, width='80', height='80')
-                    .userDetails
-                      for value, item in user
-                        if item == "joined" || item == "email" || item == "last_active" || item == "contributions"
-                          span #[strong #{item}: ] #{value}
-                          br
+              br
+              input.form-control.quicksearch(type='text', autofocus=true, placeholder="Search Users...")
+              br
+              .grid
+                for user in users
+                  .col-md-6.col-lg-6.grid-item
+                    fieldset.userFieldset
+                      legend.userLegend
+                        input(type='checkbox').userCheckbox
+                        a.userLink(href='#')= user.name
+                      .userProfile
+                        img(src=user.gravatar, width='80', height='80')
+                      .userDetails
+                        for value, item in user
+                          if item == "joined" || item == "email" || item == "last_active" || item == "contributions"
+                            span #[strong #{item}: ] #{value}
+                            br

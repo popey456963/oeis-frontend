@@ -1,6 +1,7 @@
 var mongoose = require('mongoose')
 var mongoosastic = require('mongoosastic')
 
+
 var schemaOptions = {
   timestamps: true,
   toJSON: {
@@ -31,6 +32,28 @@ var seqSchema = new mongoose.Schema({
   time: { type: Date, unique: false, index: false, ensureIndex: true, index: 'hashed', es_boost: 1.0},
   created: { type: Date, unique: false, index: false, ensureIndex: true, index: 'hashed', es_boost: 1.0}
 }, schemaOptions)
+
+seqSchema.index({
+    id: 'text', 
+    number: 'text', 
+    name: 'text', 
+    comment: 'text',
+    link: 'text',
+    reference: 'text',
+    keyword: 'text'
+  }, {
+    name: 'Weighting of Schema', 
+    weights: {
+      id: 10, 
+      number: 10, 
+      name: 5, 
+      keyword: 5,
+      comment: 3,
+      link: 3,
+      reference: 3,
+    }
+  }
+)
 
 seqSchema.set('autoindex', false)
 

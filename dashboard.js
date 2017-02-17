@@ -65,34 +65,6 @@ var table =  grid.set(4, 9, 4, 3, contrib.table,
   , columnSpacing: 1
   , columnWidth: [24, 10, 10]})
 
-/*
- *
- * LCD Options
-//these options need to be modified epending on the resulting positioning/size
-  options.segmentWidth = options.segmentWidth || 0.06; // how wide are the segments in % so 50% = 0.5
-  options.segmentInterval = options.segmentInterval || 0.11; // spacing between the segments in % so 50% = 0.5
-  options.strokeWidth = options.strokeWidth || 0.11; // spacing between the segments in % so 50% = 0.5
-//default display settings
-  options.elements = options.elements || 3; // how many elements in the display. or how many characters can be displayed.
-  options.display = options.display || 321; // what should be displayed before anything is set
-  options.elementSpacing = options.spacing || 4; // spacing between each element
-  options.elementPadding = options.padding || 2; // how far away from the edges to put the elements
-//coloring
-  options.color = options.color || "white";
-*/
-var lcdLineOne = grid.set(0,9,2,3, contrib.lcd,
-  {
-    label: "LCD Test",
-    segmentWidth: 0.06,
-    segmentInterval: 0.11,
-    strokeWidth: 0.1,
-    elements: 5,
-    display: 3210,
-    elementSpacing: 4,
-    elementPadding: 2
-  }
-);
-
 var memoryLine = grid.set(0, 6, 4, 3, contrib.line, 
   { style: 
     { line: "green"
@@ -231,19 +203,6 @@ setInterval(function() {
 setInterval(function() {   
     setLineData([errorsData], memoryLine)
 }, 5000)
-
-setInterval(function(){
-  var colors = ['green','magenta','cyan','red','blue'];
-  var text = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-
-  var value = Math.round(Math.random() * 100);
-  lcdLineOne.setDisplay(value + text[value%12]);
-  lcdLineOne.setOptions({
-    color: colors[value%5],
-    elementPadding: 4
-  });
-  screen.render()
-}, 1500);
 
 setInterval(function() {pusage.stat(process.pid, function(err, stat) {
   if (stat.cpu > 100) stat.cpu = 0

@@ -73,7 +73,8 @@ block content
                     else if index == 'keyword'
                       ul.tags
                         for i in item.split(",")
-                          li.tag= i
+                          a(href='/search?q=keyword:' + i)
+                            li.tag= i
                     else
                       p!=item
         a.floating-button(href='#', style='display: none;')

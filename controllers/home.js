@@ -258,7 +258,7 @@ exports.search = function(req, res) {
       })
     } else {
       res.render('./search_results/no_results', {
-        title: 'No Results :: OEIS Lookup',
+        title: (req.query.q ? 'Too Many Results ' : 'No Results') + ':: OEIS Lookup',
         page: 'Search Results',
         query: req.query.q,
         count: data.count
@@ -433,6 +433,66 @@ function toMarkdownData(doc) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.postEditSequence = function(req, res) {
+  handleNewEditSequence(req, res)
+}
+
+function handleNewEditSequence(req, res) {
+  Sequence.findOne({ number: req.body.number }, function(err, doc) {
+    if (!doc) {
+      res.json({ "success": false, "err": "Sequence Number Not Found..."})
+    } else {
+      let changes = {}
+
+      res.json(JSON.stringify(findRecursiveChanges(req.body, doc)))
+    }
+  })
+}
+
+function findRecursiveChanges(item1, item2) {
+  // This function can deal with objects, arrays and strings.
+  // Arr1 should be the given array, Arr2 should be the Mongoose doc
+  
+  let changes = {}
+
+  if (item1 !== null && typeof item1 === 'object') {
+    for (let item in item1) {
+      changes[item] = findRecursiveChanges(item1[item], item2[item])
+      logger.log(JSON.stringify(changes[item]))
+    }
+    return changes
+  } else if (typeof item1 === 'array') {
+    changes = []
+    for (var i = 0; i < item1.length; i++) {
+      if (!item1[i].replace(/\s/g, '').length) {
+        logger.log("Removed empty: " + JSON.stringify(item1[i]))
+        item1 = item1.splice(i, 1)
+      }
+    }
+    for (var i = 0; i < item1.length; i++) {
+      changes[i] = findRecursiveChanges(item1[i], item2[i])
+      logger.log(JSON.stringify(changes[i]))
+    }
+    return changes
+  } else if (typeof item1 === 'string') {
+    logger.log(JSON.stringify(item1), JSON.stringify(item2))
+    if (item1 === item2) {
+      return "unchanged"
+    } else {
+      if (!item1) {
+        return "created"
+      } else if (!item2) {
+        return "removed"
+      } else {
+        return "changed"
+      }
+    }
+  } else {
+    logger.log(item1)
+    throw "Error!  Type not recognised."
+  }
+}
+
+function handleEditSequence(req, res) {
   Sequence.findOne({ number: req.body.number }, function(err, doc) {
     if (!doc) {
       res.json({ "success": false, "err": "Sequence Number Not Found..."})
@@ -443,11 +503,18 @@ exports.postEditSequence = function(req, res) {
           req.body[item] = req.body[item].split(/\r?\n/)
         }
         if (item == "data") {
-          req.body[item] = req.body[item].split(", ").join(",")
+          if (req.body[item].constructor === Array) {
+            req.body[item] = req.body[item][0].split(", ").join(",")
+          } else {
+            req.body[item] = req.body[item].split(", ").join(",")
+          }
         }
         if (req.body[item].constructor === Array) {
           for (let i = 0; i < req.body[item].length; i++) {
             req.body[item][i] = req.body[item][i].replace(/\\./g, '.')
+            if (req.body[item].constructor === String && !req.body[item].replace(/\s/g, '').length) {
+              req.body[item] = req.body[item].splice(i, 1)
+            }
           }
           changes[item] = "Unchanged"
           let check = arrayCheck(doc[item], req.body[item])
@@ -496,6 +563,7 @@ exports.postEditSequence = function(req, res) {
  */
 function arrayCheck(arr1, arr2) {
   if(arr1.length !== arr2.length)
+    logger.log(arr1, arr2)
     return [false, ["length", arr1.length, arr2.length]]
   for(let i = arr1.length; i--;) {
     if(arr1[i] !== arr2[i])
@@ -724,7 +792,7 @@ function findSeqs(text) {
 }
 
 function findLinks(text) {
-  let match
+  let match 
   const link = /&lt;a([^>]+)&gt;(.+?)&lt;\/a&gt;/gi
 
   do {
@@ -935,6 +1003,3 @@ function bootstrapFindMissing(value, multiplier) {
     }
   })
 }
-
-// bootstrapFindMissing(100000, 30)
-// bootstrapFindMissing(100000, 20)
