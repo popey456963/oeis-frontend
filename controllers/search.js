@@ -41,14 +41,16 @@ exports.search = function(req, res) {
 		let search = parse(items, []).sort(weightSort)
 
 		let values = searchDB(search).then(function(result) {
-			topResults = Object.keys(result).sort(function(a,b){ return result[b] - result[a] || a - b }).slice(start, start + limit)
+			topResults = Object.keys(result).sort(function(a,b){ return result[b] - result[a] || a - b })
+			count = topResults.length
+			topResults = topResults.slice(start, start + limit)
 
 			getItems(topResults).then(function(documents) {
 				res.json({
 					greeting: "Greetings from the OEIS! http://oeis.org/",
 					query: decodeURIComponent(req.query.q),
 					time: +new Date() - time,
-					count: topResults.length,
+					count: count,
 					start: start,
 					parse: search,
 					results: documents,
@@ -138,9 +140,34 @@ function sortOptions(sort, weight) {
 				break
 			case 'phrase':
 				// Add in phrase searching
+				resolve({})
+				break
+			case 'keyword':
+				find({ 'keyword': { "$regex": sort.value } }, function(results) {
+					let value = {}
+					for (let i = 0; i < results.length; i++) {
+						value[results[i].number] = weight
+					}
+					resolve(value)
+				})
+				break
+			case 'id':
+				if (sort.value.charAt(0) == 'A') {
+					sort.value = sort.value.slice(1)
+				}
+				sort.value = parseInt(sort.value)
+				if (isNaN(sort.value)) resolve({}); return
+				find({ 'number': sort.value }, function(results) {
+					let value = {}
+					for (let i = 0; i < results.length; i++) {
+						value[results[i].number] = weight
+					}
+					resolve(value)
+				})
 				break
 			default:
 				logger.error("Unknown type? " + sort.type)
+				resolve({})
 		}
 	})
 
