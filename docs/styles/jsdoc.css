@@ -237,7 +237,6 @@ nav > h2 > a {
 }
 
 footer {
-  display: none !important;
   color: hsl(0, 0%, 28%);
   margin-left: 250px;
   display: block;

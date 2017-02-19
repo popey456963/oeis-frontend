@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#arrayCheck">arrayCheck</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#finalRender">finalRender</a></li><li data-type='method'><a href="module-HomeController.html#getFavInfo">getFavInfo</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#donut">donut</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#arrayCheck">arrayCheck</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#finalRender">finalRender</a></li><li data-type='method'><a href="module-HomeController.html#getFavInfo">getFavInfo</a></li><li data-type='method'><a href="module-HomeController.html#handleNewEditSequence">handleNewEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#handleNewEditSequence">handleNewEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseProgram">parseProgram</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#donut">donut</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html">search</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
 </nav>
 
 <div id="main">
@@ -158,7 +158,7 @@ exports.test = function(req, res) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.id = function(req, res) {
-  const sequence = req.params.sequence
+  let sequence = req.params.sequence
   if (sequence.length &lt; 6 &amp;&amp; !isNaN(sequence)) {
     while (sequence.length &lt; 6) {
       sequence = '0' + sequence
@@ -174,9 +174,11 @@ exports.id = function(req, res) {
     }).lean().exec(function(err, doc) {
       if (!doc) {
         if (0 &lt; parseInt(sequence) &lt; 277000) {
-          updateOne(parseInt(sequence))
+          updateOne(parseInt(sequence), function() {
+            exports.id(req, res)
+          })
         }
-        return seqNotFound(res)
+        // return seqNotFound(res)
       } else {
         if (doc.program) {
           // logger.log("Parsing Program")
@@ -295,7 +297,7 @@ exports.search = function(req, res) {
       })
     } else {
       res.render('./search_results/no_results', {
-        title: 'No Results :: OEIS Lookup',
+        title: (req.query.q ? 'Too Many Results ' : 'No Results') + ':: OEIS Lookup',
         page: 'Search Results',
         query: req.query.q,
         count: data.count
@@ -470,6 +472,84 @@ function toMarkdownData(doc) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.postEditSequence = function(req, res) {
+  handleNewEditSequence(req, res)
+}
+
+/**
+ * An interesting fix to a problem causing errors when displaying text.  This
+ * function is identical to the functionality proposed in `postEditSequence()`.
+ *
+ * @function handleNewEditSequence 
+ * @instance
+ * @param {object} req - The request object sent by the client.
+ * @param {object} res - The response object to reply to the client.
+ */
+function handleNewEditSequence(req, res) {
+  Sequence.findOne({ number: req.body.number }, function(err, doc) {
+    if (!doc) {
+      res.json({ "success": false, "err": "Sequence Number Not Found..."})
+    } else {
+      let changes = {}
+
+      res.json(JSON.stringify(findRecursiveChanges(req.body, doc)))
+    }
+  })
+}
+
+/**
+ * This function returns the deep differences between an array and a
+ * Mongoose document.
+ *
+ * @function handleNewEditSequence 
+ * @instance
+ * @param {object} item1 - The given array.
+ * @param {object} item2 - The given Mongoose document.
+ */
+function findRecursiveChanges(item1, item2) {
+  // This function can deal with objects, arrays and strings.
+  // Arr1 should be the given array, Arr2 should be the Mongoose doc
+  
+  let changes = {}
+
+  if (item1 !== null &amp;&amp; typeof item1 === 'object') {
+    for (let item in item1) {
+      changes[item] = findRecursiveChanges(item1[item], item2[item])
+      logger.log(JSON.stringify(changes[item]))
+    }
+    return changes
+  } else if (typeof item1 === 'array') {
+    changes = []
+    for (var i = 0; i &lt; item1.length; i++) {
+      if (!item1[i].replace(/\s/g, '').length) {
+        logger.log("Removed empty: " + JSON.stringify(item1[i]))
+        item1 = item1.splice(i, 1)
+      }
+    }
+    for (var i = 0; i &lt; item1.length; i++) {
+      changes[i] = findRecursiveChanges(item1[i], item2[i])
+      logger.log(JSON.stringify(changes[i]))
+    }
+    return changes
+  } else if (typeof item1 === 'string') {
+    logger.log(JSON.stringify(item1), JSON.stringify(item2))
+    if (item1 === item2) {
+      return "unchanged"
+    } else {
+      if (!item1) {
+        return "created"
+      } else if (!item2) {
+        return "removed"
+      } else {
+        return "changed"
+      }
+    }
+  } else {
+    logger.log(item1)
+    throw "Error!  Type not recognised."
+  }
+}
+
+function handleEditSequence(req, res) {
   Sequence.findOne({ number: req.body.number }, function(err, doc) {
     if (!doc) {
       res.json({ "success": false, "err": "Sequence Number Not Found..."})
@@ -480,11 +560,18 @@ exports.postEditSequence = function(req, res) {
           req.body[item] = req.body[item].split(/\r?\n/)
         }
         if (item == "data") {
-          req.body[item] = req.body[item].split(", ").join(",")
+          if (req.body[item].constructor === Array) {
+            req.body[item] = req.body[item][0].split(", ").join(",")
+          } else {
+            req.body[item] = req.body[item].split(", ").join(",")
+          }
         }
         if (req.body[item].constructor === Array) {
           for (let i = 0; i &lt; req.body[item].length; i++) {
             req.body[item][i] = req.body[item][i].replace(/\\./g, '.')
+            if (req.body[item].constructor === String &amp;&amp; !req.body[item].replace(/\s/g, '').length) {
+              req.body[item] = req.body[item].splice(i, 1)
+            }
           }
           changes[item] = "Unchanged"
           let check = arrayCheck(doc[item], req.body[item])
@@ -533,6 +620,7 @@ exports.postEditSequence = function(req, res) {
  */
 function arrayCheck(arr1, arr2) {
   if(arr1.length !== arr2.length)
+    logger.log(arr1, arr2)
     return [false, ["length", arr1.length, arr2.length]]
   for(let i = arr1.length; i--;) {
     if(arr1[i] !== arr2[i])
@@ -600,7 +688,7 @@ function parseSearch(data, query) {
   // We gotta go from a sequence of data points, to bolded data points.
 
   // Here we parse the search query
-  let query = query.split(" ")
+  query = query.split(" ")
   let numbers = []
   let sequences = []
   for (let i = 0; i &lt; query.length; i++) {
@@ -647,6 +735,17 @@ function parseSearch(data, query) {
   return data
 }
 
+/**
+ * Given some string of programming languages and their respective
+ * programs, tries to identify them.  Returns an array of these
+ * identified languages.
+ *
+ * Also converts syntaxes from unknown languages to ones with a similar
+ * syntax.
+ *
+ * @param {object} data - The data returned from the OEIS API.
+ * @param {string} query - The query requested by the user.
+ */
 function parseProgram(program) {
   const transform = {
     'PARI': 'apache',
@@ -720,7 +819,7 @@ function checkUpdate() {
     old_updates = updates
     fs.writeFile('./data/updates.json', JSON.stringify(old_updates, null, 4), function(err) {
       if (err) {
-        logger.error(err)
+        logegr.error(err)
       } else {
         logger.log("Updates Saved")
       }
@@ -761,7 +860,7 @@ function findSeqs(text) {
 }
 
 function findLinks(text) {
-  let match
+  let match 
   const link = /&amp;lt;a([^>]+)&amp;gt;(.+?)&amp;lt;\/a&amp;gt;/gi
 
   do {
@@ -833,7 +932,7 @@ function updateItem(id, number) {
   })
 }
 
-function updateOne(id) {
+function updateOne(id, callback) {
   const text = ('000000' + String(id)).substring(String(id).length)
   // Some point might want to turn this to Request instead of SuperRequest
   // We don't really want caching on updating id's.
@@ -853,6 +952,9 @@ function updateOne(id) {
           throw err
         }
         logger.success(text + ' was updated successfully!')
+        if (callback) {
+          callback()
+        }
       })
     } else {
       logger.error('Request returned something wrong when trying to update one...')
@@ -968,10 +1070,7 @@ function bootstrapFindMissing(value, multiplier) {
       currentTimeout++
     }
   })
-}
-
-// bootstrapFindMissing(100000, 30)
-// bootstrapFindMissing(100000, 20)</code></pre>
+}</code></pre>
         </article>
     </section>
 
@@ -983,7 +1082,7 @@ function bootstrapFindMissing(value, multiplier) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Dec 06 2016 09:06:23 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Sat Feb 18 2017 22:05:56 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

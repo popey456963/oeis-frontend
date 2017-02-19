@@ -11,7 +11,11 @@ exports.ensureAuthenticated = function(req, res, next) {
   if (req.isAuthenticated()) {
     next();
   } else {
-    res.redirect('/login?redirect=' + req.url)
+    if (req.method == 'POST') {
+      res.status(401).json({ err: true, message: 'Not logged in!' })
+    } else {
+      res.redirect('/login?redirect=' + req.url)
+    }
   }
 };
 

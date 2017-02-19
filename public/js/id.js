@@ -1,7 +1,7 @@
 $(function() {
   $("#favourite").on("click", function(e) {
     e.preventDefault()
-    $.post(this.href, function(data) {
+    $.post(this.href).done(function(data) {
       console.log(data)
       if (data == "Favourited") {
       	// Favourited
@@ -16,6 +16,11 @@ $(function() {
         $("#favtext").text(" Favourite")
         $("#favourite").attr("href", location.pathname + "/favourite")
         toastr.info('Unfavourited', '')
+      }
+    }).fail(function(xhr, status, err) {
+      if (err == 'Unauthorized') toastr.error('Are you logged in?', 'Unauthorized!')
+      else {
+        toastr.error('Unknown Error...', '')
       }
     })
   })

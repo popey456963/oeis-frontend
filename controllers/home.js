@@ -119,7 +119,7 @@ exports.test = function(req, res) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.id = function(req, res) {
-  const sequence = req.params.sequence
+  let sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
     while (sequence.length < 6) {
       sequence = '0' + sequence
@@ -436,6 +436,15 @@ exports.postEditSequence = function(req, res) {
   handleNewEditSequence(req, res)
 }
 
+/**
+ * An interesting fix to a problem causing errors when displaying text.  This
+ * function is identical to the functionality proposed in `postEditSequence()`.
+ *
+ * @function handleNewEditSequence 
+ * @instance
+ * @param {object} req - The request object sent by the client.
+ * @param {object} res - The response object to reply to the client.
+ */
 function handleNewEditSequence(req, res) {
   Sequence.findOne({ number: req.body.number }, function(err, doc) {
     if (!doc) {
@@ -448,6 +457,15 @@ function handleNewEditSequence(req, res) {
   })
 }
 
+/**
+ * This function returns the deep differences between an array and a
+ * Mongoose document.
+ *
+ * @function handleNewEditSequence 
+ * @instance
+ * @param {object} item1 - The given array.
+ * @param {object} item2 - The given Mongoose document.
+ */
 function findRecursiveChanges(item1, item2) {
   // This function can deal with objects, arrays and strings.
   // Arr1 should be the given array, Arr2 should be the Mongoose doc
@@ -678,6 +696,17 @@ function parseSearch(data, query) {
   return data
 }
 
+/**
+ * Given some string of programming languages and their respective
+ * programs, tries to identify them.  Returns an array of these
+ * identified languages.
+ *
+ * Also converts syntaxes from unknown languages to ones with a similar
+ * syntax.
+ *
+ * @param {object} data - The data returned from the OEIS API.
+ * @param {string} query - The query requested by the user.
+ */
 function parseProgram(program) {
   const transform = {
     'PARI': 'apache',
@@ -751,7 +780,7 @@ function checkUpdate() {
     old_updates = updates
     fs.writeFile('./data/updates.json', JSON.stringify(old_updates, null, 4), function(err) {
       if (err) {
-        logger.error(err)
+        logegr.error(err)
       } else {
         logger.log("Updates Saved")
       }
