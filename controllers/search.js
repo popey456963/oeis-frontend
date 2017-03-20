@@ -1,5 +1,6 @@
 const Sequence = require('../models/Sequence')
 const logger = require('./logger')()
+// const Promise = require('bluebird')
 
 /**
  * Handles any get requests to `/search`.  This program responds to the user with a
@@ -12,8 +13,19 @@ const logger = require('./logger')()
  */
 exports.search = function(req, res) {
 	if (req.query.fmt == 'json') {
+		let time = +new Date()
 		let items = []
+
 		let query = req.query.q.split('"')
+		let start = req.query.start || (req.query.page - 1) * 10 || 0
+		let limit = req.query.limit || 10
+
+		start = isNaN(parseInt(start)) ? 0 : parseInt(start)
+		limit = isNaN(parseInt(limit)) ? 10 : parseInt(limit)
+
+		if (limit > 100) { limit = 100 }
+		if (limit < 1) { limit = 1 }
+
 		// Odd numbered sequences go straight to items.
 		// Even numbered sequences get split then go to items.
 		for (let i = 0; i < query.length; i++) {
@@ -23,16 +35,28 @@ exports.search = function(req, res) {
 				items.push(query[i].split(" "))
 			}
 		}
+
 		items = [].concat.apply([], items).filter(function(n){ return n != "" })
 
 		let search = parse(items, []).sort(weightSort)
 
-		let values = searchDB(search)
+		let values = searchDB(search).then(function(result) {
+			topResults = Object.keys(result).sort(function(a,b){ return result[b] - result[a] || a - b })
+			count = topResults.length
+			topResults = topResults.slice(start, start + limit)
 
-		res.send(JSON.stringify({
-			query: decodeURIComponent(req.query.q),
-			parse: search
-		}))
+			getItems(topResults).then(function(documents) {
+				res.json({
+					greeting: "Greetings from the OEIS! http://oeis.org/",
+					query: decodeURIComponent(req.query.q),
+					time: +new Date() - time,
+					count: count,
+					start: start,
+					parse: search,
+					results: documents,
+				})
+			})
+		})
 	} else {
 		res.json({error: 1, msg: 'This format is currently not supported, sorry.'})
 	}
@@ -40,37 +64,112 @@ exports.search = function(req, res) {
   logger.log('Someone called search...')
 }
 
-function searchDB(tree) {
-	for (let i = 0; i < tree.length; i++) {
-		sortOptions(tree[i], function(results) {
-			console.log(tree[i].type + ": " + results.length)
-		})
+function getItems(items) {
+	let promises = []
+
+	for (let i = 0; i < items.length; i++) {
+		promises.push(getItem(items[i]))
 	}
+
+	return Promise.all(promises).then(function(results) {
+		let mapped = results.map(function(item) { return item[0] })
+		return mapped
+	})
 }
 
-function sortOptions(sort, callback) {
-	switch(sort.type) {
-		case 'number':
-			// TODO: Perhaps an optimisation by pre-computing all fields?
-			find({ 'data': new RegExp('\,' + sort.value + '\,|^' + sort.value + '\,|\,' + sort.value + '$') }, function(results) {
-				callback(results)
-			})
-			break
-		case 'sequence':
-			find({ 'data': new RegExp(sort.value.join(','))}, function(results) {
-				callback(results)
-			})
-			break
-		case 'or':
-			// Maybe some unification of results required here?
-			searchDB(sort.value, function() { callback() })
-			break
-		case 'phrase':
-			// Add in phrase searching
-			break
-		default:
-			logger.error("Unknown type? " + sort.type)
+function getItem(item) {
+	return new Promise(function(resolve, reject) {
+		Sequence.find({ 'number': item }, { '_id': 0, '__v': 0, 'createdAt': 0, 'updatedAt': 0 }, function(err, docs) {
+			if (err) throw err
+			else {
+				resolve(docs)
+			}
+		})
+	})
+}
+
+function searchDB(tree) {
+	let time = +new Date()
+	let promises = []
+
+	for (let i = 0; i < tree.length; i++) {
+		promises.push(sortOptions(tree[i], tree[i].weight))
 	}
+
+	return Promise.all(promises).then(function(result) {
+		let best = {}
+		for (let i = 0; i < result.length; i++) {
+			for (var j in result[i]) {
+				if (best[j]) {
+					best[j] += result[i][j]
+				} else {
+					best[j] = result[i][j]
+				}
+			}
+		}
+		return best
+	})
+}
+
+function sortOptions(sort, weight) {
+	return new Promise(function(resolve, reject) {
+		switch(sort.type) {
+			case 'number':
+				find({ 'data': new RegExp('\,' + sort.value + '\,|^' + sort.value + '\,|\,' + sort.value + '$') }, function(results) {
+					let value = {}
+					for (let i = 0; i < results.length; i++) {
+						value[results[i].number] = weight
+					}
+					resolve(value)
+				})
+				break
+			case 'sequence':
+				find({ 'data': new RegExp(sort.value.join(','))}, function(results) {
+					let value = {}
+					for (let i = 0; i < results.length; i++) {
+						value[results[i].number] = weight
+					}
+					resolve(value)
+				})
+				break
+			case 'or':
+				// Maybe some unification of results required here?
+				let or = searchDB(sort.value, true).then(function(results) {
+					resolve(results)
+				})
+				break
+			case 'phrase':
+				// Add in phrase searching
+				resolve({})
+				break
+			case 'keyword':
+				find({ 'keyword': { "$regex": sort.value } }, function(results) {
+					let value = {}
+					for (let i = 0; i < results.length; i++) {
+						value[results[i].number] = weight
+					}
+					resolve(value)
+				})
+				break
+			case 'id':
+				if (sort.value.charAt(0) == 'A') {
+					sort.value = sort.value.slice(1)
+				}
+				sort.value = parseInt(sort.value)
+				if (isNaN(sort.value)) resolve({}); return
+				find({ 'number': sort.value }, function(results) {
+					let value = {}
+					for (let i = 0; i < results.length; i++) {
+						value[results[i].number] = weight
+					}
+					resolve(value)
+				})
+				break
+			default:
+				logger.error("Unknown type? " + sort.type)
+				resolve({})
+		}
+	})
 }
 
 function find(search, callback) {

@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#arrayCheck">arrayCheck</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#finalRender">finalRender</a></li><li data-type='method'><a href="module-HomeController.html#getFavInfo">getFavInfo</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#donut">donut</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomeController.html">HomeController</a><ul class='methods'><li data-type='method'><a href="module-HomeController.html#arrayCheck">arrayCheck</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#editSequence">editSequence</a></li><li data-type='method'><a href="module-HomeController.html#finalRender">finalRender</a></li><li data-type='method'><a href="module-HomeController.html#getFavInfo">getFavInfo</a></li><li data-type='method'><a href="module-HomeController.html#handleNewEditSequence">handleNewEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#handleNewEditSequence">handleNewEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#id">id</a></li><li data-type='method'><a href="module-HomeController.html#index">index</a></li><li data-type='method'><a href="module-HomeController.html#organiseData">organiseData</a></li><li data-type='method'><a href="module-HomeController.html#postEditSequence">postEditSequence</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#search">search</a></li><li data-type='method'><a href="module-HomeController.html#seqNotFound">seqNotFound</a></li><li data-type='method'><a href="module-HomeController.html#test">test</a></li><li data-type='method'><a href="module-HomeController.html#welcome">welcome</a></li><li data-type='method'><a href="module-HomeController.html#~parseProgram">parseProgram</a></li><li data-type='method'><a href="module-HomeController.html#~parseSearch">parseSearch</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#accountDelete">accountDelete</a></li><li><a href="global.html#accountGet">accountGet</a></li><li><a href="global.html#accountPut">accountPut</a></li><li><a href="global.html#contactGet">contactGet</a></li><li><a href="global.html#contactPost">contactPost</a></li><li><a href="global.html#donut">donut</a></li><li><a href="global.html#ensureAuthenticated">ensureAuthenticated</a></li><li><a href="global.html#forgotGet">forgotGet</a></li><li><a href="global.html#forgotPost">forgotPost</a></li><li><a href="global.html#loginGet">loginGet</a></li><li><a href="global.html#loginPost">loginPost</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#resetGet">resetGet</a></li><li><a href="global.html#resetPost">resetPost</a></li><li><a href="global.html">search</a></li><li><a href="global.html#signupGet">signupGet</a></li><li><a href="global.html#signupPost">signupPost</a></li><li><a href="global.html#unlink">unlink</a></li></ul>
 </nav>
 
 <div id="main">
@@ -46,6 +46,10 @@ const contrib = require('blessed-contrib')
 const pusage = require('pidusage')
 const _ = require('lodash')
 const ps = require('current-processes')
+const WebSocketServer = require('ws');
+
+// web Socket Initiation
+var wss = new WebSocketServer.Server({ port: 8080 });
 
 const screen = blessed.screen()
 
@@ -99,34 +103,6 @@ var table =  grid.set(4, 9, 4, 3, contrib.table,
   , label: 'Active Processes'
   , columnSpacing: 1
   , columnWidth: [24, 10, 10]})
-
-/*
- *
- * LCD Options
-//these options need to be modified epending on the resulting positioning/size
-  options.segmentWidth = options.segmentWidth || 0.06; // how wide are the segments in % so 50% = 0.5
-  options.segmentInterval = options.segmentInterval || 0.11; // spacing between the segments in % so 50% = 0.5
-  options.strokeWidth = options.strokeWidth || 0.11; // spacing between the segments in % so 50% = 0.5
-//default display settings
-  options.elements = options.elements || 3; // how many elements in the display. or how many characters can be displayed.
-  options.display = options.display || 321; // what should be displayed before anything is set
-  options.elementSpacing = options.spacing || 4; // spacing between each element
-  options.elementPadding = options.padding || 2; // how far away from the edges to put the elements
-//coloring
-  options.color = options.color || "white";
-*/
-var lcdLineOne = grid.set(0,9,2,3, contrib.lcd,
-  {
-    label: "LCD Test",
-    segmentWidth: 0.06,
-    segmentInterval: 0.11,
-    strokeWidth: 0.1,
-    elements: 5,
-    display: 3210,
-    elementSpacing: 4,
-    elementPadding: 2
-  }
-);
 
 var memoryLine = grid.set(0, 6, 4, 3, contrib.line, 
   { style: 
@@ -197,31 +173,19 @@ table.focus()
 setInterval(generateTable, 5000)
 
 
-//set log dummy data
-setInterval(function() {
-   var rnd = Math.round(Math.random()*2)
-   if (rnd==0) log.log('starting process ' + commands[Math.round(Math.random()*(commands.length-1))])   
-   else if (rnd==1) log.log('terminating server ' + servers[Math.round(Math.random()*(servers.length-1))])
-   else if (rnd==2) log.log('avg. wait time ' + Math.random().toFixed(2))
-   screen.render()
-}, 500)
-
-/*
-//set spark dummy data
-var spark1 = [1,2,5,2,1,5,1,2,5,2,1,5,4,4,5,4,1,5,1,2,5,2,1,5,1,2,5,2,1,5,1,2,5,2,1,5]
-var spark2 = [4,4,5,4,1,5,1,2,5,2,1,5,4,4,5,4,1,5,1,2,5,2,1,5,1,2,5,2,1,5,1,2,5,2,1,5]
-
-refreshSpark()
-setInterval(refreshSpark, 1000)
-
-function refreshSpark() {
-  spark1.shift()
-  spark1.push(Math.random()*5+1)       
-  spark2.shift()
-  spark2.push(Math.random()*5+1)       
-  sparkline.setData(['Server1', 'Server2'], [spark1, spark2])  
-}
-*/
+wss.on('connection', function connection(ws) {
+  var location = ws.upgradeReq.headers['x-forwarded-for'] || ws.upgradeReq.connection.remoteAddress
+  log.log("Connection from " + location)
+  ws.on('message', function incoming(message) {
+    msg = JSON.parse(message)
+    if (msg[0] == "msg") {
+      log.log(msg[1])
+    }
+    if (msg[0] == "loc") {
+      console.log(msg[1])
+    }
+  })
+})
 
 //set map dummy markers
 var marker = true
@@ -279,19 +243,6 @@ setInterval(function() {
     setLineData([errorsData], memoryLine)
 }, 5000)
 
-setInterval(function(){
-  var colors = ['green','magenta','cyan','red','blue'];
-  var text = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-
-  var value = Math.round(Math.random() * 100);
-  lcdLineOne.setDisplay(value + text[value%12]);
-  lcdLineOne.setOptions({
-    color: colors[value%5],
-    elementPadding: 4
-  });
-  screen.render()
-}, 1500);
-
 setInterval(function() {pusage.stat(process.pid, function(err, stat) {
   if (stat.cpu > 100) stat.cpu = 0
   let color = "green"
@@ -335,7 +286,7 @@ screen.render()</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Tue Dec 06 2016 09:06:23 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Sat Feb 18 2017 22:05:56 GMT+0000 (GMT Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

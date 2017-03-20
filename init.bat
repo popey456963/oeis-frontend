@@ -1,7 +1,7 @@
 @echo off
 setlocal enableextensions enabledelayedexpansion
 
-if "%1" == "" echo "Current options: elasticsearch, nodemon, watch, mongod, mongo"
+if "%1" == "" echo "Current options: elasticsearch, nodemon, watch, mongod, mongo, forever"
 
 if "%1" == "" SET /P inputName= "Command > "
 if NOT "%1" == "" SET inputName=%1
@@ -46,7 +46,7 @@ goto :EndOfFile
 
 :StartForever
 	echo Starting Forever...
-	forever --uid "OEIS" -a server.js
+	forever --uid "OEIS" -a start server.js
 	goto :EndOfFile
 
 :EndOfFile

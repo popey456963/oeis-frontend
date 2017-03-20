@@ -18,6 +18,7 @@ let seq_list = require('../config/sequences')
 
 const GRAB_INTERVAL = 300
 const BASE_URL = 'https://oeis.org/'
+const OUR_SEARCH = true
 
 /**
  * Handles any get requests to `/`.  This program responds to the user with a
@@ -84,11 +85,12 @@ exports.welcome = function(req, res) {
  */
 exports.test = function(req, res) {
   const sequence = req.body.sequence
-  const url = BASE_URL + 'search?fmt=json&q=' + encodeURIComponent(sequence)
+  const url = OUR_SEARCH ? 'http://localhost:3005/search2?fmt=json&q=' + sequence : BASE_URL + 'search?fmt=json&q=' + sequence
 
   if (sequence == '') {
     res.send('Sequence must not be blank')
   } else {
+    console.log(url)
     utils.superRequest(url, function(data) {
       if (data) {
         if (data.count != 0 && data.results == null) {
@@ -119,7 +121,7 @@ exports.test = function(req, res) {
  * @param {object} res - The response object to reply to the client.
  */
 exports.id = function(req, res) {
-  const sequence = req.params.sequence
+  let sequence = req.params.sequence
   if (sequence.length < 6 && !isNaN(sequence)) {
     while (sequence.length < 6) {
       sequence = '0' + sequence
@@ -239,10 +241,11 @@ function organiseData(data, edit) {
 exports.search = function(req, res) {
   const sequence = decodeURIComponent(req.query.q)
   const page = (typeof req.query.page === 'undefined') ? 0 : parseInt(req.query.page) - 1
-  const url = BASE_URL + 'search?fmt=json&q=' + sequence + '&start=' + (page * 10)
+  const url = OUR_SEARCH ? 'http://localhost:3005/search2?fmt=json&q=' + sequence + '&page=' + (page + 1) : BASE_URL + 'search?fmt=json&q=' + sequence + '&start=' + (page * 10)
 
   utils.superRequest(url, function(data) {
-    if (data && data.results && data.count > 0) {
+    console.log(data)
+    if (data && data.results != null && data.count > 0) {
       data = parseSearch(data, req.query.q)
       res.render('./search_results/search_results', {
         title: 'Search Results :: OEIS Lookup',
@@ -258,7 +261,7 @@ exports.search = function(req, res) {
       })
     } else {
       res.render('./search_results/no_results', {
-        title: (req.query.q ? 'Too Many Results ' : 'No Results') + ':: OEIS Lookup',
+        title: (data.count ? 'Too Many Results ' : 'No Results') + ' :: OEIS Lookup',
         page: 'Search Results',
         query: req.query.q,
         count: data.count
@@ -436,6 +439,15 @@ exports.postEditSequence = function(req, res) {
   handleNewEditSequence(req, res)
 }
 
+/**
+ * An interesting fix to a problem causing errors when displaying text.  This
+ * function is identical to the functionality proposed in `postEditSequence()`.
+ *
+ * @function handleNewEditSequence 
+ * @instance
+ * @param {object} req - The request object sent by the client.
+ * @param {object} res - The response object to reply to the client.
+ */
 function handleNewEditSequence(req, res) {
   Sequence.findOne({ number: req.body.number }, function(err, doc) {
     if (!doc) {
@@ -448,6 +460,15 @@ function handleNewEditSequence(req, res) {
   })
 }
 
+/**
+ * This function returns the deep differences between an array and a
+ * Mongoose document.
+ *
+ * @function handleNewEditSequence 
+ * @instance
+ * @param {object} item1 - The given array.
+ * @param {object} item2 - The given Mongoose document.
+ */
 function findRecursiveChanges(item1, item2) {
   // This function can deal with objects, arrays and strings.
   // Arr1 should be the given array, Arr2 should be the Mongoose doc
@@ -678,6 +699,17 @@ function parseSearch(data, query) {
   return data
 }
 
+/**
+ * Given some string of programming languages and their respective
+ * programs, tries to identify them.  Returns an array of these
+ * identified languages.
+ *
+ * Also converts syntaxes from unknown languages to ones with a similar
+ * syntax.
+ *
+ * @param {object} data - The data returned from the OEIS API.
+ * @param {string} query - The query requested by the user.
+ */
 function parseProgram(program) {
   const transform = {
     'PARI': 'apache',
@@ -751,7 +783,7 @@ function checkUpdate() {
     old_updates = updates
     fs.writeFile('./data/updates.json', JSON.stringify(old_updates, null, 4), function(err) {
       if (err) {
-        logger.error(err)
+        logegr.error(err)
       } else {
         logger.log("Updates Saved")
       }
@@ -881,7 +913,7 @@ function updateOne(id, callback) {
       Sequence.findOneAndUpdate(query, update, options, function(err, result) {
         if (err) {
           logger.error(err)
-          throw err
+          // throw err
         }
         logger.success(text + ' was updated successfully!')
         if (callback) {
@@ -1003,3 +1035,5 @@ function bootstrapFindMissing(value, multiplier) {
     }
   })
 }
+
+bootstrapFindMissing(100000, 2)

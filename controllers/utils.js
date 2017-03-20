@@ -2,6 +2,8 @@ var request = require('request')
 var cachedRequest = require('cached-request')(request)
 var logger = require('./logger')()
 
+cachedRequest.setCacheDirectory('./tmp/cache')
+
 exports.superRequest = function(url, callback, ttl) {
   ttl = (typeof ttl === 'undefined') ? 1000 * 60 * 60 * 24 : ttl
   var options = {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>controllers/contact.js - Documentation</title>
+    <title>controllers/search.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">controllers/contact.js</h1>
+    <h1 class="page-title">controllers/search.js</h1>
     
 
     
@@ -37,54 +37,164 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({
-  service: 'Mailgun',
-  auth: {
-    user: process.env.MAILGUN_USERNAME,
-    pass: process.env.MAILGUN_PASSWORD
-  }
-});
+            <pre class="prettyprint source linenums"><code>const Sequence = require('../models/Sequence')
+const logger = require('./logger')()
 
 /**
- * GET /contact
+ * Handles any get requests to `/search`.  This program responds to the user with a
+ * a JSON file which conatins search information results
+ * 
+ * @function search
+ * @instance
+ * @param {object} req - The request object sent by the client.
+ * @param {object} res - The response object to reply to the client.
  */
-exports.contactGet = function(req, res) {
-  res.render('contact', {
-    title: 'Contact'
-  });
-};
+exports.search = function(req, res) {
+	if (req.query.fmt == 'json') {
+		let items = []
+		let query = req.query.q.split('"')
+		// Odd numbered sequences go straight to items.
+		// Even numbered sequences get split then go to items.
+		for (let i = 0; i &lt; query.length; i++) {
+			if (i % 2) {
+				items.push(query[i])
+			} else {
+				items.push(query[i].split(" "))
+			}
+		}
+		items = [].concat.apply([], items).filter(function(n){ return n != "" })
 
-/**
- * POST /contact
- */
-exports.contactPost = function(req, res) {
-  req.assert('name', 'Name cannot be blank').notEmpty();
-  req.assert('email', 'Email is not valid').isEmail();
-  req.assert('email', 'Email cannot be blank').notEmpty();
-  req.assert('message', 'Message cannot be blank').notEmpty();
-  req.sanitize('email').normalizeEmail({ remove_dots: false });
+		let search = parse(items, []).sort(weightSort)
 
-  var errors = req.validationErrors();
+		let values = searchDB(search)
 
-  if (errors) {
-    req.flash('error', errors);
-    return res.redirect('/contact');
-  }
+		res.send(JSON.stringify({
+			query: decodeURIComponent(req.query.q),
+			parse: search
+		}))
+	} else {
+		res.json({error: 1, msg: 'This format is currently not supported, sorry.'})
+	}
 
-  var mailOptions = {
-    from: req.body.name + ' ' + '&lt;'+ req.body.email + '>',
-    to: 'your@email.com',
-    subject: '✔ Contact Form | Mega Boilerplate',
-    text: req.body.message
-  };
+  logger.log('Someone called search...')
+}
 
-  transporter.sendMail(mailOptions, function(err) {
-    req.flash('success', { msg: 'Thank you! Your feedback has been submitted.' });
-    res.redirect('/contact');
-  });
-};
-</code></pre>
+function searchDB(tree) {
+	for (let i = 0; i &lt; tree.length; i++) {
+		sortOptions(tree[i], function(results) {
+			console.log(tree[i].type + ": " + results.length)
+		})
+	}
+}
+
+function sortOptions(sort, callback) {
+	switch(sort.type) {
+		case 'number':
+			find({ 'data': new RegExp('\,' + sort.value + '\,|^' + sort.value + '\,|\,' + sort.value + '$') }, function(results) {
+				callback(results)
+			})
+			break
+		case 'sequence':
+			find({ 'data': new RegExp(sort.value.join(','))}, function(results) {
+				callback(results)
+			})
+			break
+		case 'or':
+			// Maybe some unification of results required here?
+			searchDB(sort.value, function() { callback() })
+			break
+		case 'phrase':
+			// Add in phrase searching
+			break
+		default:
+			logger.error("Unknown type? " + sort.type)
+	}
+}
+
+function find(search, callback) {
+	Sequence.find(search, { 'number': 1, '_id': 0 }, function(err, docs) {
+		if (err) throw err
+		else {
+			callback(docs)
+		}
+	})
+}
+
+function weightSort(a, b) {
+  if (a.weight &lt; b.weight) return 1
+  if (a.weight > b.weight) return -1
+  return 0
+}
+
+function parse(items, search) {
+	let item = items.pop(0)
+	if (item.split('|').length > 1) {
+		let subsearch = parse(item.split('|'), [])
+		let highest = 0
+		for (let i = 0; i &lt; subsearch.length; i++) {
+			if (subsearch[i].weight > highest) {
+				highest = subsearch[i].weight
+			}
+		}
+		search.push({
+			type: 'or',
+			value: subsearch,
+			weight: highest
+		})
+	}
+	else if (item.indexOf(':') != -1) {
+		// It looks like author:McJule
+		// OR author:McJule|author:Euler
+		let isNot = false
+		if (item.charAt(0) == '-') {
+			isNot = true
+			item = item.substring(1)
+		}
+		search.push({
+			type: item.split(':')[0],
+			value: item.split(':')[1],
+			inverse: isNot,
+			weight: 30 
+		})
+	}
+	else if (!isNaN(item)) {
+		// It looks like 1 4 8
+		search.push({
+			type: 'number',
+			value: item,
+			weight: 10
+		})
+	}
+	else if (item.split(',').length > 1) {
+		let allNumbers = true
+		let splitNumbers = item.split(',')
+		for (let j = 0; j &lt; splitNumbers; j++) {
+			if (isNaN(splitNumbers[j])) {
+				allNumbers = false
+				break
+			}
+		}
+		if (allNumbers) {
+			// It looks like 1,4,8,9...
+			search.push({
+				type: 'sequence',
+				value: item.split(',').map(Number),
+				weight: 100
+			})
+		}
+	} else {
+		search.push({
+			type: 'phrase',
+			value: item,
+			weight: 20
+		})
+	}
+	if (items.length > 0) {
+		return parse(items, search)
+	} else {
+		return search
+	}
+}</code></pre>
         </article>
     </section>
 
