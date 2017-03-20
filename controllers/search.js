@@ -51,6 +51,7 @@ function searchDB(tree) {
 function sortOptions(sort, callback) {
 	switch(sort.type) {
 		case 'number':
+			// TODO: Perhaps an optimisation by pre-computing all fields?
 			find({ 'data': new RegExp('\,' + sort.value + '\,|^' + sort.value + '\,|\,' + sort.value + '$') }, function(results) {
 				callback(results)
 			})

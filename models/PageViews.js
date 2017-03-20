@@ -24,11 +24,11 @@ var dayViewSchema = new mongoose.Schema({
 }, schemaOptions)
 
 var weekViewSchema = new mongoose.Schema({
-  page: { type: String, unique: false}
+    page: { type: String, unique: false}
 }, schemaOptions)
 
 var activeUserSchema = new mongoose.Schema({
-  email: { type: String, unique: true},
+  email: { type: String, unique: true },
   name: { type: String, unique: true }
 }, schemaOptions)
 
